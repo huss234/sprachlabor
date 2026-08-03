@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sprachlabor — German reading lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   SPRACHLABOR — design tokens
+   Palette: Ulm-school rationalism + German signage.
+   Cool gray paper, graphite ink, Autobahn cobalt, signal yellow.
+   Type: Newsreader = German source. Archivo = UI/English.
+         IBM Plex Mono = pronunciation notation.
+   ============================================================ */
+:root{
+  --paper:#ECEEF0;
+  --paper-2:#E1E5E8;
+  --surface:#FFFFFF;
+  --surface-2:#F5F7F8;
+  --ink:#14181B;
+  --ink-2:#4A5359;
+  --ink-3:#7C878E;
+  --rule:#D3D9DD;
+  --rule-2:#E4E9EC;
+  --signal:#1338BE;
+  --signal-soft:#E7EBFA;
+  --stress:#FFC800;
+  --stress-ink:#1A1400;
+  --der:#1338BE;
+  --die:#C0264C;
+  --das:#17795E;
+  --ok:#17795E;
+  --warn:#B4620A;
+  --shadow:0 1px 2px rgba(20,24,27,.05), 0 8px 24px -12px rgba(20,24,27,.18);
+  --shadow-lift:0 2px 4px rgba(20,24,27,.06), 0 18px 40px -18px rgba(20,24,27,.28);
+  --rail:76px;
+  --measure:66ch;
+  --r-sm:4px; --r-md:8px; --r-lg:14px;
+  --sans:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --serif:"Newsreader","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.2,.7,.3,1);
+}
+:root[data-theme="dark"]{
+  --paper:#0F1214;
+  --paper-2:#0B0E10;
+  --surface:#171B1E;
+  --surface-2:#1E2327;
+  --ink:#E8EBEE;
+  --ink-2:#A5AFB6;
+  --ink-3:#78838A;
+  --rule:#2B3237;
+  --rule-2:#232A2E;
+  --signal:#7D9BFF;
+  --signal-soft:#1B2338;
+  --stress:#FFC800;
+  --stress-ink:#1A1400;
+  --der:#7D9BFF;
+  --die:#FF8FA8;
+  --das:#5CCFA6;
+  --ok:#5CCFA6;
+  --warn:#E5A159;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.5), 0 18px 40px -18px rgba(0,0,0,.75);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;padding:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;line-height:1.5;
+  font-synthesis-weight:none;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-wrap:break-word;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none;padding:0}
+a{color:var(--signal)}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:2px}
+::selection{background:var(--stress);color:var(--stress-ink)}
+h1,h2,h3,h4,p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+
+/* ---------- reusable atoms ---------- */
+.eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+.mono{font-family:var(--mono)}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  height:38px;padding:0 16px;border-radius:var(--r-md);
+  font-size:13px;font-weight:600;letter-spacing:.01em;
+  border:1px solid var(--rule);background:var(--surface);color:var(--ink);
+  transition:background .15s var(--ease),border-color .15s var(--ease),transform .1s var(--ease);
+  white-space:nowrap;
+}
+.btn:hover{background:var(--surface-2);border-color:var(--ink-3)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn--primary{background:var(--signal);border-color:var(--signal);color:#fff}
+:root[data-theme="dark"] .btn--primary{color:#0B0E10}
+.btn--primary:hover{background:var(--signal);border-color:var(--signal);filter:brightness(1.08)}
+.btn--ghost{border-color:transparent;background:transparent}
+.btn--ghost:hover{background:var(--surface-2);border-color:transparent}
+.btn--danger:hover{border-color:var(--die);color:var(--die)}
+.btn--sm{height:30px;padding:0 11px;font-size:12px}
+.btn svg{width:15px;height:15px;flex:none}
+
+.chip{
+  display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;
+  border:1px solid var(--rule);border-radius:100px;
+  font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--ink-2);
+  background:var(--surface);
+}
+.chip--level{border-color:var(--signal);color:var(--signal);background:var(--signal-soft)}
+
+.card-surface{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg)}
+
+/* ============================================================
+   RAIL — fixed vertical navigation
+   ============================================================ */
+.rail{
+  position:fixed;left:0;top:0;bottom:0;width:var(--rail);z-index:60;
+  background:var(--surface);border-right:1px solid var(--rule);
+  display:flex;flex-direction:column;align-items:center;
+  padding:14px 0 16px;gap:4px;
+}
+.rail__mark{
+  width:34px;height:34px;border-radius:9px;background:var(--ink);color:var(--paper);
+  display:grid;place-items:center;font-weight:700;font-size:15px;letter-spacing:-.03em;
+  margin-bottom:14px;flex:none;
+}
+.rail__btn{
+  width:52px;padding:9px 0 7px;border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  color:var(--ink-3);transition:color .15s var(--ease),background .15s var(--ease);
+}
+.rail__btn:hover{color:var(--ink);background:var(--surface-2)}
+.rail__btn[aria-current="true"]{color:var(--signal);background:var(--signal-soft)}
+.rail__btn svg{width:19px;height:19px}
+.rail__btn span{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.rail__spacer{flex:1}
+.rail__word{
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-size:10px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--ink-3);opacity:.65;margin-bottom:12px;user-select:none;
+}
+
+/* ============================================================
+   SHELL
+   ============================================================ */
+.shell{margin-left:var(--rail);min-height:100vh;display:flex;flex-direction:column}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 40px}
+.view{display:none;padding:34px 0 96px;animation:rise .32s var(--ease) both}
+.view.is-active{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.page-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+  padding-bottom:16px;border-bottom:1px solid var(--rule);margin-bottom:28px;
+}
+.page-head h1{font-size:27px;font-weight:600;letter-spacing:-.022em;line-height:1.15}
+.page-head p{font-size:13px;color:var(--ink-2);margin-top:5px;max-width:52ch}
+.page-head__actions{display:flex;gap:8px;flex:none}
+
+/* ============================================================
+   LIBRARY
+   ============================================================ */
+.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.search{
+  flex:1;min-width:200px;position:relative;display:flex;align-items:center;
+}
+.search svg{position:absolute;left:12px;width:15px;height:15px;color:var(--ink-3);pointer-events:none}
+.search input{
+  width:100%;height:38px;padding:0 12px 0 34px;
+  border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);
+}
+.search input::placeholder{color:var(--ink-3)}
+.search input:focus{outline:none;border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);overflow:hidden}
+.seg button{
+  height:36px;padding:0 13px;font-size:12px;font-weight:600;color:var(--ink-2);
+  border-right:1px solid var(--rule);transition:background .14s var(--ease),color .14s var(--ease);
+}
+.seg button:last-child{border-right:none}
+.seg button:hover{background:var(--surface-2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+.grid-lessons{
+  display:grid;gap:16px;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+}
+.lcard{
+  position:relative;display:flex;flex-direction:column;gap:12px;
+  padding:20px;text-align:left;background:var(--surface);
+  border:1px solid var(--rule);border-radius:var(--r-lg);
+  transition:transform .18s var(--ease),box-shadow .18s var(--ease),border-color .18s var(--ease);
+  contain:content;
+}
+.lcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--ink-3)}
+.lcard__top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lcard__idx{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink-3);letter-spacing:.06em}
+.lcard__title{font-family:var(--serif);font-size:25px;font-weight:400;letter-spacing:-.015em;line-height:1.15}
+.lcard__sub{font-size:12.5px;color:var(--ink-2);font-style:italic}
+.lcard__excerpt{
+  font-family:var(--serif);font-size:14px;line-height:1.6;color:var(--ink-2);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.lcard__foot{
+  display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:12px;
+  border-top:1px solid var(--rule-2);font-size:11.5px;color:var(--ink-3);font-weight:500;
+}
+.meter{flex:1;height:3px;background:var(--rule);border-radius:100px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--signal);border-radius:100px;transition:width .5s var(--ease)}
+.meter i.is-full{background:var(--ok)}
+
+.empty{
+  text-align:center;padding:72px 24px;border:1px dashed var(--rule);border-radius:var(--r-lg);
+  background:var(--surface);
+}
+.empty h3{font-family:var(--serif);font-size:24px;font-weight:400;margin-bottom:8px}
+.empty p{font-size:14px;color:var(--ink-2);max-width:42ch;margin:0 auto 20px}
+
+/* ============================================================
+   LESSON — masthead
+   ============================================================ */
+.masthead{margin-bottom:30px}
+.crumb{display:flex;align-items:center;gap:8px;margin-bottom:20px}
+.crumb button{font-size:12px;font-weight:600;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+.crumb button:hover{color:var(--signal)}
+.crumb svg{width:14px;height:14px}
+.masthead__rule{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.masthead__rule .line{flex:1;height:1px;background:var(--rule)}
+.masthead h1{
+  font-family:var(--serif);font-size:clamp(34px,5.2vw,52px);font-weight:400;
+  letter-spacing:-.026em;line-height:1.05;margin-bottom:8px;
+}
+.masthead__en{font-size:15px;color:var(--ink-2);font-style:italic;margin-bottom:16px}
+.masthead__meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---------- reader ---------- */
+.reader{max-width:var(--measure);margin-bottom:14px}
+.reader__bar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding:10px 0 12px;margin-bottom:22px;border-bottom:1px solid var(--rule);
+  position:sticky;top:0;z-index:20;background:var(--paper);
+}
+.reader__bar .eyebrow{flex:none}
+.sent{display:block;margin-bottom:2px;padding:2px 0;border-radius:3px;transition:background .15s var(--ease)}
+.sent:hover{background:var(--surface-2)}
+.de-text{
+  font-family:var(--serif);font-size:clamp(19px,2.1vw,22px);line-height:1.72;
+  font-weight:400;letter-spacing:-.004em;
+}
+.tok{border-radius:2px;transition:background .12s var(--ease),color .12s var(--ease)}
+.tok--vocab{
+  cursor:pointer;
+  background-image:linear-gradient(var(--signal),var(--signal));
+  background-size:100% 1px;background-repeat:no-repeat;background-position:0 1.16em;
+}
+.tok--vocab:hover{background-color:var(--signal-soft);color:var(--signal)}
+.tok--vocab.is-open{background-color:var(--signal);color:#fff}
+:root[data-theme="dark"] .tok--vocab.is-open{color:#0B0E10}
+.tok--known{background-image:linear-gradient(var(--ok),var(--ok))}
+
+.en-line{
+  font-size:14.5px;line-height:1.6;color:var(--ink-2);font-style:italic;
+  padding:6px 0 12px 14px;border-left:2px solid var(--rule);margin:4px 0 14px;
+}
+.en-block{
+  max-width:var(--measure);padding:22px 24px;border-radius:var(--r-lg);
+  background:var(--surface);border:1px solid var(--rule);margin-bottom:14px;
+}
+.en-block .eyebrow{display:block;margin-bottom:10px}
+.en-block p{font-size:16px;line-height:1.68;color:var(--ink-2)}
+[hidden]{display:none !important}
+
+/* ---------- word popover ---------- */
+.pop{
+  position:absolute;z-index:70;width:min(340px,calc(100vw - 32px));
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-lift);padding:16px;
+  animation:pop .18s var(--ease) both;
+}
+@keyframes pop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+.pop__head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.pop__word{font-family:var(--serif);font-size:24px;font-weight:400;line-height:1.15;letter-spacing:-.015em}
+.pop__close{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;color:var(--ink-3);flex:none}
+.pop__close:hover{background:var(--surface-2);color:var(--ink)}
+.pop__close svg{width:14px;height:14px}
+.pop__tr{font-size:15px;font-weight:600;margin:10px 0 6px}
+.pop__def{font-size:13px;line-height:1.55;color:var(--ink-2)}
+
+/* ============================================================
+   SIGNATURE — pronunciation strip
+   Syllables as monospace cells divided by hairlines;
+   the stressed syllable sits in a filled signal-yellow block.
+   ============================================================ */
+.say{
+  display:inline-flex;align-items:stretch;
+  border:1px solid var(--rule);border-radius:var(--r-sm);overflow:hidden;
+  background:var(--surface-2);
+  font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.02em;
+  line-height:1;max-width:100%;flex-wrap:wrap;
+}
+.say i{
+  font-style:normal;padding:6px 8px;border-right:1px solid var(--rule);color:var(--ink-2);
+  display:flex;align-items:center;
+}
+.say i:last-child{border-right:none}
+.say i.is-stress{background:var(--stress);color:var(--stress-ink);font-weight:600}
+.say--lg{font-size:15px}
+.say--lg i{padding:9px 12px}
+
+/* ============================================================
+   VOCABULARY / FLASHCARDS
+   ============================================================ */
+.section-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  padding-bottom:14px;border-bottom:1px solid var(--rule);margin:52px 0 22px;
+}
+.section-head h2{font-size:19px;font-weight:600;letter-spacing:-.015em}
+.section-head p{font-size:12.5px;color:var(--ink-3);margin-top:4px}
+.section-head__actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+.grid-cards{
+  display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(264px,1fr));
+  content-visibility:auto;contain-intrinsic-size:auto 190px;
+}
+.fcard{perspective:1400px;min-height:186px}
+.fcard__inner{
+  display:grid;width:100%;height:100%;min-height:186px;
+  transform-style:preserve-3d;transition:transform .52s var(--ease);
+  text-align:left;
+}
+.fcard.is-flipped .fcard__inner{transform:rotateY(180deg)}
+.fcard__face{
+  grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
+  padding:18px;display:flex;flex-direction:column;gap:10px;
+  transition:border-color .16s var(--ease),box-shadow .16s var(--ease);
+}
+.fcard:hover .fcard__face{box-shadow:var(--shadow)}
+.fcard__face--back{transform:rotateY(180deg);background:var(--surface-2)}
+.fcard__top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pos{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.fcard__word{font-family:var(--serif);font-size:26px;font-weight:400;line-height:1.15;letter-spacing:-.017em}
+.art{font-weight:500}
+.art--der{color:var(--der)}
+.art--die{color:var(--die)}
+.art--das{color:var(--das)}
+.fcard__tr{font-size:17px;font-weight:600;line-height:1.3}
+.fcard__def{font-size:12.5px;line-height:1.55;color:var(--ink-2)}
+.fcard__ex{
+  font-family:var(--serif);font-size:13.5px;line-height:1.5;color:var(--ink-2);
+  padding-left:10px;border-left:2px solid var(--rule);
+}
+.fcard__ex em{display:block;font-family:var(--sans);font-size:12px;font-style:italic;color:var(--ink-3);margin-top:3px}
+.fcard__hint{margin-top:auto;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.fcard__plural{font-size:11.5px;color:var(--ink-3);font-family:var(--mono)}
+.box-dot{width:6px;height:6px;border-radius:100px;background:var(--rule);flex:none}
+.box-dot.is-on{background:var(--signal)}
+.box-dot.is-max{background:var(--ok)}
+.boxes{display:flex;gap:3px;align-items:center}
+
+/* ============================================================
+   DRILL — full-screen practice
+   ============================================================ */
+.drill{
+  position:fixed;inset:0;z-index:90;background:var(--paper);
+  display:flex;flex-direction:column;animation:fade .2s var(--ease) both;
+}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.drill__bar{
+  display:flex;align-items:center;gap:16px;padding:14px 22px;border-bottom:1px solid var(--rule);
+  background:var(--surface);
+}
+.drill__bar .meter{max-width:none}
+.drill__count{font-family:var(--mono);font-size:12px;color:var(--ink-3);font-weight:500;flex:none}
+.drill__stage{
+  flex:1;display:grid;place-items:center;padding:24px;overflow-y:auto;
+}
+.drill__card{
+  width:min(560px,100%);background:var(--surface);border:1px solid var(--rule);
+  border-radius:var(--r-lg);box-shadow:var(--shadow-lift);padding:34px 30px;
+  display:flex;flex-direction:column;gap:16px;min-height:290px;
+  animation:deal .3s var(--ease) both;
+}
+@keyframes deal{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.drill__word{font-family:var(--serif);font-size:clamp(32px,6vw,46px);font-weight:400;letter-spacing:-.025em;line-height:1.1}
+.drill__tr{font-size:22px;font-weight:600}
+.drill__def{font-size:14px;line-height:1.6;color:var(--ink-2)}
+.drill__foot{
+  display:flex;gap:10px;padding:16px 22px;border-top:1px solid var(--rule);
+  background:var(--surface);justify-content:center;flex-wrap:wrap;
+}
+.drill__foot .btn{flex:1;max-width:190px;justify-content:center;height:44px}
+.kbd{
+  font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 5px;
+  border:1px solid var(--rule);border-radius:3px;color:var(--ink-3);
+}
+.drill__done{text-align:center;max-width:420px}
+.drill__done h2{font-family:var(--serif);font-size:38px;font-weight:400;margin-bottom:10px}
+.drill__done p{color:var(--ink-2);font-size:14px;margin-bottom:24px}
+.score{display:flex;gap:26px;justify-content:center;margin-bottom:28px}
+.score div{text-align:center}
+.score b{display:block;font-family:var(--mono);font-size:30px;font-weight:600;letter-spacing:-.02em}
+.score span{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ============================================================
+   DATA
+   ============================================================ */
+.panel{
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
+  padding:22px;margin-bottom:16px;
+}
+.panel h3{font-size:15px;font-weight:600;margin-bottom:5px;letter-spacing:-.01em}
+.panel > p{font-size:13px;color:var(--ink-2);margin-bottom:16px;max-width:62ch}
+.cols{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:start}
+
+.drop{
+  border:1.5px dashed var(--rule);border-radius:var(--r-lg);padding:34px 20px;text-align:center;
+  transition:border-color .16s var(--ease),background .16s var(--ease);background:var(--surface-2);
+}
+.drop.is-over{border-color:var(--signal);background:var(--signal-soft)}
+.drop svg{width:26px;height:26px;color:var(--ink-3);margin-bottom:10px}
+.drop p{font-size:13px;color:var(--ink-2);margin-bottom:14px}
+.drop b{color:var(--ink)}
+
+.stats{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden;grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+.stats div{background:var(--surface);padding:14px 16px}
+.stats b{display:block;font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:-.02em}
+.stats span{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+
+.rows{border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden}
+.row{
+  display:flex;align-items:center;gap:14px;padding:11px 14px;
+  border-bottom:1px solid var(--rule-2);background:var(--surface);
+}
+.row:last-child{border-bottom:none}
+.row__name{flex:1;min-width:0}
+.row__name b{display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row__name span{font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+.row__acts{display:flex;gap:6px;flex:none}
+
+textarea.code{
+  width:100%;min-height:180px;padding:14px;border:1px solid var(--rule);border-radius:var(--r-md);
+  background:var(--surface-2);font-family:var(--mono);font-size:12px;line-height:1.6;resize:vertical;
+}
+textarea.code:focus{outline:none;border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
+pre.spec{
+  margin:0;padding:16px;background:var(--surface-2);border:1px solid var(--rule);
+  border-radius:var(--r-md);font-family:var(--mono);font-size:11.5px;line-height:1.65;
+  overflow-x:auto;color:var(--ink-2);
+}
+pre.spec b{color:var(--signal);font-weight:500}
+.filename{
+  display:inline-block;font-family:var(--mono);font-size:12px;padding:3px 8px;
+  background:var(--stress);color:var(--stress-ink);border-radius:3px;font-weight:500;
+}
+.keytable{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden;grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
+.keytable div{background:var(--surface);padding:10px 13px;display:flex;align-items:baseline;gap:9px}
+.keytable code{font-family:var(--serif);font-size:16px;color:var(--ink);flex:none}
+.keytable span{font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+
+/* ---------- toast ---------- */
+.toasts{position:fixed;bottom:22px;left:calc(var(--rail) + 22px);z-index:120;display:flex;flex-direction:column;gap:8px}
+.toast{
+  display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:var(--r-md);
+  background:var(--ink);color:var(--paper);font-size:13px;font-weight:500;
+  box-shadow:var(--shadow-lift);animation:slide .26s var(--ease) both;max-width:360px;
+}
+@keyframes slide{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+.toast.is-out{animation:slideout .22s var(--ease) forwards}
+@keyframes slideout{to{opacity:0;transform:translateX(-14px)}}
+.toast svg{width:15px;height:15px;flex:none}
+.toast--bad{background:var(--die);color:#fff}
+
+/* ============================================================
+   SETTINGS / SYNC
+   ============================================================ */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px}
+.field input[type=text],.field input[type=password]{
+  width:100%;height:40px;padding:0 13px;border:1px solid var(--rule);border-radius:var(--r-md);
+  background:var(--surface-2);font-family:var(--mono);font-size:13px;
+}
+.field input:focus{outline:none;border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft);background:var(--surface)}
+.hint{font-size:12px;color:var(--ink-3);margin-top:7px;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.status{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:100px;background:var(--ink-3);flex:none}
+.dot--ok{background:var(--ok)}
+.dot--bad{background:var(--die)}
+.dot--busy{background:var(--warn);animation:pulse 1s var(--ease) infinite}
+@keyframes pulse{50%{opacity:.35}}
+.status__main{font-size:14px;font-weight:600}
+.status__sub{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.switch{display:flex;align-items:center;gap:11px;cursor:pointer;user-select:none}
+.switch input{position:absolute;opacity:0;width:0;height:0}
+.switch i{
+  width:40px;height:23px;border-radius:100px;background:var(--rule);position:relative;flex:none;
+  transition:background .18s var(--ease);
+}
+.switch i::after{
+  content:"";position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:100px;
+  background:var(--surface);transition:transform .18s var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+.switch input:checked + i{background:var(--signal)}
+.switch input:checked + i::after{transform:translateX(17px)}
+.switch input:focus-visible + i{outline:2px solid var(--signal);outline-offset:2px}
+.switch span{font-size:13.5px;font-weight:500}
+.rail__sync{
+  width:9px;height:9px;border-radius:100px;background:var(--ink-3);margin:6px 0 2px;flex:none;
+}
+.rail__sync.dot--ok{background:var(--ok)}
+.rail__sync.dot--bad{background:var(--die)}
+.rail__sync.dot--busy{background:var(--warn);animation:pulse 1s var(--ease) infinite}
+.warnbox{
+  padding:13px 15px;border:1px solid var(--rule);border-left:3px solid var(--warn);
+  border-radius:0 var(--r-md) var(--r-md) 0;background:var(--surface-2);
+  font-size:13px;line-height:1.6;color:var(--ink-2);margin-top:14px;
+}
+.warnbox b{color:var(--ink)}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  :root{--rail:0px}
+  .rail{
+    top:auto;left:0;right:0;bottom:0;width:auto;height:60px;flex-direction:row;
+    justify-content:space-around;padding:0 8px;border-right:none;border-top:1px solid var(--rule);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .rail__mark,.rail__word,.rail__spacer{display:none}
+  .rail__btn{width:auto;flex:1;max-width:88px;padding:8px 0 6px}
+  .shell{margin-left:0;padding-bottom:64px}
+  .wrap{padding:0 20px}
+  .view{padding-top:24px}
+  .toasts{left:16px;right:16px;bottom:76px}
+  .drill__foot{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+  .page-head{flex-direction:column;align-items:flex-start;gap:14px}
+  .page-head__actions{width:100%}
+  .page-head__actions .btn{flex:1;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+@media print{
+  .rail,.reader__bar,.section-head__actions,.page-head__actions,.fcard__hint{display:none !important}
+  .shell{margin-left:0}
+  .fcard__inner{transform:none !important}
+  .fcard__face--back{transform:none;position:static}
+}
+</style>
+</head>
+<body>
+<nav class="rail" aria-label="Main">
+  <div class="rail__mark" aria-hidden="true">S</div>
+  <button class="rail__btn" data-nav="library" aria-current="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h5v16H4zM11 4h4v16h-4zM17.5 4.6l3.2 15.1"/></svg>
+    <span>Library</span>
+  </button>
+  <button class="rail__btn" data-nav="lesson">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H4zM8 19.5h8M12 15.5v4"/><path d="M7.5 9h5M7.5 12h9"/></svg>
+    <span>Lesson</span>
+  </button>
+  <button class="rail__btn" data-nav="data">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg>
+    <span>Data</span>
+  </button>
+  <div class="rail__spacer"></div>
+  <button class="rail__btn" data-nav="settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v3M12 17v3M4 12h3M17 12h3M6.8 6.8l2.1 2.1M15.1 15.1l2.1 2.1M17.2 6.8l-2.1 2.1M8.9 15.1l-2.1 2.1"/><circle cx="12" cy="12" r="3.2"/></svg>
+    <span>Sync</span>
+    <i class="rail__sync" id="railSync"></i>
+  </button>
+  <button class="rail__btn" id="themeBtn" title="Switch theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+    <span>Theme</span>
+  </button>
+  <div class="rail__word">Sprachlabor</div>
+</nav>
+
+<main class="shell">
+
+  <!-- ══════════════════ LIBRARY ══════════════════ -->
+  <section class="view is-active" id="view-library">
+    <div class="wrap">
+      <header class="page-head">
+        <div>
+          <div class="eyebrow" style="margin-bottom:8px">Deutsch → English</div>
+          <h1>Library</h1>
+          <p>Read a paragraph, reveal the translation, then drill every word it contains.</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn" data-nav="data">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 15V4M8 8l4-4 4 4M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>
+            Import lesson
+          </button>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <label class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+          <input type="search" id="libSearch" placeholder="Search titles, topics, words…" autocomplete="off">
+        </label>
+        <div class="seg" id="libFilter" role="group" aria-label="Filter by level">
+          <button aria-pressed="true" data-level="all">All</button>
+          <button aria-pressed="false" data-level="A1">A1</button>
+          <button aria-pressed="false" data-level="A2">A2</button>
+          <button aria-pressed="false" data-level="B1">B1</button>
+          <button aria-pressed="false" data-level="B2">B2</button>
+        </div>
+      </div>
+
+      <div class="grid-lessons" id="lessonGrid"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ LESSON ══════════════════ -->
+  <section class="view" id="view-lesson">
+    <div class="wrap" id="lessonBody"></div>
+  </section>
+
+  <!-- ══════════════════ DATA ══════════════════ -->
+  <section class="view" id="view-data">
+    <div class="wrap">
+      <header class="page-head">
+        <div>
+          <div class="eyebrow" style="margin-bottom:8px">Files &amp; storage</div>
+          <h1>Data</h1>
+          <p>Every lesson is one JSON file. Import them, export them, keep them anywhere.</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn" id="btnExportAll">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v11M8 11l4 4 4-4M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>
+            Export library
+          </button>
+        </div>
+      </header>
+
+      <div class="stats" id="statsRow" style="margin-bottom:22px"></div>
+
+      <div class="cols">
+        <div class="panel">
+          <h3>Add lessons</h3>
+          <p>Drop one or more lesson files here, or a whole library bundle. Duplicate IDs are overwritten.</p>
+          <div class="drop" id="dropZone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
+            <p>Drop <b>.json</b> files here</p>
+            <button class="btn" id="btnPick">Choose files</button>
+            <input type="file" id="filePick" accept=".json,application/json" multiple hidden>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Paste a lesson</h3>
+          <p>Have JSON on your clipboard? Paste it below and add it straight to the library.</p>
+          <textarea class="code" id="pasteBox" placeholder='{ "format": "sprachlabor.lesson", "version": 1, … }' spellcheck="false"></textarea>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <button class="btn btn--primary" id="btnPaste">Add lesson</button>
+            <button class="btn" id="btnTemplate">Download blank template</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Stored lessons</h3>
+        <p>Export writes a file named exactly the way the importer expects it.</p>
+        <div class="rows" id="dataRows"></div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn btn--danger" id="btnResetProgress">Reset all progress</button>
+          <button class="btn btn--danger" id="btnWipe">Delete everything</button>
+          <button class="btn" id="btnSeed">Restore sample lessons</button>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div class="panel">
+          <h3>Lesson file format</h3>
+          <p>The importer accepts any file matching this shape. Only <code class="mono">id</code>, <code class="mono">title</code>, <code class="mono">paragraph</code> and <code class="mono">vocabulary</code> are required.</p>
+          <pre class="spec" id="specBox"></pre>
+          <div style="margin-top:14px;font-size:13px;color:var(--ink-2);line-height:1.7">
+            <div style="margin-bottom:8px"><b>Single lesson filename</b><br><span class="filename">sl-lesson__A1__im-cafe.json</span></div>
+            <div><b>Whole library bundle</b><br><span class="filename">sl-library__2026-08-03.json</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Pronunciation key</h3>
+          <p>Respellings use English spelling patterns only — no IPA. Capitals mark the stressed syllable.</p>
+          <div class="keytable" id="keyTable"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ══════════════════ SETTINGS / SYNC ══════════════════ -->
+  <section class="view" id="view-settings">
+    <div class="wrap">
+      <header class="page-head">
+        <div>
+          <div class="eyebrow" style="margin-bottom:8px">Devices &amp; sync</div>
+          <h1>Sync</h1>
+          <p>Connect this device to your private GitHub folder so your tablet and your phone always hold the same library.</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--primary" id="btnSyncNow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.1-5.1M4 13a8 8 0 0 0 14.1 5.1"/><path d="M4 4v5h5M20 20v-5h-5"/></svg>
+            Sync now
+          </button>
+        </div>
+      </header>
+
+      <div class="panel" id="syncStatus"></div>
+
+      <div class="panel">
+        <h3>GitHub connection</h3>
+        <p>These three fields are all it needs. Everything is stored on this device only — nothing is ever written into the public folder that holds the app.</p>
+        <div class="cols">
+          <div class="field">
+            <label for="ghUser">GitHub username</label>
+            <input type="text" id="ghUser" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="huss234">
+          </div>
+          <div class="field">
+            <label for="ghRepo">Private data repository</label>
+            <input type="text" id="ghRepo" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sprachlabor-data">
+          </div>
+        </div>
+        <div class="field">
+          <label for="ghToken">Personal access token</label>
+          <input type="password" id="ghToken" autocomplete="off" spellcheck="false" placeholder="ghp_…">
+          <div class="hint">The long code you copied from GitHub. It is kept in this browser's private storage and is never uploaded anywhere except to GitHub itself, over an encrypted connection.</div>
+        </div>
+        <div class="btnrow">
+          <button class="btn btn--primary" id="btnGhSave">Save and connect</button>
+          <button class="btn" id="btnGhTest">Test connection</button>
+          <button class="btn btn--danger" id="btnGhForget">Forget this device</button>
+        </div>
+        <div class="warnbox">
+          <b>Never paste this token into a message, a file, or the public repository.</b> Anyone holding it can read and write your private folder. If it ever leaks, delete it on GitHub and generate a new one — that instantly makes the old one useless.
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Automatic sync</h3>
+        <p>When this is on, the app syncs quietly after you study and whenever you reopen it. Turn it off to sync only with the button above.</p>
+        <label class="switch">
+          <input type="checkbox" id="ghAuto">
+          <i></i>
+          <span>Sync automatically in the background</span>
+        </label>
+      </div>
+
+      <div class="panel">
+        <h3>How the merge works</h3>
+        <p style="margin-bottom:0">Your two devices never overwrite each other wholesale. Lessons merge one by one and the newest edit wins. Progress merges word by word, so a session on your phone and a session on your tablet both survive. Your study history is append-only, which means it cannot conflict at all — the two devices simply pool what each of them recorded.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script>
+"use strict";
+/* ============================================================
+   SPRACHLABOR
+   Single-file German reading lab. No dependencies.
+   ------------------------------------------------------------
+   Architecture
+     store   → tiered async persistence (artifact API → local → memory)
+     state   → lessons[], progress{}, settings{}
+     router  → hash based, renders one view at a time
+     render  → DocumentFragment builds + event delegation
+   ============================================================ */
+
+const KEY_LIB  = "sprachlabor-library-v1";
+const KEY_PROG = "sprachlabor-progress-v1";
+const KEY_EVT  = "sprachlabor-events-v1";
+const FORMAT   = "sprachlabor.lesson";
+
+/* ---------- tiny DOM helpers ---------- */
+const $  = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const el = (tag, cls, html) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (html != null) n.innerHTML = html;
+  return n;
+};
+const slug = s => String(s).toLowerCase()
+  .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+  .normalize("NFD").replace(/[\u0300-\u036f]/g,"")   /* café → cafe */
+  .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,48) || "lesson";
+const today = () => new Date().toISOString().slice(0, 10);
+
+/* ============================================================
+   STORE — one write path, debounced, degrades gracefully
+   ============================================================ */
+const store = (() => {
+  const mem = Object.create(null);
+  let backend = "memory";
+  let db = null;
+
+  function openIDB() {
+    return new Promise(resolve => {
+      let settled = false;
+      const finish = v => { if (!settled) { settled = true; resolve(v); } };
+      let req;
+      try { req = indexedDB.open("sprachlabor", 1); }
+      catch (e) { return finish(null); }
+      req.onupgradeneeded = () => { try { req.result.createObjectStore("kv"); } catch (e) {} };
+      req.onsuccess = () => finish(req.result);
+      req.onerror = () => finish(null);
+      req.onblocked = () => finish(null);
+      setTimeout(() => finish(null), 4000);
+    });
+  }
+
+  /* IndexedDB first: async, doesn't block the screen, disk-quota sized. */
+  async function init() {
+    db = await openIDB();
+    if (db && db.objectStoreNames.contains("kv")) { backend = "idb"; return backend; }
+    db = null;
+    if (window.storage && typeof window.storage.get === "function") { backend = "artifact"; return backend; }
+    try { localStorage.setItem("__sl", "1"); localStorage.removeItem("__sl"); backend = "local"; }
+    catch (e) { backend = "memory"; }
+    return backend;
+  }
+
+  function idb(mode, run) {
+    return new Promise((resolve, reject) => {
+      let tx;
+      try { tx = db.transaction("kv", mode); } catch (e) { return reject(e); }
+      const req = run(tx.objectStore("kv"));
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function get(key) {
+    try {
+      if (backend === "idb") { const raw = await idb("readonly", st => st.get(key)); return raw ? JSON.parse(raw) : null; }
+      if (backend === "artifact") { const r = await window.storage.get(key, false); return r && r.value ? JSON.parse(r.value) : null; }
+      if (backend === "local") { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; }
+    } catch (e) {}
+    return mem[key] === undefined ? null : mem[key];
+  }
+
+  async function set(key, value) {
+    const raw = JSON.stringify(value);
+    try {
+      if (backend === "idb") { await idb("readwrite", st => st.put(raw, key)); return true; }
+      if (backend === "artifact") { await window.storage.set(key, raw, false); return true; }
+      if (backend === "local") { localStorage.setItem(key, raw); return true; }
+    } catch (e) { mem[key] = value; return false; }
+    mem[key] = value;
+    return true;
+  }
+
+  const timers = Object.create(null);
+  function queue(key, getValue, ms) {
+    clearTimeout(timers[key]);
+    timers[key] = setTimeout(() => set(key, getValue()), ms || 450);
+  }
+  function flush() { Object.keys(timers).forEach(k => clearTimeout(timers[k])); }
+  function label() {
+    return { idb: "On this device (IndexedDB)", artifact: "Session storage",
+             local: "On this device (browser)", memory: "This session only" }[backend] || backend;
+  }
+  return { init, get, set, queue, flush, label, get mode() { return backend; } };
+})();
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  lessons: [],
+  progress: {},          // { lessonId: { wordKey: { box:1..5, seen, ok, t } } }
+  events: [],            // append-only study history — the source for stats later
+  deleted: {},           // { lessonId: timestamp } tombstones, so deletes survive a merge
+  settings: {
+    theme: "light", translation: "off", autoSync: true, deviceId: "",
+    github: { user: "huss234", repo: "sprachlabor-data", token: "", branch: "main" },
+    lastSync: 0
+  },
+  view: "library",
+  currentId: null,
+  filter: { q: "", level: "all" }
+};
+
+const saveLibrary  = () => store.queue(KEY_LIB,  () => ({ lessons: state.lessons, deleted: state.deleted }), 300);
+const saveProgress = () => store.queue(KEY_PROG, () => ({ progress: state.progress, settings: state.settings }), 600);
+const saveEvents   = () => store.queue(KEY_EVT,  () => state.events, 800);
+
+function deviceId() {
+  if (!state.settings.deviceId) {
+    state.settings.deviceId = Math.random().toString(36).slice(2, 8);
+    saveProgress();
+  }
+  return state.settings.deviceId;
+}
+
+/* ---------- progress model: 5-box Leitner ---------- */
+function wordKey(v) { return (v.word || "").toLowerCase(); }
+function progFor(lessonId) {
+  if (!state.progress[lessonId]) state.progress[lessonId] = {};
+  return state.progress[lessonId];
+}
+function boxOf(lessonId, v) {
+  const p = progFor(lessonId)[wordKey(v)];
+  return p ? p.box : 0;
+}
+function rate(lessonId, v, delta) {
+  const p = progFor(lessonId);
+  const k = wordKey(v);
+  const cur = p[k] || { box: 0, seen: 0, ok: 0 };
+  cur.box = Math.max(0, Math.min(5, cur.box + delta));
+  cur.seen++;
+  if (delta > 0) cur.ok++;
+  cur.t = Date.now();
+  p[k] = cur;
+  logEvent(lessonId, k, delta, cur.box);
+  saveProgress();
+  markDirty();
+}
+
+/* Append-only history. Never edited, never merged by conflict — only pooled.
+   Everything the calendar and the statistics will need comes from here. */
+function logEvent(lessonId, word, delta, box) {
+  state.events.push({
+    id: Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8),
+    t: Date.now(), l: lessonId, w: word, r: delta > 0 ? 1 : 0, b: box, d: deviceId()
+  });
+  saveEvents();
+}
+
+function eventsSince(ms) {
+  const cut = Date.now() - ms;
+  let n = 0;
+  for (let i = state.events.length - 1; i >= 0; i--) {
+    if (state.events[i].t < cut) break;
+    n++;
+  }
+  return n;
+}
+function lessonScore(lesson) {
+  const words = lesson.vocabulary || [];
+  if (!words.length) return 0;
+  let sum = 0;
+  for (const v of words) sum += boxOf(lesson.id, v);
+  return Math.round((sum / (words.length * 5)) * 100);
+}
+
+/* ============================================================
+   TOASTS
+   ============================================================ */
+const ICON_OK  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+const ICON_BAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 7v7M12 17.5v.01"/><circle cx="12" cy="12" r="9"/></svg>';
+function toast(msg, bad) {
+  const host = $("#toasts");
+  const t = el("div", "toast" + (bad ? " toast--bad" : ""), (bad ? ICON_BAD : ICON_OK) + "<span>" + esc(msg) + "</span>");
+  host.appendChild(t);
+  setTimeout(() => { t.classList.add("is-out"); setTimeout(() => t.remove(), 240); }, 2600);
+}
+
+/* ============================================================
+   PRONUNCIATION STRIP  (the signature element)
+   "buh-TSAA-luhn" → cells split on "-", the ALL-CAPS cell is stressed
+   ============================================================ */
+function sayStrip(say, large) {
+  if (!say) return "";
+  const parts = String(say).split(/[-·\s]+/).map(s => s.trim()).filter(Boolean);
+  const cells = parts.map(p => {
+    const letters = p.replace(/[^a-zA-ZäöüÄÖÜß]/g, "");
+    const stressed = letters.length > 0 && letters === letters.toUpperCase();
+    return '<i class="' + (stressed ? "is-stress" : "") + '">' + esc(p) + "</i>";
+  }).join("");
+  return '<span class="say' + (large ? " say--lg" : "") + '" title="Say it like this">' + cells + "</span>";
+}
+
+/* ============================================================
+   LESSON NORMALISATION + VALIDATION
+   Accepts loose input and repairs it into the canonical shape.
+   ============================================================ */
+function splitSentences(text) {
+  const out = [];
+  const re = /[^.!?…]+[.!?…]+["»”')\]]*\s*|[^.!?…]+$/g;
+  let m;
+  while ((m = re.exec(text)) !== null) { const s = m[0].trim(); if (s) out.push(s); }
+  return out.length ? out : [text];
+}
+
+function normalizeLesson(raw) {
+  if (!raw || typeof raw !== "object") throw new Error("Not a JSON object.");
+  const p = raw.paragraph || {};
+  const de = String(p.de || p.german || p.text || "").trim();
+  const en = String(p.en || p.english || p.translation || "").trim();
+  if (!de) throw new Error("Missing the German paragraph (paragraph.de).");
+
+  let sentences = Array.isArray(p.sentences) ? p.sentences
+    .map(s => ({ de: String(s.de || "").trim(), en: String(s.en || "").trim() }))
+    .filter(s => s.de) : [];
+  if (!sentences.length) {
+    const dl = splitSentences(de), enl = splitSentences(en);
+    sentences = dl.map((s, i) => ({ de: s, en: enl[i] || "" }));
+  }
+
+  const vocabulary = (Array.isArray(raw.vocabulary) ? raw.vocabulary : []).map(v => {
+    const word = String(v.word || v.de || "").trim();
+    const gm = word.match(/^(der|die|das)\s+/i);
+    return {
+      word,
+      gender: v.gender || (gm ? gm[1].toLowerCase() : ""),
+      pos: v.pos || v.type || (gm ? "noun" : ""),
+      plural: v.plural || "",
+      forms: Array.isArray(v.forms) ? v.forms.filter(Boolean) : [],
+      translation: String(v.translation || v.en || "").trim(),
+      definition: String(v.definition || v.meaning || "").trim(),
+      say: String(v.say || v.pronunciation || v.phonetic || "").trim(),
+      example: v.example && (v.example.de || v.example.en)
+        ? { de: String(v.example.de || ""), en: String(v.example.en || "") } : null
+    };
+  }).filter(v => v.word);
+
+  const title = String(raw.title || "Untitled lesson").trim();
+  return {
+    format: FORMAT,
+    version: 1,
+    id: String(raw.id || slug(title) + "-" + Math.random().toString(36).slice(2, 6)),
+    title,
+    titleEn: String(raw.titleEn || raw.title_en || "").trim(),
+    level: String(raw.level || "A1").toUpperCase().slice(0, 2),
+    topic: String(raw.topic || "").trim(),
+    added: raw.added || today(),
+    updatedAt: raw.updatedAt || (raw.added ? raw.added + "T00:00:00.000Z" : new Date().toISOString()),
+    paragraph: { de, en, sentences },
+    vocabulary
+  };
+}
+
+function lessonFilename(l) { return "sl-lesson__" + l.level + "__" + slug(l.title) + ".json"; }
+function libraryFilename() { return "sl-library__" + today() + ".json"; }
+
+function download(filename, text) {
+  const blob = new Blob([text], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = el("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1200);
+}
+
+function addLessons(list, quiet) {
+  let added = 0, replaced = 0, bad = 0, why = "";
+  for (const raw of list) {
+    let l;
+    try { l = normalizeLesson(raw); }
+    catch (err) { bad++; why = err.message; continue; }
+    const i = state.lessons.findIndex(x => x.id === l.id);
+    l.updatedAt = new Date().toISOString();
+    delete state.deleted[l.id];
+    if (i >= 0) { state.lessons[i] = l; replaced++; } else { state.lessons.push(l); added++; }
+  }
+  if (added || replaced) { saveLibrary(); markDirty(); }
+  if (!quiet) {
+    const bits = [];
+    if (added) bits.push(added + " added");
+    if (replaced) bits.push(replaced + " updated");
+    if (bits.length) toast(bits.join(" · ") + (bad ? " · " + bad + " skipped" : ""));
+    else toast(bad ? why : "Nothing to add", true);
+  }
+  return { added, replaced, bad };
+}
+
+/* Accepts a single lesson, a bundle, or a bare array. */
+function unpack(json) {
+  if (Array.isArray(json)) return json;
+  if (json && Array.isArray(json.lessons)) return json.lessons;
+  return [json];
+}
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+function go(view, id) {
+  const hash = view === "lesson" && id ? "#/lesson/" + encodeURIComponent(id) : "#/" + view;
+  if (location.hash !== hash) { location.hash = hash; return; }
+  applyRoute();
+}
+function applyRoute() {
+  const raw = location.hash.replace(/^#\/?/, "");
+  const parts = raw.split("/");
+  let view = parts[0] || "library";
+  let id = parts[1] ? decodeURIComponent(parts[1]) : null;
+
+  if (view === "lesson") {
+    if (!id) id = state.currentId || (state.lessons[0] && state.lessons[0].id);
+    if (!id || !state.lessons.some(l => l.id === id)) { view = "library"; id = null; }
+    else state.currentId = id;
+  }
+  if (!["library", "lesson", "data", "settings"].includes(view)) view = "library";
+  state.view = view;
+
+  $$(".view").forEach(v => v.classList.remove("is-active"));
+  const node = $("#view-" + view);
+  if (node) node.classList.add("is-active");
+  $$(".rail__btn[data-nav]").forEach(b => b.setAttribute("aria-current", String(b.dataset.nav === view)));
+
+  if (view === "library") renderLibrary();
+  if (view === "lesson")  renderLesson(id);
+  if (view === "data")    renderData();
+  if (view === "settings") renderSettings();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- theme ---------- */
+function setTheme(t) {
+  state.settings.theme = t;
+  document.documentElement.setAttribute("data-theme", t);
+  saveProgress();
+}
+
+/* ============================================================
+   LIBRARY VIEW
+   ============================================================ */
+function renderLibrary() {
+  const grid = $("#lessonGrid");
+  const q = state.filter.q.trim().toLowerCase();
+  const lv = state.filter.level;
+
+  const list = state.lessons.filter(l => {
+    if (lv !== "all" && l.level !== lv) return false;
+    if (!q) return true;
+    if ((l.title + " " + l.titleEn + " " + l.topic).toLowerCase().includes(q)) return true;
+    if (l.paragraph.de.toLowerCase().includes(q)) return true;
+    return l.vocabulary.some(v => (v.word + " " + v.translation).toLowerCase().includes(q));
+  });
+
+  grid.innerHTML = "";
+  if (!list.length) {
+    const box = el("div", "empty");
+    box.style.gridColumn = "1/-1";
+    box.innerHTML = state.lessons.length
+      ? "<h3>Nothing matches</h3><p>No lesson contains that. Try a different word or clear the filter.</p>" +
+        '<button class="btn" data-clear="1">Clear search</button>'
+      : "<h3>Your library is empty</h3><p>Lessons live in JSON files. Import one, paste one, or restore the samples to see how it works.</p>" +
+        '<button class="btn btn--primary" data-nav="data">Go to Data</button>';
+    grid.appendChild(box);
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  list.forEach((l, i) => {
+    const pct = lessonScore(l);
+    const card = el("button", "lcard");
+    card.dataset.open = l.id;
+    card.innerHTML =
+      '<div class="lcard__top">' +
+        '<span class="lcard__idx">' + String(i + 1).padStart(2, "0") + " / " + l.vocabulary.length + " words</span>" +
+        '<span class="chip chip--level">' + esc(l.level) + "</span>" +
+      "</div>" +
+      '<div><div class="lcard__title">' + esc(l.title) + "</div>" +
+      (l.titleEn ? '<div class="lcard__sub">' + esc(l.titleEn) + "</div>" : "") + "</div>" +
+      '<div class="lcard__excerpt">' + esc(l.paragraph.de) + "</div>" +
+      '<div class="lcard__foot">' +
+        "<span>" + pct + "%</span>" +
+        '<span class="meter"><i class="' + (pct === 100 ? "is-full" : "") + '" style="width:' + pct + '%"></i></span>' +
+        (l.topic ? "<span>" + esc(l.topic) + "</span>" : "") +
+      "</div>";
+    frag.appendChild(card);
+  });
+  grid.appendChild(frag);
+}
+
+/* ============================================================
+   LESSON VIEW
+   ============================================================ */
+const normWord = s => String(s).toLowerCase()
+  .replace(/^[^a-zäöüß]+|[^a-zäöüß]+$/gi, "");
+
+function buildIndex(lesson) {
+  if (lesson._index) return lesson._index;
+  const map = new Map();
+  lesson.vocabulary.forEach((v, i) => {
+    const bare = v.word.replace(/^(der|die|das)\s+/i, "");
+    const keys = [bare].concat(v.forms || []);
+    keys.forEach(k => {
+      const n = normWord(k);
+      if (n && !map.has(n)) map.set(n, i);
+    });
+  });
+  Object.defineProperty(lesson, "_index", { value: map, writable: true, configurable: true });
+  return map;
+}
+
+function tokenize(sentence, lesson) {
+  const map = buildIndex(lesson);
+  const parts = sentence.split(/(\s+)/);
+  let out = "";
+  for (const part of parts) {
+    if (!part) continue;
+    if (/^\s+$/.test(part)) { out += part; continue; }
+    const lead = part.match(/^[^\wäöüßÄÖÜ]*/)[0];
+    const tail = part.match(/[^\wäöüßÄÖÜ]*$/)[0];
+    const core = part.slice(lead.length, part.length - tail.length || undefined);
+    const n = normWord(core);
+    const i = map.has(n) ? map.get(n) : -1;
+    if (i >= 0 && core) {
+      const known = boxOf(lesson.id, lesson.vocabulary[i]) >= 4;
+      out += esc(lead) + '<span class="tok tok--vocab' + (known ? " tok--known" : "") +
+             '" data-w="' + i + '" role="button" tabindex="0">' + esc(core) + "</span>" + esc(tail);
+    } else {
+      out += esc(part);
+    }
+  }
+  return out;
+}
+
+function articleHTML(v) {
+  if (!v.gender) return esc(v.word);
+  const rest = v.word.replace(/^(der|die|das)\s+/i, "");
+  return '<span class="art art--' + v.gender + '">' + v.gender + "</span> " + esc(rest);
+}
+
+function cardHTML(lesson, v, i) {
+  const box = boxOf(lesson.id, v);
+  const dots = [1, 2, 3, 4, 5].map(n =>
+    '<span class="box-dot ' + (n <= box ? (box === 5 ? "is-max" : "is-on") : "") + '"></span>').join("");
+  return '<div class="fcard" data-card="' + i + '" tabindex="0" role="button" aria-label="Flip card: ' + esc(v.word) + '">' +
+    '<div class="fcard__inner">' +
+      '<div class="fcard__face">' +
+        '<div class="fcard__top"><span class="pos">' + esc(v.pos || "word") + '</span><span class="boxes">' + dots + "</span></div>" +
+        '<div class="fcard__word">' + articleHTML(v) + "</div>" +
+        (v.plural ? '<div class="fcard__plural">pl. ' + esc(v.plural) + "</div>" : "") +
+        sayStrip(v.say) +
+        '<div class="fcard__hint">Tap to reveal</div>' +
+      "</div>" +
+      '<div class="fcard__face fcard__face--back">' +
+        '<div class="fcard__tr">' + esc(v.translation) + "</div>" +
+        (v.definition ? '<div class="fcard__def">' + esc(v.definition) + "</div>" : "") +
+        (v.example ? '<div class="fcard__ex">' + esc(v.example.de) +
+          (v.example.en ? "<em>" + esc(v.example.en) + "</em>" : "") + "</div>" : "") +
+        '<div class="fcard__hint">Tap to flip back</div>' +
+      "</div>" +
+    "</div></div>";
+}
+
+function renderLesson(id) {
+  const lesson = state.lessons.find(l => l.id === id);
+  const host = $("#lessonBody");
+  if (!lesson) { host.innerHTML = ""; return; }
+
+  const mode = state.settings.translation;
+  const sentences = lesson.paragraph.sentences;
+  const pct = lessonScore(lesson);
+
+  let reader = "";
+  sentences.forEach((s, i) => {
+    reader += '<span class="sent" data-s="' + i + '">' + tokenize(s.de, lesson) + " </span>";
+    if (mode === "inline" && s.en) reader += '<div class="en-line">' + esc(s.en) + "</div>";
+  });
+
+  host.innerHTML =
+    '<div class="crumb"><button data-nav="library">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>' +
+      "All lessons</button></div>" +
+
+    '<header class="masthead">' +
+      '<div class="masthead__rule">' +
+        '<span class="eyebrow">' + esc(lesson.level) + (lesson.topic ? " · " + esc(lesson.topic) : "") + "</span>" +
+        '<span class="line"></span>' +
+        '<span class="eyebrow">' + lesson.vocabulary.length + " words · " + pct + "% learned</span>" +
+      "</div>" +
+      "<h1>" + esc(lesson.title) + "</h1>" +
+      (lesson.titleEn ? '<div class="masthead__en">' + esc(lesson.titleEn) + "</div>" : "") +
+      '<div class="masthead__meta">' +
+        '<button class="btn btn--primary" data-drill="1">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l13 8-13 8z"/></svg>' +
+          "Practice " + lesson.vocabulary.length + " cards</button>" +
+        '<button class="btn" data-export="' + esc(lesson.id) + '">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v11M8 11l4 4 4-4M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>' +
+          "Export</button>" +
+      "</div>" +
+    "</header>" +
+
+    '<div class="reader">' +
+      '<div class="reader__bar">' +
+        '<span class="eyebrow">Deutsch</span>' +
+        '<div class="seg" data-tr-mode>' +
+          '<button data-tr="off"    aria-pressed="' + (mode === "off") + '">Hide English</button>' +
+          '<button data-tr="inline" aria-pressed="' + (mode === "inline") + '">Line by line</button>' +
+          '<button data-tr="full"   aria-pressed="' + (mode === "full") + '">Full text</button>' +
+        "</div>" +
+      "</div>" +
+      '<div class="de-text" id="readerText">' + reader + "</div>" +
+    "</div>" +
+
+    (mode === "full" && lesson.paragraph.en
+      ? '<div class="en-block"><span class="eyebrow">English</span><p>' + esc(lesson.paragraph.en) + "</p></div>"
+      : "") +
+
+    '<div class="section-head">' +
+      "<div><h2>Vocabulary</h2><p>Every word in the paragraph — translation, meaning and how to say it.</p></div>" +
+      '<div class="section-head__actions">' +
+        '<button class="btn btn--sm" data-flipall="1">Reveal all</button>' +
+        '<button class="btn btn--sm" data-flipall="0">Hide all</button>' +
+      "</div>" +
+    "</div>" +
+    '<div class="grid-cards" id="cardGrid">' +
+      lesson.vocabulary.map((v, i) => cardHTML(lesson, v, i)).join("") +
+    "</div>";
+}
+
+/* ---------- word popover ---------- */
+let popEl = null;
+function closePop() {
+  if (popEl) { popEl.remove(); popEl = null; }
+  $$(".tok--vocab.is-open").forEach(t => t.classList.remove("is-open"));
+}
+function openPop(tok, lesson, v) {
+  closePop();
+  tok.classList.add("is-open");
+  popEl = el("div", "pop");
+  popEl.innerHTML =
+    '<div class="pop__head">' +
+      '<div class="pop__word">' + articleHTML(v) + "</div>" +
+      '<button class="pop__close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+    "</div>" +
+    sayStrip(v.say) +
+    '<div class="pop__tr">' + esc(v.translation) + "</div>" +
+    (v.definition ? '<div class="pop__def">' + esc(v.definition) + "</div>" : "") +
+    (v.plural ? '<div class="fcard__plural" style="margin-top:8px">pl. ' + esc(v.plural) + "</div>" : "");
+  document.body.appendChild(popEl);
+
+  const r = tok.getBoundingClientRect();
+  const w = popEl.offsetWidth, h = popEl.offsetHeight;
+  let left = r.left + window.scrollX + r.width / 2 - w / 2;
+  left = Math.max(12 + window.scrollX, Math.min(left, window.scrollX + document.documentElement.clientWidth - w - 12));
+  let top = r.bottom + window.scrollY + 9;
+  if (r.bottom + h + 20 > window.innerHeight && r.top - h - 9 > 0) top = r.top + window.scrollY - h - 9;
+  popEl.style.left = left + "px";
+  popEl.style.top = top + "px";
+}
+
+/* ============================================================
+   DRILL — weakest cards first, self-rated, keyboard driven
+   ============================================================ */
+const drill = { on: false, lesson: null, queue: [], i: 0, shown: false, ok: 0, again: 0, node: null };
+
+function startDrill(lesson) {
+  if (!lesson.vocabulary.length) { toast("This lesson has no words yet", true); return; }
+  drill.on = true; drill.lesson = lesson; drill.i = 0; drill.shown = false; drill.ok = 0; drill.again = 0;
+  drill.queue = lesson.vocabulary.slice().sort((a, b) => {
+    const d = boxOf(lesson.id, a) - boxOf(lesson.id, b);
+    return d !== 0 ? d : Math.random() - 0.5;
+  });
+  drill.node = el("div", "drill");
+  document.body.appendChild(drill.node);
+  document.body.style.overflow = "hidden";
+  paintDrill();
+}
+function endDrill() {
+  if (!drill.on) return;
+  drill.on = false;
+  if (drill.node) drill.node.remove();
+  drill.node = null;
+  document.body.style.overflow = "";
+  if (state.view === "lesson") renderLesson(state.currentId);
+}
+function paintDrill() {
+  const n = drill.node;
+  const total = drill.queue.length;
+
+  if (drill.i >= total) {
+    n.innerHTML =
+      '<div class="drill__bar"><button class="btn btn--ghost btn--sm" data-drill-close="1">Close</button>' +
+        '<span class="meter"><i class="is-full" style="width:100%"></i></span>' +
+        '<span class="drill__count">' + total + " / " + total + "</span></div>" +
+      '<div class="drill__stage"><div class="drill__done">' +
+        "<h2>Durchgearbeitet.</h2><p>Session finished. Your boxes are saved — weak words come back first next time.</p>" +
+        '<div class="score">' +
+          "<div><b>" + drill.ok + "</b><span>Knew it</span></div>" +
+          "<div><b>" + drill.again + "</b><span>Needs work</span></div>" +
+          "<div><b>" + lessonScore(drill.lesson) + "%</b><span>Lesson</span></div>" +
+        "</div>" +
+        '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
+          '<button class="btn btn--primary" data-drill-again="1">Run it again</button>' +
+          '<button class="btn" data-drill-close="1">Back to lesson</button>' +
+        "</div>" +
+      "</div></div>";
+    return;
+  }
+
+  const v = drill.queue[drill.i];
+  const pct = Math.round((drill.i / total) * 100);
+  n.innerHTML =
+    '<div class="drill__bar">' +
+      '<button class="btn btn--ghost btn--sm" data-drill-close="1">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Close</button>' +
+      '<span class="meter"><i style="width:' + pct + '%"></i></span>' +
+      '<span class="drill__count">' + (drill.i + 1) + " / " + total + "</span>" +
+    "</div>" +
+    '<div class="drill__stage"><div class="drill__card">' +
+      '<div class="pos">' + esc(v.pos || "word") + (v.plural ? " · pl. " + esc(v.plural) : "") + "</div>" +
+      '<div class="drill__word">' + articleHTML(v) + "</div>" +
+      (drill.shown
+        ? sayStrip(v.say, true) +
+          '<div class="drill__tr">' + esc(v.translation) + "</div>" +
+          (v.definition ? '<div class="drill__def">' + esc(v.definition) + "</div>" : "") +
+          (v.example ? '<div class="fcard__ex" style="font-size:15px">' + esc(v.example.de) +
+            (v.example.en ? "<em>" + esc(v.example.en) + "</em>" : "") + "</div>" : "")
+        : '<div style="margin-top:auto;color:var(--ink-3);font-size:13px">What does it mean? ' +
+          '<span class="kbd">Space</span> to check</div>') +
+    "</div></div>" +
+    '<div class="drill__foot">' +
+      (drill.shown
+        ? '<button class="btn" data-rate="-1">Again <span class="kbd">1</span></button>' +
+          '<button class="btn" data-rate="1">Got it <span class="kbd">2</span></button>' +
+          '<button class="btn btn--primary" data-rate="2">Easy <span class="kbd">3</span></button>'
+        : '<button class="btn btn--primary" data-reveal="1">Show answer <span class="kbd">Space</span></button>') +
+    "</div>";
+}
+function drillRate(delta) {
+  if (!drill.shown) return;
+  const v = drill.queue[drill.i];
+  rate(drill.lesson.id, v, delta);
+  if (delta > 0) drill.ok++; else drill.again++;
+  drill.i++; drill.shown = false;
+  paintDrill();
+}
+
+/* ============================================================
+   DATA VIEW
+   ============================================================ */
+const SPEC = `{
+  "<b>format</b>": "sprachlabor.lesson",
+  "<b>version</b>": 1,
+  "<b>id</b>": "im-cafe",              // unique; re-importing overwrites
+  "<b>title</b>": "Im Café",
+  "<b>titleEn</b>": "At the café",
+  "<b>level</b>": "A1",                // A1 A2 B1 B2 C1
+  "<b>topic</b>": "Alltag",
+  "<b>paragraph</b>": {
+    "de": "Full German paragraph…",
+    "en": "Full English translation…",
+    "sentences": [                // optional; auto-split if omitted
+      { "de": "Erster Satz.", "en": "First sentence." }
+    ]
+  },
+  "<b>vocabulary</b>": [
+    {
+      "word": "der Kaffee",       // include the article for nouns
+      "forms": ["Kaffee","Kaffees"],   // forms as they appear in the text
+      "pos": "noun",
+      "plural": "die Kaffees",
+      "translation": "coffee",
+      "definition": "A hot drink brewed from roasted beans.",
+      "say": "KAH-fay",           // CAPITALS = stressed syllable
+      "example": { "de": "Ein Kaffee, bitte.", "en": "A coffee, please." }
+    }
+  ]
+}`;
+
+const PRON_KEY = [
+  ["ä", "eh — like <b>bed</b>"], ["ö", "ur — like <b>her</b>, lips rounded"],
+  ["ü", "ew — like <b>few</b>"], ["ei", "eye"], ["ie", "ee"], ["eu / äu", "oy"],
+  ["au", "ow — like <b>how</b>"], ["w", "v"], ["v", "f"], ["z", "ts"],
+  ["s + vowel", "z"], ["st / sp", "sht / shp"], ["sch", "sh"],
+  ["ch (ich)", "kh — soft, hissed"], ["ch (ach)", "khh — throaty"],
+  ["r", "r — soft, in the throat"], ["ß", "ss"], ["-e ending", "uh"]
+];
+
+function renderData() {
+  const words = state.lessons.reduce((n, l) => n + l.vocabulary.length, 0);
+  let learned = 0;
+  state.lessons.forEach(l => l.vocabulary.forEach(v => { if (boxOf(l.id, v) >= 4) learned++; }));
+  const modeLabel = store.label();
+
+  $("#statsRow").innerHTML =
+    "<div><b>" + state.lessons.length + "</b><span>Lessons</span></div>" +
+    "<div><b>" + words + "</b><span>Words</span></div>" +
+    "<div><b>" + learned + "</b><span>Learned</span></div>" +
+    "<div><b>" + (words ? Math.round(learned / words * 100) : 0) + "%</b><span>Coverage</span></div>" +
+    "<div><b>" + eventsSince(30 * 864e5) + "</b><span>Reviews, 30 days</span></div>" +
+    "<div><b style='font-size:13px;padding-top:6px;line-height:1.35'>" + esc(modeLabel) + "</b><span>Storage</span></div>";
+
+  const rows = $("#dataRows");
+  if (!state.lessons.length) {
+    rows.innerHTML = '<div class="row"><div class="row__name"><b>No lessons stored</b>' +
+      "<span>Import a file or restore the samples to begin</span></div></div>";
+  } else {
+    rows.innerHTML = state.lessons.map(l =>
+      '<div class="row"><div class="row__name"><b>' + esc(l.title) + " — " + esc(l.level) +
+        "</b><span>" + esc(lessonFilename(l)) + " · " + l.vocabulary.length + " words</span></div>" +
+      '<div class="row__acts">' +
+        '<button class="btn btn--sm" data-open="' + esc(l.id) + '">Open</button>' +
+        '<button class="btn btn--sm" data-export="' + esc(l.id) + '">Export</button>' +
+        '<button class="btn btn--sm btn--danger" data-del="' + esc(l.id) + '">Delete</button>' +
+      "</div></div>").join("");
+  }
+
+  $("#specBox").innerHTML = SPEC;
+  $("#keyTable").innerHTML = PRON_KEY.map(k =>
+    "<div><code>" + k[0] + "</code><span>" + k[1] + "</span></div>").join("");
+}
+
+/* ---------- file intake ---------- */
+function readFiles(files) {
+  const jobs = Array.prototype.slice.call(files)
+    .filter(f => /\.json$/i.test(f.name) || f.type === "application/json")
+    .map(f => f.text().then(t => ({ name: f.name, json: JSON.parse(t) }))
+      .catch(() => { toast(f.name + " isn’t valid JSON", true); return null; }));
+  if (!jobs.length) { toast("Only .json lesson files can be imported", true); return; }
+  Promise.all(jobs).then(res => {
+    const all = [];
+    res.filter(Boolean).forEach(r => { unpack(r.json).forEach(x => all.push(x)); });
+    if (!all.length) return;
+    try {
+      addLessons(all);
+      renderData();
+    } catch (e) { toast(e.message || "That file isn’t a lesson", true); }
+  });
+}
+
+/* ============================================================
+   EVENTS — delegated from the document
+   ============================================================ */
+document.addEventListener("click", e => {
+  const t = e.target;
+
+  /* navigation */
+  const nav = t.closest("[data-nav]");
+  if (nav) { go(nav.dataset.nav); return; }
+
+  const open = t.closest("[data-open]");
+  if (open) { go("lesson", open.dataset.open); return; }
+
+  const card = t.closest("[data-card]");
+  const lcard = t.closest("[data-open], .lcard");
+  if (lcard && lcard.dataset.open) { go("lesson", lcard.dataset.open); return; }
+
+  /* theme */
+  if (t.closest("#themeBtn")) { setTheme(state.settings.theme === "dark" ? "light" : "dark"); return; }
+
+  /* translation mode */
+  const tr = t.closest("[data-tr]");
+  if (tr) { state.settings.translation = tr.dataset.tr; saveProgress(); renderLesson(state.currentId); return; }
+
+  /* library filter */
+  const lv = t.closest("#libFilter button");
+  if (lv) {
+    state.filter.level = lv.dataset.level;
+    $$("#libFilter button").forEach(b => b.setAttribute("aria-pressed", String(b === lv)));
+    renderLibrary(); return;
+  }
+  if (t.closest("[data-clear]")) { state.filter.q = ""; $("#libSearch").value = ""; renderLibrary(); return; }
+
+  /* word token → popover */
+  const tok = t.closest(".tok--vocab");
+  if (tok) {
+    const lesson = state.lessons.find(l => l.id === state.currentId);
+    if (lesson) {
+      if (tok.classList.contains("is-open")) closePop();
+      else openPop(tok, lesson, lesson.vocabulary[+tok.dataset.w]);
+    }
+    return;
+  }
+  if (popEl && !t.closest(".pop")) closePop();
+  if (t.closest(".pop__close")) { closePop(); return; }
+
+  /* flashcards */
+  if (card) { card.classList.toggle("is-flipped"); return; }
+  const fa = t.closest("[data-flipall]");
+  if (fa) {
+    const on = fa.dataset.flipall === "1";
+    $$("#cardGrid .fcard").forEach(c => c.classList.toggle("is-flipped", on));
+    return;
+  }
+
+  /* drill */
+  if (t.closest("[data-drill]")) {
+    const lesson = state.lessons.find(l => l.id === state.currentId);
+    if (lesson) startDrill(lesson);
+    return;
+  }
+  if (t.closest("[data-drill-close]")) { endDrill(); return; }
+  if (t.closest("[data-drill-again]")) { const l = drill.lesson; endDrill(); startDrill(l); return; }
+  if (t.closest("[data-reveal]")) { drill.shown = true; paintDrill(); return; }
+  const rt = t.closest("[data-rate]");
+  if (rt) { drillRate(+rt.dataset.rate); return; }
+
+  /* export / delete */
+  const ex = t.closest("[data-export]");
+  if (ex) {
+    const l = state.lessons.find(x => x.id === ex.dataset.export);
+    if (l) {
+      const clean = JSON.parse(JSON.stringify(l)); delete clean._index;
+      download(lessonFilename(l), JSON.stringify(clean, null, 2));
+      toast("Saved " + lessonFilename(l));
+    }
+    return;
+  }
+  const del = t.closest("[data-del]");
+  if (del) {
+    const l = state.lessons.find(x => x.id === del.dataset.del);
+    if (l && confirm('Delete "' + l.title + '"? Export it first if you want to keep it.')) {
+      state.lessons = state.lessons.filter(x => x.id !== l.id);
+      delete state.progress[l.id];
+      state.deleted[l.id] = new Date().toISOString();
+      saveLibrary(); saveProgress(); markDirty(); renderData(); toast("Deleted " + l.title);
+    }
+    return;
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (drill.on) {
+    if (e.key === "Escape") { endDrill(); return; }
+    if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      if (drill.i >= drill.queue.length) return;
+      if (!drill.shown) { drill.shown = true; paintDrill(); }
+      return;
+    }
+    if (drill.shown) {
+      if (e.key === "1") drillRate(-1);
+      if (e.key === "2") drillRate(1);
+      if (e.key === "3") drillRate(2);
+    }
+    return;
+  }
+  if (e.key === "Escape") { closePop(); return; }
+  const tgt = e.target;
+  if ((e.key === "Enter" || e.key === " ") && tgt.classList) {
+    if (tgt.classList.contains("tok--vocab") || tgt.classList.contains("fcard")) { e.preventDefault(); tgt.click(); }
+  }
+});
+
+window.addEventListener("hashchange", applyRoute);
+window.addEventListener("resize", closePop, { passive: true });
+window.addEventListener("scroll", () => { if (popEl) closePop(); }, { passive: true });
+
+/* ============================================================
+   GITHUB SYNC
+   Your private repo holds three files. Each merges differently:
+     library.json   → per lesson, newest edit wins (+ tombstones)
+     progress.json  → per word, newest rating wins
+     events.json    → union of ids; conflicts are impossible
+   ============================================================ */
+const GH_LIB = "library.json", GH_PROG = "progress.json", GH_EVT = "events.json";
+
+/* btoa() breaks on umlauts — go through UTF-8 bytes both ways. */
+function b64enc(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = "", CH = 0x8000;
+  for (let i = 0; i < bytes.length; i += CH) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+  return btoa(bin);
+}
+function b64dec(b64) {
+  const bin = atob(String(b64).replace(/\s/g, ""));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+/* key-sorted stringify so an unchanged object always looks unchanged */
+function stable(v) {
+  if (Array.isArray(v)) return "[" + v.map(stable).join(",") + "]";
+  if (v && typeof v === "object") {
+    return "{" + Object.keys(v).sort().map(k => JSON.stringify(k) + ":" + stable(v[k])).join(",") + "}";
+  }
+  return JSON.stringify(v === undefined ? null : v);
+}
+
+function ghCfg() {
+  if (!state.settings.github) state.settings.github = { user: "", repo: "", token: "", branch: "main" };
+  return state.settings.github;
+}
+function ghReady() { const c = ghCfg(); return !!(c.user && c.repo && c.token); }
+function ghBase() {
+  const c = ghCfg();
+  return "https://api.github.com/repos/" + encodeURIComponent(c.user) + "/" + encodeURIComponent(c.repo);
+}
+function ghMsg(res) {
+  if (res.status === 401) return "GitHub rejected the token. It may be expired, mistyped, or deleted.";
+  if (res.status === 403) return "GitHub refused the request — the token may not have repository access, or you have hit the hourly limit.";
+  if (res.status === 404) return "Could not find that repository. Check the username and the repository name.";
+  if (res.status === 409) return "Both devices wrote at the same moment. Sync again in a second.";
+  if (res.status === 422) return "GitHub would not accept the file.";
+  return "GitHub returned an error (" + res.status + ").";
+}
+function ghFetch(url, opts) {
+  const o = opts || {};
+  return fetch(url, {
+    method: o.method || "GET",
+    cache: "no-store",
+    headers: Object.assign({
+      "Accept": "application/vnd.github+json",
+      "Authorization": "Bearer " + ghCfg().token,
+      "X-GitHub-Api-Version": "2022-11-28"
+    }, o.headers || {}),
+    body: o.body
+  });
+}
+
+async function ghRead(file) {
+  const c = ghCfg();
+  const url = ghBase() + "/contents/" + file + "?ref=" + encodeURIComponent(c.branch || "main") + "&_=" + Date.now();
+  const res = await ghFetch(url);
+  if (res.status === 404) return { data: null, sha: null };
+  if (!res.ok) throw new Error(ghMsg(res));
+  const j = await res.json();
+  let text;
+  if (j.content) text = b64dec(j.content);
+  else {                                    /* files over 1 MB come back empty here */
+    const b = await ghFetch(ghBase() + "/git/blobs/" + j.sha);
+    if (!b.ok) throw new Error(ghMsg(b));
+    text = b64dec((await b.json()).content);
+  }
+  let data = null;
+  try { data = JSON.parse(text); } catch (e) { data = null; }
+  return { data: data, sha: j.sha };
+}
+
+async function ghWrite(file, obj, sha, message) {
+  const c = ghCfg();
+  const body = {
+    message: message,
+    content: b64enc(JSON.stringify(obj, null, 2)),
+    branch: c.branch || "main"
+  };
+  if (sha) body.sha = sha;
+  const res = await ghFetch(ghBase() + "/contents/" + file, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(ghMsg(res));
+  return res;
+}
+
+function cleanLesson(l) {
+  const c = {};
+  ["format","version","id","title","titleEn","level","topic","added","updatedAt","paragraph","vocabulary"]
+    .forEach(k => { if (l[k] !== undefined) c[k] = l[k]; });
+  return c;
+}
+
+/* ---- merges ---- */
+function mergeLibrary(remote) {
+  const tomb = Object.assign({}, (remote && remote.deleted) || {}, state.deleted || {});
+  const map = new Map();
+  const take = raw => {
+    let l;
+    try { l = normalizeLesson(raw); } catch (e) { return; }
+    const prev = map.get(l.id);
+    if (!prev || String(l.updatedAt || "") > String(prev.updatedAt || "")) map.set(l.id, l);
+  };
+  ((remote && remote.lessons) || []).forEach(take);
+  state.lessons.forEach(take);
+
+  const out = [];
+  map.forEach((l, id) => {
+    const t = tomb[id];
+    if (t && String(t) >= String(l.updatedAt || "")) return;   /* deleted after its last edit */
+    out.push(l);
+  });
+  out.sort((a, b) => String(a.level + a.title).localeCompare(String(b.level + b.title)));
+  state.deleted = tomb;
+  return out;
+}
+
+function mergeProgress(remote) {
+  const out = {};
+  [remote || {}, state.progress || {}].forEach(src => {
+    Object.keys(src || {}).forEach(lid => {
+      if (!out[lid]) out[lid] = {};
+      Object.keys(src[lid] || {}).forEach(w => {
+        const inc = src[lid][w], cur = out[lid][w];
+        if (!cur || (inc.t || 0) >= (cur.t || 0)) out[lid][w] = inc;
+      });
+    });
+  });
+  return out;
+}
+
+function mergeEvents(remote) {
+  const seen = new Set(), out = [];
+  (Array.isArray(remote) ? remote : []).concat(state.events || []).forEach(e => {
+    if (!e || !e.id || seen.has(e.id)) return;
+    seen.add(e.id);
+    out.push(e);
+  });
+  out.sort((a, b) => (a.t || 0) - (b.t || 0));
+  return out;
+}
+
+/* ---- status ---- */
+let syncState = { kind: "idle", msg: "Not connected" };
+function setSync(kind, msg) {
+  syncState = { kind: kind, msg: msg };
+  const dot = $("#railSync");
+  if (dot) dot.className = "rail__sync" + (kind === "ok" ? " dot--ok" : kind === "bad" ? " dot--bad" : kind === "busy" ? " dot--busy" : "");
+  if (state.view === "settings") renderSyncStatus();
+}
+
+let dirty = false, dirtyTimer = null;
+function markDirty() {
+  dirty = true;
+  if (!ghReady() || !state.settings.autoSync) return;
+  clearTimeout(dirtyTimer);
+  dirtyTimer = setTimeout(() => syncNow(false), 12000);   /* settle first, then sync once */
+}
+
+let syncing = false;
+async function syncNow(manual) {
+  if (syncing) return;
+  if (!ghReady()) { if (manual) toast("Add your GitHub details below first", true); return; }
+  if (!navigator.onLine) { setSync("bad", "Offline — will sync when you reconnect"); if (manual) toast("No internet connection", true); return; }
+
+  syncing = true;
+  setSync("busy", "Syncing…");
+  try {
+    const [lib, prog, evt] = await Promise.all([ghRead(GH_LIB), ghRead(GH_PROG), ghRead(GH_EVT)]);
+
+    const remoteProg = prog.data && prog.data.progress ? prog.data.progress : (prog.data || {});
+    const remoteEvts = evt.data && evt.data.events ? evt.data.events : (Array.isArray(evt.data) ? evt.data : []);
+
+    const beforeLib  = stable([(lib.data && lib.data.deleted) || {}, ((lib.data && lib.data.lessons) || []).map(x => { try { return cleanLesson(normalizeLesson(x)); } catch (e) { return null; } })]);
+    const beforeProg = stable(remoteProg);
+    const beforeEvt  = remoteEvts.length;
+
+    state.lessons  = mergeLibrary(lib.data);
+    state.progress = mergeProgress(remoteProg);
+    state.events   = mergeEvents(remoteEvts);
+
+    const now = new Date().toISOString();
+    const afterLib = stable([state.deleted, state.lessons.map(cleanLesson)]);
+    const afterProg = stable(state.progress);
+
+    if (afterLib !== beforeLib) {
+      await ghWrite(GH_LIB, {
+        format: "sprachlabor.library", version: 2, updated: now,
+        deleted: state.deleted, lessons: state.lessons.map(cleanLesson)
+      }, lib.sha, "Library sync from " + deviceId());
+    }
+    if (afterProg !== beforeProg) {
+      await ghWrite(GH_PROG, {
+        format: "sprachlabor.progress", version: 2, updated: now, progress: state.progress
+      }, prog.sha, "Progress sync from " + deviceId());
+    }
+    if (state.events.length !== beforeEvt) {
+      await ghWrite(GH_EVT, {
+        format: "sprachlabor.events", version: 2, updated: now, events: state.events
+      }, evt.sha, "History sync from " + deviceId());
+    }
+
+    dirty = false;
+    state.settings.lastSync = Date.now();
+    saveLibrary(); saveProgress(); saveEvents();
+    setSync("ok", "Everything is in step");
+    if (manual) toast("Synced — " + state.lessons.length + " lessons, " + state.events.length + " reviews");
+    if (state.view === "library") renderLibrary();
+    if (state.view === "lesson" && !drill.on) renderLesson(state.currentId);
+    if (state.view === "data") renderData();
+  } catch (err) {
+    setSync("bad", err.message || "Sync failed");
+    if (manual) toast(err.message || "Sync failed", true);
+  } finally {
+    syncing = false;
+    if (state.view === "settings") renderSyncStatus();
+  }
+}
+
+async function ghTest() {
+  if (!ghReady()) { toast("Fill in all three fields first", true); return; }
+  setSync("busy", "Checking…");
+  try {
+    const res = await ghFetch(ghBase());
+    if (!res.ok) throw new Error(ghMsg(res));
+    const j = await res.json();
+    if (!j.private) {
+      setSync("bad", "That repository is public");
+      toast("Careful — that repository is public. Use your private one.", true);
+      return;
+    }
+    setSync("ok", "Connected to " + j.full_name);
+    toast("Connected to " + j.full_name);
+  } catch (err) {
+    setSync("bad", err.message || "Could not connect");
+    toast(err.message || "Could not connect", true);
+  }
+  renderSyncStatus();
+}
+
+/* ============================================================
+   SETTINGS VIEW
+   ============================================================ */
+function timeAgo(ms) {
+  if (!ms) return "never";
+  const d = Math.floor((Date.now() - ms) / 1000);
+  if (d < 60) return "just now";
+  if (d < 3600) return Math.floor(d / 60) + " min ago";
+  if (d < 86400) return Math.floor(d / 3600) + " hr ago";
+  return Math.floor(d / 86400) + " days ago";
+}
+
+function renderSyncStatus() {
+  const host = $("#syncStatus");
+  if (!host) return;
+  const kind = syncState.kind;
+  const label = ghReady() ? syncState.msg : "This device is not connected yet";
+  host.innerHTML =
+    '<div class="status">' +
+      '<span class="dot ' + (kind === "ok" ? "dot--ok" : kind === "bad" ? "dot--bad" : kind === "busy" ? "dot--busy" : "") + '"></span>' +
+      "<div style='flex:1;min-width:180px'>" +
+        '<div class="status__main">' + esc(label) + "</div>" +
+        '<div class="status__sub">Last synced ' + timeAgo(state.settings.lastSync) +
+          " · " + state.lessons.length + " lessons · " + state.events.length + " reviews recorded</div>" +
+      "</div>" +
+    "</div>" +
+    '<div class="stats" style="margin-top:18px">' +
+      "<div><b>" + eventsSince(30 * 864e5) + "</b><span>Reviews, 30 days</span></div>" +
+      "<div><b>" + eventsSince(7 * 864e5) + "</b><span>Reviews, 7 days</span></div>" +
+      "<div><b>" + state.events.length + "</b><span>All time</span></div>" +
+      "<div><b style='font-size:14px;padding-top:5px'>" + esc(store.label()) + "</b><span>Local storage</span></div>" +
+      "<div><b style='font-size:14px;padding-top:5px'>" + esc(deviceId()) + "</b><span>This device</span></div>" +
+    "</div>";
+}
+
+function renderSettings() {
+  const c = ghCfg();
+  $("#ghUser").value = c.user || "";
+  $("#ghRepo").value = c.repo || "";
+  $("#ghToken").value = c.token || "";
+  $("#ghAuto").checked = state.settings.autoSync !== false;
+  renderSyncStatus();
+}
+
+/* ============================================================
+   SAMPLE LESSONS — also the reference for the file format
+   ============================================================ */
+const SAMPLES = [
+{
+  format: FORMAT, version: 1, id: "im-cafe", title: "Im Café", titleEn: "At the café",
+  level: "A1", topic: "Alltag",
+  paragraph: {
+    de: "Am Samstagmorgen gehe ich immer in mein Lieblingscafé an der Ecke. Der Kellner kennt mich schon und bringt mir sofort einen großen Kaffee mit Milch. Ich setze mich ans Fenster und lese in Ruhe die Zeitung. Draußen regnet es, aber drinnen ist es warm und still. Nach einer Stunde bezahle ich und gehe langsam nach Hause.",
+    en: "On Saturday mornings I always go to my favourite café on the corner. The waiter already knows me and brings me a large coffee with milk straight away. I sit down by the window and read the newspaper in peace. It is raining outside, but inside it is warm and quiet. After an hour I pay and walk slowly home.",
+    sentences: [
+      { de: "Am Samstagmorgen gehe ich immer in mein Lieblingscafé an der Ecke.", en: "On Saturday mornings I always go to my favourite café on the corner." },
+      { de: "Der Kellner kennt mich schon und bringt mir sofort einen großen Kaffee mit Milch.", en: "The waiter already knows me and brings me a large coffee with milk straight away." },
+      { de: "Ich setze mich ans Fenster und lese in Ruhe die Zeitung.", en: "I sit down by the window and read the newspaper in peace." },
+      { de: "Draußen regnet es, aber drinnen ist es warm und still.", en: "It is raining outside, but inside it is warm and quiet." },
+      { de: "Nach einer Stunde bezahle ich und gehe langsam nach Hause.", en: "After an hour I pay and walk slowly home." }
+    ]
+  },
+  vocabulary: [
+    { word: "der Samstagmorgen", forms: ["Samstagmorgen"], pos: "noun", say: "ZAHMS-tahk-mor-guhn", translation: "Saturday morning", definition: "The morning of the sixth day of the week. German glues the day and the time of day into one word.", example: { de: "Am Samstagmorgen schlafe ich lange.", en: "On Saturday morning I sleep in." } },
+    { word: "immer", pos: "adverb", say: "IM-uh", translation: "always", definition: "On every occasion, without exception.", example: { de: "Er kommt immer zu spät.", en: "He is always late." } },
+    { word: "das Lieblingscafé", forms: ["Lieblingscafé"], pos: "noun", say: "LEEB-lings-ka-fay", translation: "favourite café", definition: "The café you prefer above all others. Put Lieblings- in front of any noun to make it your favourite one.", example: { de: "Das ist mein Lieblingsbuch.", en: "That is my favourite book." } },
+    { word: "die Ecke", forms: ["Ecke"], plural: "die Ecken", pos: "noun", say: "EK-uh", translation: "corner", definition: "The point where two streets, walls or edges meet.", example: { de: "Der Laden ist gleich um die Ecke.", en: "The shop is just around the corner." } },
+    { word: "der Kellner", forms: ["Kellner"], plural: "die Kellner", pos: "noun", say: "KEL-nuh", translation: "waiter", definition: "A man who serves food and drink to guests. The female form is die Kellnerin.", example: { de: "Der Kellner bringt die Rechnung.", en: "The waiter brings the bill." } },
+    { word: "kennen", forms: ["kennt"], pos: "verb", say: "KEN-uhn", translation: "to know (a person or place)", definition: "To be familiar with someone or somewhere through experience. Not wissen, which is knowing a fact.", example: { de: "Ich kenne diese Stadt gut.", en: "I know this city well." } },
+    { word: "schon", pos: "adverb", say: "shohn", translation: "already", definition: "Earlier than expected, or by this point in time.", example: { de: "Bist du schon fertig?", en: "Are you finished already?" } },
+    { word: "sofort", pos: "adverb", say: "zo-FORT", translation: "immediately", definition: "Without any delay, at that very moment.", example: { de: "Ich komme sofort.", en: "I am coming right away." } },
+    { word: "groß", forms: ["großen"], pos: "adjective", say: "grohss", translation: "big, large", definition: "Of considerable size. Of a person it means tall.", example: { de: "Ein großes Bier, bitte.", en: "A large beer, please." } },
+    { word: "der Kaffee", forms: ["Kaffee"], plural: "die Kaffees", pos: "noun", say: "KAH-fay", translation: "coffee", definition: "A hot drink brewed from roasted ground beans; also a single serving of it.", example: { de: "Möchtest du einen Kaffee?", en: "Would you like a coffee?" } },
+    { word: "die Milch", forms: ["Milch"], pos: "noun", say: "milkh", translation: "milk", definition: "The white liquid from cows, drunk on its own or added to coffee and tea.", example: { de: "Kaffee mit Milch, bitte.", en: "Coffee with milk, please." } },
+    { word: "sich setzen", forms: ["setze"], pos: "verb", say: "zikh ZET-suhn", translation: "to sit down", definition: "To lower yourself onto a seat. Reflexive in German: you seat yourself.", example: { de: "Setzen Sie sich, bitte.", en: "Please have a seat." } },
+    { word: "das Fenster", forms: ["Fenster"], plural: "die Fenster", pos: "noun", say: "FEN-stuh", translation: "window", definition: "The glazed opening in a wall that lets light in.", example: { de: "Mach bitte das Fenster auf.", en: "Please open the window." } },
+    { word: "lesen", forms: ["lese"], pos: "verb", say: "LAY-zuhn", translation: "to read", definition: "To take in written text with your eyes.", example: { de: "Ich lese gern Krimis.", en: "I like reading crime novels." } },
+    { word: "die Ruhe", forms: ["Ruhe"], pos: "noun", say: "ROO-uh", translation: "quiet, calm", definition: "The absence of noise and disturbance. In Ruhe means without being rushed or bothered.", example: { de: "Lass mich in Ruhe.", en: "Leave me alone." } },
+    { word: "die Zeitung", forms: ["Zeitung"], plural: "die Zeitungen", pos: "noun", say: "TSYE-toong", translation: "newspaper", definition: "A printed or online publication carrying the day's news.", example: { de: "Die Zeitung liegt auf dem Tisch.", en: "The newspaper is on the table." } },
+    { word: "draußen", pos: "adverb", say: "DROW-suhn", translation: "outside", definition: "In the open air, not within a building.", example: { de: "Draußen ist es kalt.", en: "It is cold outside." } },
+    { word: "regnen", forms: ["regnet"], pos: "verb", say: "RAYG-nuhn", translation: "to rain", definition: "Of water falling from the sky. Always used with es: es regnet.", example: { de: "Es regnet seit gestern.", en: "It has been raining since yesterday." } },
+    { word: "drinnen", pos: "adverb", say: "DRIN-uhn", translation: "inside, indoors", definition: "Within a building, out of the weather.", example: { de: "Wir bleiben heute drinnen.", en: "We are staying indoors today." } },
+    { word: "still", pos: "adjective", say: "shtil", translation: "quiet, still", definition: "Making no noise; peaceful and undisturbed.", example: { de: "Im Wald war es ganz still.", en: "It was completely quiet in the forest." } },
+    { word: "die Stunde", forms: ["Stunde"], plural: "die Stunden", pos: "noun", say: "SHTOON-duh", translation: "hour", definition: "A period of sixty minutes. Also a school lesson.", example: { de: "Der Film dauert zwei Stunden.", en: "The film lasts two hours." } },
+    { word: "bezahlen", forms: ["bezahle"], pos: "verb", say: "buh-TSAA-luhn", translation: "to pay", definition: "To hand over money for goods or a service.", example: { de: "Ich möchte bezahlen, bitte.", en: "I would like to pay, please." } },
+    { word: "langsam", pos: "adjective", say: "LAHNG-zahm", translation: "slow, slowly", definition: "At an unhurried pace. Works as both adjective and adverb.", example: { de: "Sprechen Sie bitte langsamer.", en: "Please speak more slowly." } }
+  ]
+},
+{
+  format: FORMAT, version: 1, id: "der-weg-zur-arbeit", title: "Der Weg zur Arbeit", titleEn: "The way to work",
+  level: "A2", topic: "Unterwegs",
+  paragraph: {
+    de: "Jeden Morgen um Viertel nach sieben verlasse ich die Wohnung und laufe zur Haltestelle. Die Straßenbahn ist meistens pünktlich, aber heute hatte sie zehn Minuten Verspätung. Ich stand im Regen und ärgerte mich, weil um acht eine wichtige Besprechung anfing. Zum Glück rief meine Kollegin an und verschob den Termin auf halb neun. Als ich endlich im Büro ankam, war ich völlig durchnässt, aber nicht mehr gestresst.",
+    en: "Every morning at quarter past seven I leave the flat and walk to the tram stop. The tram is usually on time, but today it was ten minutes late. I stood in the rain and got annoyed, because an important meeting was starting at eight. Luckily my colleague rang and moved the appointment to half past eight. When I finally got to the office I was completely soaked, but no longer stressed.",
+    sentences: [
+      { de: "Jeden Morgen um Viertel nach sieben verlasse ich die Wohnung und laufe zur Haltestelle.", en: "Every morning at quarter past seven I leave the flat and walk to the tram stop." },
+      { de: "Die Straßenbahn ist meistens pünktlich, aber heute hatte sie zehn Minuten Verspätung.", en: "The tram is usually on time, but today it was ten minutes late." },
+      { de: "Ich stand im Regen und ärgerte mich, weil um acht eine wichtige Besprechung anfing.", en: "I stood in the rain and got annoyed, because an important meeting was starting at eight." },
+      { de: "Zum Glück rief meine Kollegin an und verschob den Termin auf halb neun.", en: "Luckily my colleague rang and moved the appointment to half past eight." },
+      { de: "Als ich endlich im Büro ankam, war ich völlig durchnässt, aber nicht mehr gestresst.", en: "When I finally got to the office I was completely soaked, but no longer stressed." }
+    ]
+  },
+  vocabulary: [
+    { word: "das Viertel", forms: ["Viertel"], pos: "noun", say: "FEER-tuhl", translation: "quarter", definition: "A fourth of something. In telling time, Viertel nach sieben is 7:15.", example: { de: "Es ist Viertel vor acht.", en: "It is quarter to eight." } },
+    { word: "verlassen", forms: ["verlasse"], pos: "verb", say: "fair-LAH-suhn", translation: "to leave (a place)", definition: "To go away from a place or a person. Takes a direct object: you leave something, not leave from it.", example: { de: "Wir verlassen das Haus um acht.", en: "We leave the house at eight." } },
+    { word: "die Wohnung", forms: ["Wohnung"], plural: "die Wohnungen", pos: "noun", say: "VOH-noong", translation: "flat, apartment", definition: "A self-contained home inside a larger building.", example: { de: "Sie sucht eine neue Wohnung.", en: "She is looking for a new flat." } },
+    { word: "laufen", forms: ["laufe"], pos: "verb", say: "LOW-fuhn", translation: "to walk, to go on foot", definition: "In everyday German this usually means to go somewhere on foot; only in sport does it mean to run.", example: { de: "Ich laufe lieber, als zu fahren.", en: "I would rather walk than drive." } },
+    { word: "die Haltestelle", forms: ["Haltestelle"], plural: "die Haltestellen", pos: "noun", say: "HAHL-tuh-shtel-uh", translation: "stop (bus or tram)", definition: "The marked place where a bus or tram halts to let passengers on and off.", example: { de: "Die Haltestelle ist gleich dort drüben.", en: "The stop is just over there." } },
+    { word: "die Straßenbahn", forms: ["Straßenbahn"], plural: "die Straßenbahnen", pos: "noun", say: "SHTRAA-suhn-baan", translation: "tram, streetcar", definition: "A rail vehicle that runs through city streets. Literally a street railway.", example: { de: "Nimm die Straßenbahn Linie 4.", en: "Take tram number 4." } },
+    { word: "meistens", pos: "adverb", say: "MICE-tuhns", translation: "usually, most of the time", definition: "In the majority of cases, though not always.", example: { de: "Meistens esse ich zu Hause.", en: "I usually eat at home." } },
+    { word: "pünktlich", pos: "adjective", say: "PEWNKT-likh", translation: "punctual, on time", definition: "Arriving or happening at exactly the agreed time.", example: { de: "Der Zug war pünktlich.", en: "The train was on time." } },
+    { word: "die Verspätung", forms: ["Verspätung"], plural: "die Verspätungen", pos: "noun", say: "fair-SHPAY-toong", translation: "delay", definition: "The amount of time by which something is late. German names the delay as a thing you have.", example: { de: "Der Flug hat eine Stunde Verspätung.", en: "The flight is an hour late." } },
+    { word: "der Regen", forms: ["Regen"], pos: "noun", say: "RAY-guhn", translation: "rain", definition: "Water falling from the clouds.", example: { de: "Wir sind im Regen gelaufen.", en: "We walked in the rain." } },
+    { word: "sich ärgern", forms: ["ärgerte"], pos: "verb", say: "zikh AIR-guhn", translation: "to get annoyed", definition: "To become irritated about something. Reflexive: you annoy yourself over it.", example: { de: "Ärgere dich nicht darüber.", en: "Do not get annoyed about it." } },
+    { word: "wichtig", forms: ["wichtige"], pos: "adjective", say: "VIKH-tikh", translation: "important", definition: "Carrying real weight or consequence.", example: { de: "Das ist mir sehr wichtig.", en: "That matters a lot to me." } },
+    { word: "die Besprechung", forms: ["Besprechung"], plural: "die Besprechungen", pos: "noun", say: "buh-SHPREKH-oong", translation: "meeting", definition: "A work discussion held at an arranged time. Built from sprechen, to speak.", example: { de: "Die Besprechung dauert eine Stunde.", en: "The meeting lasts an hour." } },
+    { word: "anfangen", forms: ["anfing"], pos: "verb", say: "AHN-fahng-uhn", translation: "to begin, to start", definition: "To get under way. Separable: the an- jumps to the end of the clause.", example: { de: "Der Film fängt um acht an.", en: "The film starts at eight." } },
+    { word: "das Glück", forms: ["Glück"], pos: "noun", say: "glewk", translation: "luck, happiness", definition: "Good fortune, and also the feeling of being happy. Zum Glück means luckily.", example: { de: "Zum Glück hat es nicht geregnet.", en: "Luckily it did not rain." } },
+    { word: "die Kollegin", forms: ["Kollegin"], plural: "die Kolleginnen", pos: "noun", say: "ko-LAY-gin", translation: "colleague (female)", definition: "A woman you work with. The male form is der Kollege.", example: { de: "Meine Kollegin hilft mir oft.", en: "My colleague often helps me." } },
+    { word: "anrufen", forms: ["rief"], pos: "verb", say: "AHN-roo-fuhn", translation: "to call, to phone", definition: "To telephone someone. Separable, and it takes a direct object: ich rufe dich an.", example: { de: "Ruf mich später an.", en: "Call me later." } },
+    { word: "verschieben", forms: ["verschob"], pos: "verb", say: "fair-SHEE-buhn", translation: "to postpone, to move", definition: "To shift something to a later time, or physically slide it elsewhere.", example: { de: "Können wir das auf morgen verschieben?", en: "Can we move that to tomorrow?" } },
+    { word: "der Termin", forms: ["Termin"], plural: "die Termine", pos: "noun", say: "tair-MEEN", translation: "appointment", definition: "A fixed date and time to meet or be somewhere. Not a deadline, which is die Frist.", example: { de: "Ich habe einen Termin beim Arzt.", en: "I have a doctor's appointment." } },
+    { word: "halb", pos: "adverb", say: "hahlp", translation: "half", definition: "Half. Careful with clock time: halb neun is half way to nine, so 8:30 — not 9:30.", example: { de: "Wir treffen uns um halb sieben.", en: "We are meeting at half past six." } },
+    { word: "endlich", pos: "adverb", say: "ENT-likh", translation: "finally, at last", definition: "After a long or frustrating wait.", example: { de: "Endlich ist das Wetter besser.", en: "The weather is finally better." } },
+    { word: "das Büro", forms: ["Büro"], plural: "die Büros", pos: "noun", say: "bew-ROH", translation: "office", definition: "The room or building where office work is done.", example: { de: "Sie arbeitet im Büro nebenan.", en: "She works in the office next door." } },
+    { word: "ankommen", forms: ["ankam"], pos: "verb", say: "AHN-kom-uhn", translation: "to arrive", definition: "To reach your destination. Separable, and it uses sein in the perfect tense.", example: { de: "Wann kommst du an?", en: "When do you arrive?" } },
+    { word: "völlig", pos: "adverb", say: "FUR-likh", translation: "completely, utterly", definition: "To the fullest degree, with nothing left over.", example: { de: "Das ist völlig normal.", en: "That is completely normal." } },
+    { word: "durchnässt", pos: "adjective", say: "doorkh-NEST", translation: "soaked through", definition: "Wet all the way through, not merely damp.", example: { de: "Meine Schuhe sind durchnässt.", en: "My shoes are soaked through." } },
+    { word: "gestresst", pos: "adjective", say: "guh-SHTREST", translation: "stressed", definition: "Under mental pressure. Borrowed from English but pronounced with a sht- at the front.", example: { de: "Er wirkt heute sehr gestresst.", en: "He seems very stressed today." } }
+  ]
+},
+{
+  format: FORMAT, version: 1, id: "wochenende-in-berlin", title: "Ein Wochenende in Berlin", titleEn: "A weekend in Berlin",
+  level: "B1", topic: "Reisen",
+  paragraph: {
+    de: "Obwohl ich schon oft in Berlin war, entdecke ich bei jedem Besuch etwas Neues. Am Freitagabend traf ich mich mit alten Freunden in einer Kneipe in Kreuzberg, wo wir bis weit nach Mitternacht über Politik und Musik diskutierten. Am nächsten Tag schlenderte ich über einen Flohmarkt und kaufte eine alte Kamera, die vermutlich nicht mehr funktioniert. Was mich an dieser Stadt am meisten beeindruckt, ist die Mischung aus Geschichte und Gegenwart: An einer Mauer erkennt man noch die Spuren der Vergangenheit, und gegenüber eröffnet nächste Woche ein neues Café.",
+    en: "Although I have been to Berlin many times, I discover something new on every visit. On Friday evening I met up with old friends in a pub in Kreuzberg, where we argued about politics and music until well past midnight. The next day I strolled through a flea market and bought an old camera that probably no longer works. What impresses me most about this city is the mixture of history and the present: on one wall you can still make out the traces of the past, and opposite it a new café opens next week.",
+    sentences: [
+      { de: "Obwohl ich schon oft in Berlin war, entdecke ich bei jedem Besuch etwas Neues.", en: "Although I have been to Berlin many times, I discover something new on every visit." },
+      { de: "Am Freitagabend traf ich mich mit alten Freunden in einer Kneipe in Kreuzberg, wo wir bis weit nach Mitternacht über Politik und Musik diskutierten.", en: "On Friday evening I met up with old friends in a pub in Kreuzberg, where we argued about politics and music until well past midnight." },
+      { de: "Am nächsten Tag schlenderte ich über einen Flohmarkt und kaufte eine alte Kamera, die vermutlich nicht mehr funktioniert.", en: "The next day I strolled through a flea market and bought an old camera that probably no longer works." },
+      { de: "Was mich an dieser Stadt am meisten beeindruckt, ist die Mischung aus Geschichte und Gegenwart: An einer Mauer erkennt man noch die Spuren der Vergangenheit, und gegenüber eröffnet nächste Woche ein neues Café.", en: "What impresses me most about this city is the mixture of history and the present: on one wall you can still make out the traces of the past, and opposite it a new café opens next week." }
+    ]
+  },
+  vocabulary: [
+    { word: "obwohl", pos: "conjunction", say: "op-VOHL", translation: "although", definition: "Introduces a fact that works against the main statement. It pushes its own verb to the end of the clause.", example: { de: "Obwohl es regnete, gingen wir spazieren.", en: "Although it was raining, we went for a walk." } },
+    { word: "entdecken", forms: ["entdecke"], pos: "verb", say: "ent-DEK-uhn", translation: "to discover", definition: "To come across something you did not know was there. Literally to un-cover it.", example: { de: "Wir haben ein tolles Restaurant entdeckt.", en: "We discovered a great restaurant." } },
+    { word: "der Besuch", forms: ["Besuch"], plural: "die Besuche", pos: "noun", say: "buh-ZOOKH", translation: "visit", definition: "An occasion of going to see a place or a person. Besuch haben means to have guests.", example: { de: "Wir bekommen morgen Besuch.", en: "We are having visitors tomorrow." } },
+    { word: "sich treffen", forms: ["traf"], pos: "verb", say: "zikh TREF-uhn", translation: "to meet up", definition: "To come together with someone by arrangement. Reflexive when it is mutual.", example: { de: "Wir treffen uns um sieben.", en: "We are meeting at seven." } },
+    { word: "die Kneipe", forms: ["Kneipe"], plural: "die Kneipen", pos: "noun", say: "KNYE-puh", translation: "pub, bar", definition: "A plain neighbourhood bar for drinking and talking. Both letters of the kn- are pronounced.", example: { de: "Gehen wir in die Kneipe an der Ecke.", en: "Let's go to the pub on the corner." } },
+    { word: "die Mitternacht", forms: ["Mitternacht"], pos: "noun", say: "MIT-uh-nakht", translation: "midnight", definition: "Twelve o'clock at night. Literally the middle of the night.", example: { de: "Kurz vor Mitternacht kam sie an.", en: "She arrived shortly before midnight." } },
+    { word: "diskutieren", forms: ["diskutierten"], pos: "verb", say: "dis-koo-TEE-ruhn", translation: "to debate, to argue about", definition: "To discuss something at length, often with disagreement. Stronger than English discuss.", example: { de: "Sie diskutieren ständig über Geld.", en: "They are always arguing about money." } },
+    { word: "schlendern", forms: ["schlenderte"], pos: "verb", say: "SHLEN-duhn", translation: "to stroll, to amble", definition: "To walk slowly and without purpose, for the pleasure of it.", example: { de: "Wir schlenderten durch die Altstadt.", en: "We strolled through the old town." } },
+    { word: "der Flohmarkt", forms: ["Flohmarkt"], plural: "die Flohmärkte", pos: "noun", say: "FLOH-markt", translation: "flea market", definition: "An open-air market for second-hand goods. Literally a flea market, same image as in English.", example: { de: "Sonntags ist hier Flohmarkt.", en: "There is a flea market here on Sundays." } },
+    { word: "vermutlich", pos: "adverb", say: "fair-MOOT-likh", translation: "probably, presumably", definition: "Judged likely but not confirmed.", example: { de: "Er hat es vermutlich vergessen.", en: "He has probably forgotten it." } },
+    { word: "funktionieren", forms: ["funktioniert"], pos: "verb", say: "foonk-tsyo-NEE-ruhn", translation: "to work, to function", definition: "Of a machine or system: to operate as intended. For people at work, use arbeiten.", example: { de: "Der Automat funktioniert nicht.", en: "The machine is not working." } },
+    { word: "beeindrucken", forms: ["beeindruckt"], pos: "verb", say: "buh-INE-drook-uhn", translation: "to impress", definition: "To make a strong, admiring impression on someone.", example: { de: "Ihre Rede hat mich beeindruckt.", en: "Her speech impressed me." } },
+    { word: "die Mischung", forms: ["Mischung"], plural: "die Mischungen", pos: "noun", say: "MISH-oong", translation: "mixture, blend", definition: "A combination of different things held together.", example: { de: "Es ist eine Mischung aus Angst und Freude.", en: "It is a mixture of fear and joy." } },
+    { word: "die Geschichte", forms: ["Geschichte"], plural: "die Geschichten", pos: "noun", say: "guh-SHIKH-tuh", translation: "history; story", definition: "Carries both senses: the past of a place, and a tale someone tells. Context decides.", example: { de: "Erzähl mir die ganze Geschichte.", en: "Tell me the whole story." } },
+    { word: "die Gegenwart", forms: ["Gegenwart"], pos: "noun", say: "GAY-guhn-vart", translation: "the present", definition: "The time happening now, set against the past and the future.", example: { de: "Er lebt ganz in der Gegenwart.", en: "He lives entirely in the present." } },
+    { word: "die Mauer", forms: ["Mauer"], plural: "die Mauern", pos: "noun", say: "MOW-uh", translation: "wall (freestanding)", definition: "An outdoor wall of stone or brick. An interior wall of a room is die Wand.", example: { de: "Die Mauer fiel 1989.", en: "The Wall came down in 1989." } },
+    { word: "erkennen", forms: ["erkennt"], pos: "verb", say: "air-KEN-uhn", translation: "to recognise, to make out", definition: "To identify something you can barely see, or to realise something is the case.", example: { de: "Ich habe dich sofort erkannt.", en: "I recognised you straight away." } },
+    { word: "die Spur", forms: ["Spuren"], plural: "die Spuren", pos: "noun", say: "shpoor", translation: "trace, track", definition: "A mark left behind by something that has passed. Also a traffic lane.", example: { de: "Der Dieb hinterließ keine Spuren.", en: "The thief left no traces." } },
+    { word: "die Vergangenheit", forms: ["Vergangenheit"], pos: "noun", say: "fair-GAHNG-uhn-hite", translation: "the past", definition: "Time that has already gone by. Also the name for the past tense.", example: { de: "Das gehört der Vergangenheit an.", en: "That belongs to the past." } },
+    { word: "gegenüber", pos: "preposition", say: "gay-guhn-EW-buh", translation: "opposite, across from", definition: "Facing something from the other side. Usually follows its noun: dem Bahnhof gegenüber.", example: { de: "Die Bäckerei liegt gegenüber.", en: "The bakery is across the street." } },
+    { word: "eröffnen", forms: ["eröffnet"], pos: "verb", say: "air-URF-nuhn", translation: "to open (a business)", definition: "To open something for the first time, such as a shop or an exhibition. Opening a door is öffnen.", example: { de: "Sie eröffnen im Mai ein Café.", en: "They are opening a café in May." } }
+  ]
+}
+];
+
+const BLANK = {
+  format: FORMAT, version: 1, id: "my-lesson", title: "Mein Titel", titleEn: "My title",
+  level: "A1", topic: "",
+  paragraph: { de: "Der deutsche Absatz kommt hierhin.", en: "The English translation goes here.", sentences: [] },
+  vocabulary: [{
+    word: "das Wort", forms: ["Wort"], plural: "die Wörter", pos: "noun",
+    translation: "word", definition: "A single unit of language.", say: "vort",
+    example: { de: "Ein neues Wort.", en: "A new word." }
+  }]
+};
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(async function boot() {
+  await store.init();
+  const [lib, meta, evts] = await Promise.all([store.get(KEY_LIB), store.get(KEY_PROG), store.get(KEY_EVT)]);
+
+  if (meta && typeof meta === "object") {
+    state.progress = meta.progress || {};
+    const saved = meta.settings || {};
+    const gh = Object.assign({ user: "huss234", repo: "sprachlabor-data", token: "", branch: "main" }, saved.github || {});
+    state.settings = Object.assign(state.settings, saved);
+    state.settings.github = gh;
+  }
+  state.events = Array.isArray(evts) ? evts : [];
+
+  const rawLessons = Array.isArray(lib) ? lib : (lib && Array.isArray(lib.lessons) ? lib.lessons : null);
+  state.deleted = (lib && lib.deleted) || {};
+  if (rawLessons && rawLessons.length) {
+    state.lessons = rawLessons.map(l => { try { return normalizeLesson(l); } catch (e) { return null; } }).filter(Boolean);
+  } else if (!rawLessons) {
+    state.lessons = SAMPLES.map(normalizeLesson);
+    saveLibrary();
+  } else {
+    state.lessons = [];
+  }
+
+  document.documentElement.setAttribute("data-theme", state.settings.theme || "light");
+
+  /* library search — debounced so typing never blocks paint */
+  let st;
+  $("#libSearch").addEventListener("input", e => {
+    const v = e.target.value;
+    clearTimeout(st);
+    st = setTimeout(() => { state.filter.q = v; renderLibrary(); }, 130);
+  });
+
+  /* file intake */
+  const dz = $("#dropZone");
+  ["dragenter", "dragover"].forEach(ev => dz.addEventListener(ev, e => {
+    e.preventDefault(); dz.classList.add("is-over");
+  }));
+  ["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => {
+    e.preventDefault(); dz.classList.remove("is-over");
+  }));
+  dz.addEventListener("drop", e => { if (e.dataTransfer && e.dataTransfer.files) readFiles(e.dataTransfer.files); });
+  $("#btnPick").addEventListener("click", () => $("#filePick").click());
+  $("#filePick").addEventListener("change", e => { readFiles(e.target.files); e.target.value = ""; });
+
+  /* paste */
+  $("#btnPaste").addEventListener("click", () => {
+    const box = $("#pasteBox");
+    const txt = box.value.trim();
+    if (!txt) { toast("Paste a lesson first", true); return; }
+    try {
+      addLessons(unpack(JSON.parse(txt)));
+      box.value = "";
+      renderData();
+    } catch (err) {
+      toast(err instanceof SyntaxError ? "That is not valid JSON" : (err.message || "Could not read that lesson"), true);
+    }
+  });
+
+  $("#btnTemplate").addEventListener("click", () => {
+    download("sl-lesson__A1__my-lesson.json", JSON.stringify(BLANK, null, 2));
+    toast("Template saved");
+  });
+
+  $("#btnExportAll").addEventListener("click", () => {
+    if (!state.lessons.length) { toast("Nothing to export yet", true); return; }
+    const clean = state.lessons.map(l => { const c = JSON.parse(JSON.stringify(l)); delete c._index; return c; });
+    download(libraryFilename(), JSON.stringify({
+      format: "sprachlabor.library", version: 1, exported: today(), lessons: clean
+    }, null, 2));
+    toast("Saved " + libraryFilename());
+  });
+
+  $("#btnResetProgress").addEventListener("click", () => {
+    if (!confirm("Reset every box back to zero? Your lessons stay.")) return;
+    state.progress = {}; state.events = []; saveProgress(); saveEvents(); markDirty(); renderData(); toast("Progress reset");
+  });
+
+  $("#btnWipe").addEventListener("click", () => {
+    if (!confirm("Delete all lessons and all progress? Export first if you want a copy.")) return;
+    const now = new Date().toISOString();
+    state.lessons.forEach(l => { state.deleted[l.id] = now; });
+    state.lessons = []; state.progress = {}; state.events = [];
+    saveLibrary(); saveProgress(); saveEvents(); markDirty(); renderData(); toast("Everything deleted");
+  });
+
+  $("#btnSeed").addEventListener("click", () => {
+    addLessons(SAMPLES.map(s => JSON.parse(JSON.stringify(s))));
+    renderData();
+  });
+
+  /* ---------- sync controls ---------- */
+  const readForm = () => {
+    const c = ghCfg();
+    c.user   = $("#ghUser").value.trim().replace(/^@/, "");
+    c.repo   = $("#ghRepo").value.trim().replace(/^.*\//, "");
+    c.token  = $("#ghToken").value.trim();
+    c.branch = c.branch || "main";
+  };
+
+  $("#btnGhSave").addEventListener("click", async () => {
+    readForm();
+    if (!ghReady()) { toast("Please fill in all three fields", true); return; }
+    saveProgress();
+    toast("Saved on this device");
+    await ghTest();
+    if (syncState.kind === "ok") syncNow(true);
+  });
+
+  $("#btnGhTest").addEventListener("click", () => { readForm(); saveProgress(); ghTest(); });
+
+  $("#btnGhForget").addEventListener("click", () => {
+    if (!confirm("Remove the token from this device? Your lessons stay, and the copy on GitHub stays. You would just need to paste the token again to resume syncing.")) return;
+    ghCfg().token = "";
+    $("#ghToken").value = "";
+    saveProgress();
+    setSync("idle", "This device is not connected yet");
+    toast("Token removed from this device");
+  });
+
+  $("#ghAuto").addEventListener("change", e => {
+    state.settings.autoSync = e.target.checked;
+    saveProgress();
+    toast(e.target.checked ? "Automatic sync on" : "Automatic sync off");
+  });
+
+  $("#btnSyncNow").addEventListener("click", () => syncNow(true));
+
+  /* pull when you come back to the app, push what is pending when you leave */
+  document.addEventListener("visibilitychange", () => {
+    if (!ghReady() || state.settings.autoSync === false) return;
+    if (document.visibilityState === "visible") {
+      if (Date.now() - (state.settings.lastSync || 0) > 60000) syncNow(false);
+    } else if (dirty) {
+      syncNow(false);
+    }
+  });
+  window.addEventListener("online", () => {
+    if (ghReady() && state.settings.autoSync !== false && dirty) syncNow(false);
+  });
+
+  window.addEventListener("beforeunload", () => store.flush());
+
+  if (ghReady()) {
+    setSync("idle", "Connected — not synced yet this session");
+    if (state.settings.autoSync !== false) syncNow(false);
+  } else {
+    setSync("idle", "This device is not connected yet");
+  }
+
+  applyRoute();
+})();
+</script>
+</body>
+</html>
