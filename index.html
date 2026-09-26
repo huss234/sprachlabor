@@ -182,7 +182,7 @@ ul,ol{margin:0;padding:0;list-style:none}
    arrived before the finger has lifted. The motion engine sets the
    direction (--m-vx) from where the new tab sits on the rail. */
 .view{display:none;padding:34px 0 96px}
-.view.is-active{display:block;animation:viewIn .26s var(--m-out) both}
+.view.is-active{display:block;animation:viewIn .26s var(--m-out) backwards}
 @keyframes rise{from{opacity:0}to{opacity:1}}
 
 .page-head{
@@ -3259,8 +3259,11 @@ button.wrow:hover{background:var(--signal-soft)}
 }
 @keyframes viewIn{
   from{opacity:0;translate:var(--m-vx) var(--m-vy)}
-  to{opacity:1;translate:0 0}
+  to{opacity:1;translate:none}
 }
+/* backwards fill, and an end state of `none`: a screen that kept any
+   translate after arriving would become the containing block for every
+   fixed sheet, bar and clock inside it, and they would scroll away */
 /* the menu has always asked for this keyframe; now it exists */
 @keyframes pop{from{opacity:0;transform:translateY(-6px) scale(.96)}to{opacity:1;transform:none}}
 .menu{animation-duration:.2s;animation-timing-function:var(--m-out);transform-origin:top right}
@@ -5401,11 +5404,12 @@ function recentLessons(n) {
 
 /* ---------- theme ---------- */
 function setTheme(t) {
+  /* the choice is recorded at once; only the repaint waits for the wipe */
+  state.settings.theme = t;
+  saveProgress();
   motion.theme(() => {
-    state.settings.theme = t;
     document.documentElement.setAttribute("data-theme", t);
     $$("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeSet === t)));
-    saveProgress();
   });
 }
 
