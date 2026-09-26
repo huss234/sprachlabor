@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.1 · neural German, cached on device -->
+<!-- Sprachlabor — v3.0 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -176,13 +176,10 @@ ul,ol{margin:0;padding:0;list-style:none}
 .shell{margin-left:var(--rail);min-height:100vh;display:flex;flex-direction:column}
 .wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 40px}
 /* The entrance used to run for a third of a second and slide the whole
-   panel, which read as lag. It now glides a few pixels on the `translate`
-   property alone — compositor work, nothing for the layout engine to
-   chase — and the curve front-loads the travel so the screen has
-   arrived before the finger has lifted. The motion engine sets the
-   direction (--m-vx) from where the new tab sits on the rail. */
+   panel. On a tab switch that reads as lag, so it is now a short fade
+   with no transform for the layout engine to chase. */
 .view{display:none;padding:34px 0 96px}
-.view.is-active{display:block;animation:viewIn .26s var(--m-out) both}
+.view.is-active{display:block;animation:rise .16s var(--ease) both}
 @keyframes rise{from{opacity:0}to{opacity:1}}
 
 .page-head{
@@ -3240,68 +3237,6 @@ button.wrow:hover{background:var(--signal-soft)}
 }
 .pace b{font-family:var(--mono);font-weight:600;color:var(--ink)}
 
-/* ============================================================
-   v3.1 — THE MOTION ENGINE
-   One grammar of movement for every surface. The CSS half holds
-   the curves and the few shapes that belong to the stylesheet;
-   the script half (MOTION, near the DOM helpers) answers every
-   press, hover and arrival. Press and icon motion run on the
-   individual `scale` / `rotate` / `translate` properties through
-   the Web Animations API, so they compose with — never replace —
-   the transforms and transitions each component already owns.
-   ============================================================ */
-:root{
-  --m-out:cubic-bezier(.2,.8,.2,1);
-  --m-in:cubic-bezier(.4,0,1,1);
-  --m-spring:cubic-bezier(.34,1.42,.64,1);
-  --m-vx:0px;
-  --m-vy:8px;
-}
-@keyframes viewIn{
-  from{opacity:0;translate:var(--m-vx) var(--m-vy)}
-  to{opacity:1;translate:0 0}
-}
-/* the menu has always asked for this keyframe; now it exists */
-@keyframes pop{from{opacity:0;transform:translateY(-6px) scale(.96)}to{opacity:1;transform:none}}
-.menu{animation-duration:.2s;animation-timing-function:var(--m-out);transform-origin:top right}
-
-/* ---------- the rail: one lit pill that travels between tabs ---------- */
-.rail__ind{
-  position:absolute;left:0;top:0;z-index:-1;border-radius:10px;
-  background:var(--signal-soft);pointer-events:none;opacity:0;
-  transition:transform .46s var(--m-spring),opacity .2s var(--m-out);
-}
-.rail.has-ind .rail__ind.is-on{opacity:1}
-.rail.has-ind .rail__btn[aria-current="true"]{background:transparent}
-.rail.has-ind .rail__btn[aria-current="true"]:active{background:var(--signal-soft)}
-
-/* ---------- segmented controls: the dark block slides to the choice ---------- */
-.seg{position:relative;isolation:isolate}
-.seg button{position:relative;z-index:1}
-.seg__ghost{position:absolute;top:0;bottom:0;left:0;z-index:0;background:var(--ink);pointer-events:none}
-.seg button.m-hold{background:transparent !important}
-
-/* ---------- switches settle with a little give ---------- */
-.switch i::after{transition:transform .34s var(--m-spring)}
-
-/* ---------- the press ripple ---------- */
-.m-rip{position:fixed;z-index:2147483000;pointer-events:none;overflow:hidden;contain:strict}
-.m-rip i{
-  position:absolute;border-radius:50%;background:currentColor;opacity:0;
-  width:var(--m-d);height:var(--m-d);margin:calc(var(--m-d) / -2) 0 0 calc(var(--m-d) / -2);
-}
-
-/* ---------- a theme change is a wipe, not a flash ---------- */
-::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
-
-/* something on its way out can no longer be pressed */
-.m-leaving{pointer-events:none}
-
-@media (prefers-reduced-motion:reduce){
-  :root{--m-vx:0px;--m-vy:0px}
-  .rail__ind{transition:opacity .2s linear}
-}
-
 </style>
 </head>
 <body>
@@ -3930,359 +3865,6 @@ const today = () => {
   return d.getFullYear() + "-" + (d.getMonth() < 9 ? "0" : "") + (d.getMonth() + 1) +
          "-" + (d.getDate() < 10 ? "0" : "") + d.getDate();
 };
-
-/* ============================================================
-   MOTION — the engine behind every press, hover and arrival
-   Everything is delegated from the document, so a button built
-   by any renderer, now or later, is covered without asking.
-   Press and icon motion use the individual scale / rotate /
-   translate properties through the Web Animations API: they
-   stack on top of each component's own transform and its own
-   CSS transitions instead of overwriting them. Nothing here
-   touches layout — only transform and opacity ever move.
-   ============================================================ */
-const motion = (() => {
-  const OUT = "cubic-bezier(.2,.8,.2,1)", IN = "cubic-bezier(.4,0,1,1)";
-  const SPRING = "cubic-bezier(.34,1.42,.64,1)", GLIDE = "cubic-bezier(.3,1.18,.5,1)";
-  const rm = window.matchMedia ? matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
-  const calm = () => rm.matches;
-  const can = "animate" in Element.prototype && !!(window.CSS && CSS.supports && CSS.supports("scale", "1"));
-  const PRESS = 'button, a[href], [role="button"], label.switch, summary, .tok--vocab, .chip, .chipf';
-  const SKIP = 'input, textarea, select, [contenteditable="true"], [data-m="none"], .m-leaving';
-  const LISTS = ".grid-lessons, .grid-cards, .grid-dirs, .recent, .cdesk, .metrics, .wsetgrid, .setnav__list, .stats, .keytable, .about__feats";
-  const ORDER = ["library", "lesson", "cards", "spell", "progress", "settings"];
-  const run = (n, frames, opts) => { try { return n.animate(frames, opts); } catch (e) { return null; } };
-  /* keyframes that each ease out on their own, so a bounce reads as
-     one gesture rather than a single long curve */
-  const seg = frames => frames.map(f => Object.assign({ easing: OUT }, f));
-  const hoverAnims = new WeakMap();
-
-  /* ---------- the icon inside a control ---------- */
-  function iconOf(host) {
-    const list = host.tagName === "svg" ? [host] : $$("svg", host);
-    for (let i = 0; i < list.length; i++) {
-      const s = list[i];
-      if (/chev/.test(s.getAttribute("class") || "")) continue;
-      const w = s.getBoundingClientRect().width;
-      if (w && w <= 40) return s;
-    }
-    return null;
-  }
-  const chevOf = host => host.querySelector('svg[class*="chev"]');
-  const hoverBase = (host, svg) => hoverAnims.has(svg) && hovered === host ? 1.1 : 1;
-
-  /* ---------- press: the control gives under the finger ---------- */
-  let pressed = null, pressAnim = null, pending = null, pendTimer = 0;
-  const sizeScale = r => r.width > 360 ? .985 : r.width > 140 ? .97 : .92;
-  function begin(p) {
-    const host = p.host;
-    if (!host.isConnected) return;
-    const r = host.getBoundingClientRect();
-    if (!r.width || !r.height) return;
-    pressed = host;
-    if (!calm()) {
-      pressAnim = run(host, [{ scale: 1 }, { scale: sizeScale(r) }], { duration: 120, easing: OUT, fill: "forwards" });
-      ripple(host, r, p.x, p.y);
-    }
-  }
-  function down(e) {
-    if (e.button > 0 || !e.target.closest) return;
-    if (e.target.closest(SKIP)) return;
-    const host = e.target.closest(PRESS);
-    if (!host || host.disabled || host.getAttribute("aria-disabled") === "true") return;
-    settle();
-    const p = { host: host, x: e.clientX, y: e.clientY };
-    /* a touch may still turn into a scroll, so the press waits a beat
-       before it commits; a quick tap still gets the full gesture */
-    if (e.pointerType === "touch") { pending = p; pendTimer = setTimeout(() => { pending = null; begin(p); }, 55); }
-    else begin(p);
-  }
-  function up(e) {
-    if (pending) {
-      clearTimeout(pendTimer);
-      const p = pending; pending = null;
-      if (e.type !== "pointerup") return;
-      begin(p);
-    }
-    settle();
-  }
-  function settle() {
-    if (!pressed) return;
-    const host = pressed, a = pressAnim;
-    pressed = null; pressAnim = null;
-    if (!a) return;
-    const now = getComputedStyle(host).scale;
-    a.cancel();
-    run(host, [{ scale: now && now !== "none" ? now : 1 }, { scale: 1 }], { duration: 440, easing: SPRING });
-  }
-
-  /* ---------- the ripple: a soft wash from the point of contact ---------- */
-  function ripple(host, r, x, y) {
-    const cs = getComputedStyle(host);
-    const wrap = document.createElement("span");
-    wrap.className = "m-rip";
-    wrap.setAttribute("aria-hidden", "true");
-    wrap.style.cssText = "left:" + r.left + "px;top:" + r.top + "px;width:" + r.width + "px;height:" +
-      r.height + "px;border-radius:" + cs.borderRadius + ";color:" + cs.color;
-    if (!(x >= r.left && x <= r.right && y >= r.top && y <= r.bottom)) { x = r.left + r.width / 2; y = r.top + r.height / 2; }
-    const d = Math.ceil(2 * Math.hypot(Math.max(x - r.left, r.right - x), Math.max(y - r.top, r.bottom - y)));
-    const dot = document.createElement("i");
-    dot.style.cssText = "--m-d:" + d + "px;left:" + (x - r.left) + "px;top:" + (y - r.top) + "px";
-    wrap.appendChild(dot);
-    document.body.appendChild(wrap);
-    const a = run(dot, [
-      { transform: "scale(0)", opacity: .17 },
-      { transform: "scale(1)", opacity: .11, offset: .55 },
-      { transform: "scale(1)", opacity: 0 }
-    ], { duration: 640, easing: OUT });
-    if (a) a.onfinish = a.oncancel = () => wrap.remove(); else wrap.remove();
-  }
-
-  /* ---------- icons: each one moves the way its meaning moves ---------- */
-  function iconGesture(host, svg) {
-    const base = hoverBase(host, svg), html = svg.innerHTML;
-    if (host.id === "themeBtn")
-      return [seg([{ rotate: "0deg", scale: base }, { rotate: "-35deg", scale: .8, offset: .3 }, { rotate: "360deg", scale: base }]), 640];
-    if (host.dataset.nav === "settings")
-      return [[{ rotate: "0deg" }, { rotate: "180deg" }], 720, OUT];
-    if (html.indexOf("M6 6l12 12") >= 0)
-      return [seg([{ rotate: "0deg", scale: base }, { rotate: "45deg", scale: .86, offset: .45 }, { rotate: "90deg", scale: base }]), 340];
-    if (html.indexOf("M5 7h14M10 7V5h4v2") >= 0)
-      return [seg([{ rotate: "0deg" }, { rotate: "-14deg", offset: .2 }, { rotate: "11deg", offset: .45 }, { rotate: "-6deg", offset: .7 }, { rotate: "0deg" }]), 520];
-    if (/M(5 12h14|12 16V4|12 15V4|12 4v11)/.test(html))
-      return [seg([{ translate: "0 0" }, { translate: /M5 12h14/.test(html) ? "4px 0" : (/M12 4v11/.test(html) ? "0 3px" : "0 -3px"), offset: .4 }, { translate: "0 0" }]), 460];
-    return [seg([{ scale: base }, { scale: base * .78, offset: .28 }, { scale: base * 1.14, offset: .64 }, { scale: base }]), 500];
-  }
-  function iconPop(host) {
-    if (!can || calm()) return;
-    const svg = iconOf(host);
-    if (svg) {
-      const g = iconGesture(host, svg);
-      run(svg, g[0], { duration: g[1], easing: g[2] || "linear" });
-    }
-    const chev = chevOf(host);
-    if (chev) run(chev, seg([{ translate: "0 0" }, { translate: "5px 0", offset: .4 }, { translate: "0 0" }]), { duration: 420, easing: "linear" });
-  }
-  function click(e) {
-    if (!e.target.closest || e.target.closest(SKIP)) return;
-    const host = e.target.closest(PRESS);
-    if (!host) return;
-    /* a keyboard press has no pointer before it, so it gets its own dip */
-    if (e.detail === 0 && can && !calm())
-      run(host, seg([{ scale: 1 }, { scale: .95, offset: .3 }, { scale: 1 }]), { duration: 340, easing: "linear" });
-    iconPop(host);
-  }
-
-  /* ---------- hover: icons lean toward the cursor ---------- */
-  let hovered = null;
-  function hoverIn(host) {
-    if (calm()) return;
-    const svg = iconOf(host), chev = chevOf(host);
-    if (svg) hoverAnims.set(svg, run(svg, [{ scale: 1 }, { scale: 1.1 }], { duration: 280, easing: SPRING, fill: "forwards" }));
-    if (chev) hoverAnims.set(chev, run(chev, [{ translate: "0 0" }, { translate: "3px 0" }], { duration: 260, easing: SPRING, fill: "forwards" }));
-  }
-  function hoverOut(host) {
-    [iconOf(host), chevOf(host)].forEach(n => {
-      const a = n && hoverAnims.get(n);
-      if (!a) return;
-      hoverAnims.delete(n);
-      const cs = getComputedStyle(n);
-      const from = { scale: cs.scale === "none" ? 1 : cs.scale, translate: cs.translate === "none" ? "0 0" : cs.translate };
-      a.cancel();
-      run(n, [from, { scale: 1, translate: "0 0" }], { duration: 200, easing: OUT });
-    });
-  }
-  function over(e) {
-    if (e.pointerType !== "mouse" || !e.target.closest) return;
-    const host = e.target.closest(PRESS);
-    if (host === hovered) return;
-    if (hovered) hoverOut(hovered);
-    hovered = host && !host.closest(SKIP) ? host : null;
-    if (hovered) hoverIn(hovered);
-  }
-
-  /* ---------- the rail's travelling pill ---------- */
-  let ind = null;
-  function rail(animate) {
-    const r = $(".rail");
-    if (!r) return;
-    if (!ind) {
-      ind = el("i", "rail__ind");
-      ind.setAttribute("aria-hidden", "true");
-      r.insertBefore(ind, r.firstChild);
-      r.classList.add("has-ind");
-    }
-    const cur = $('.rail__btn[aria-current="true"]', r);
-    if (!cur || !cur.offsetWidth) { ind.classList.remove("is-on"); return; }
-    const travel = animate && ind.classList.contains("is-on") && !calm();
-    if (!travel) ind.style.transition = "opacity .2s";
-    ind.style.width = cur.offsetWidth + "px";
-    ind.style.height = cur.offsetHeight + "px";
-    ind.style.transform = "translate(" + cur.offsetLeft + "px," + cur.offsetTop + "px)";
-    ind.classList.add("is-on");
-    if (!travel) { void ind.offsetWidth; ind.style.transition = ""; }
-    if (animate && can && !calm()) {
-      const svg = $(".rail__ico svg", cur);
-      if (svg) run(svg, seg([{ translate: "0 0", scale: 1 }, { translate: "0 -4px", scale: 1.08, offset: .35 }, { translate: "0 0", scale: 1 }]), { duration: 540, easing: "linear" });
-    }
-  }
-
-  /* ---------- segmented controls: the chosen block slides across ---------- */
-  function slide(sg, from, to) {
-    if (!can || calm() || !from.offsetWidth || !to.offsetWidth) return;
-    const g = el("i", "seg__ghost");
-    const w = to.offsetWidth;
-    g.style.width = w + "px";
-    g.style.transformOrigin = "0 0";
-    sg.insertBefore(g, sg.firstChild);
-    to.classList.add("m-hold");
-    const a = run(g, [
-      { transform: "translateX(" + from.offsetLeft + "px) scaleX(" + (from.offsetWidth / w) + ")" },
-      { transform: "translateX(" + to.offsetLeft + "px)" }
-    ], { duration: 360, easing: GLIDE, fill: "forwards" });
-    const done = () => { to.classList.remove("m-hold"); setTimeout(() => g.remove(), 200); };
-    if (a) a.onfinish = a.oncancel = done; else done();
-  }
-  let lastDown = 0;
-  function pop(n) {
-    if (!can || calm() || performance.now() - lastDown > 900) return;
-    run(n, seg([{ scale: 1 }, { scale: .94, offset: .25 }, { scale: 1.04, offset: .6 }, { scale: 1 }]), { duration: 420, easing: "linear" });
-  }
-  function watch(recs) {
-    const segs = new Map();
-    let railMoved = false;
-    recs.forEach(r => {
-      const n = r.target;
-      if (r.attributeName === "aria-current") { if (n.classList.contains("rail__btn")) railMoved = true; return; }
-      const on = n.getAttribute("aria-pressed") === "true";
-      if (on === (r.oldValue === "true")) return;
-      const p = n.parentElement;
-      if (p && p.classList.contains("seg")) {
-        const s = segs.get(p) || {};
-        s[on ? "to" : "from"] = n;
-        segs.set(p, s);
-      } else if (on) pop(n);
-    });
-    segs.forEach((s, sg) => { if (s.from && s.to) slide(sg, s.from, s.to); });
-    /* only a tap travels; a route restored at start-up or by the back
-       button simply lands */
-    if (railMoved) rail(performance.now() - lastDown < 900);
-  }
-
-  /* ---------- arrivals: a screen's parts come in one after another ---------- */
-  function rise(n, i) {
-    run(n, calm() ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, translate: "0 12px" }, { opacity: 1, translate: "0 0" }],
-      { duration: 420, delay: Math.min(i * 32, 320), easing: OUT, fill: "backwards" });
-  }
-  function enter(root) {
-    if (!can || !root) return;
-    const vh = window.innerHeight;
-    const seen = n => n.offsetParent !== null && n.getBoundingClientRect().top < vh;
-    const lists = $$(LISTS, root);
-    let i = 0;
-    $$(":scope > .wrap > *", root).forEach(b => {
-      if (i >= 8 || !seen(b)) return;
-      if (lists.some(l => b === l || b.contains(l))) { i++; return; }
-      rise(b, i++);
-    });
-    let k = 0;
-    lists.forEach(l => {
-      Array.prototype.slice.call(l.children, 0, 14).forEach(c => {
-        if (k < 30 && seen(c)) rise(c, 2 + k++);
-      });
-    });
-  }
-  function route(from, to) {
-    if (!to || from === to) return;
-    const a = from ? ORDER.indexOf(from.id.slice(5)) : -1, b = ORDER.indexOf(to.id.slice(5));
-    const dir = calm() || a < 0 || b < 0 ? 0 : (b > a ? 1 : -1);
-    const wide = window.innerWidth > 860;
-    to.style.setProperty("--m-vx", (wide ? 0 : dir * 18) + "px");
-    to.style.setProperty("--m-vy", calm() ? "0px" : (wide ? (dir || 1) * 10 : 0) + "px");
-  }
-
-  /* ---------- departures: nothing just vanishes ---------- */
-  function leave(node, kind) {
-    if (!node || !node.parentNode) return;
-    if (!can || node.classList.contains("m-leaving")) { node.remove(); return; }
-    /* the leaving copy gives up its ids at once, so a fresh one built
-       in the same breath is the only match for every lookup */
-    [node].concat($$("[id]", node)).forEach(n => n.removeAttribute("id"));
-    node.classList.add("m-leaving");
-    node.setAttribute("aria-hidden", "true");
-    node.inert = true;
-    const opts = { duration: 190, easing: IN, fill: "forwards" };
-    let a;
-    if (kind === "modal") {
-      const card = $(".modal", node);
-      if (card && !calm()) run(card, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(12px) scale(.98)" }], { duration: 170, easing: IN, fill: "forwards" });
-      a = run(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 210, easing: IN, fill: "forwards" });
-    } else if (kind === "menu") {
-      a = run(node, calm() ? [{ opacity: 1 }, { opacity: 0 }]
-        : [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-4px) scale(.97)" }], { duration: 140, easing: IN, fill: "forwards" });
-    } else {
-      a = run(node, calm() ? [{ opacity: 1 }, { opacity: 0 }]
-        : [{ opacity: 1, translate: "0 0" }, { opacity: 0, translate: "0 12px" }], opts);
-    }
-    const drop = () => node.remove();
-    if (a) { a.onfinish = drop; setTimeout(drop, 450); } else drop();
-  }
-
-  /* things that appear on their own: menus lay their rows in, toasts
-     land their icon */
-  function arrive(recs) {
-    recs.forEach(r => r.addedNodes.forEach(n => {
-      if (n.nodeType !== 1 || calm() || !can) return;
-      if (n.classList.contains("menu") || n.classList.contains("rquick"))
-        $$(":scope > button, :scope > div, :scope > label", n).slice(0, 12).forEach((b, i) =>
-          run(b, [{ opacity: 0, translate: "0 -4px" }, { opacity: 1, translate: "0 0" }], { duration: 240, delay: 30 + i * 22, easing: OUT, fill: "backwards" }));
-      else if (n.classList.contains("toast")) {
-        const svg = $("svg", n);
-        if (svg) run(svg, seg([{ scale: 0, rotate: "-90deg" }, { scale: 1.2, rotate: "0deg", offset: .6 }, { scale: 1, rotate: "0deg" }]), { duration: 520, delay: 90, easing: "linear", fill: "backwards" });
-      }
-    }));
-  }
-
-  /* ---------- theme: the new colours wipe out from the finger ---------- */
-  let lastPt = null;
-  function theme(fn) {
-    const recent = lastPt && performance.now() - lastPt.t < 1500;
-    if (!document.startViewTransition || calm() || !recent) { fn(); return; }
-    const x = lastPt.x, y = lastPt.y;
-    const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-    let vt;
-    try { vt = document.startViewTransition(fn); } catch (e) { fn(); return; }
-    vt.ready.then(() => {
-      document.documentElement.animate(
-        { clipPath: ["circle(0px at " + x + "px " + y + "px)", "circle(" + r + "px at " + x + "px " + y + "px)"] },
-        { duration: 600, easing: OUT, pseudoElement: "::view-transition-new(root)" });
-    }).catch(() => {});
-  }
-
-  document.addEventListener("pointerdown", e => {
-    lastPt = { x: e.clientX, y: e.clientY, t: performance.now() };
-    lastDown = lastPt.t;
-  }, { passive: true, capture: true });
-  if (can) {
-    document.addEventListener("pointerdown", down, { passive: true, capture: true });
-    ["pointerup", "pointercancel", "dragstart"].forEach(t => document.addEventListener(t, up, { passive: true, capture: true }));
-    window.addEventListener("blur", settle);
-    document.addEventListener("click", click, true);
-    document.addEventListener("pointerover", over, { passive: true });
-    document.addEventListener("pointerout", e => { if (!e.relatedTarget && hovered) { hoverOut(hovered); hovered = null; } }, { passive: true });
-  }
-  new MutationObserver(watch).observe(document.body,
-    { subtree: true, attributes: true, attributeFilter: ["aria-pressed", "aria-current"], attributeOldValue: true });
-  new MutationObserver(arrive).observe(document.body, { childList: true });
-  const th = $("#toasts");
-  if (th) new MutationObserver(arrive).observe(th, { childList: true });
-  let rz = 0;
-  window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => rail(false), 120); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => rail(false));
-  rail(false);
-
-  return { enter: enter, route: route, leave: leave, theme: theme, rail: rail };
-})();
 
 /* ============================================================
    STORE — one write path, debounced, degrades gracefully
@@ -5334,7 +4916,6 @@ function applyRoute() {
   const active = $(".view.is-active");
   const node = $("#view-" + view);
   if (active !== node) {
-    motion.route(active, node);
     if (active) active.classList.remove("is-active");
     if (node) node.classList.add("is-active");
   }
@@ -5348,8 +4929,7 @@ function applyRoute() {
   const key = view + "|" + (view === "lesson" ? (id || "") : view === "settings" ? state.setSection
     : view === "cards" ? state.cards.scope : view === "library" ? (state.cwd || "")
     : view === "spell" ? (spellCfg().scope + "\u0000" + spellCfg().deck + "\u0000" + libRev) : "");
-  const fresh = painted[view] !== key;
-  if (fresh) {
+  if (painted[view] !== key) {
     painted[view] = key;
     if (view === "library")  renderLibrary();
     if (view === "cards")    renderCards();
@@ -5358,8 +4938,6 @@ function applyRoute() {
     if (view === "progress") renderProgress();
     if (view === "settings") renderSettings();
   }
-  /* a new screen, or new contents on this one, arrive in order */
-  if (fresh || !sameView) motion.enter(node);
   /* stepping off the page closes whatever deck was open, so coming back
      costs the five tiles and nothing else */
   if (view !== "cards" && state.cards.open) { state.cards.open = null; invalidate("cards"); }
@@ -5401,12 +4979,10 @@ function recentLessons(n) {
 
 /* ---------- theme ---------- */
 function setTheme(t) {
-  motion.theme(() => {
-    state.settings.theme = t;
-    document.documentElement.setAttribute("data-theme", t);
-    $$("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeSet === t)));
-    saveProgress();
-  });
+  state.settings.theme = t;
+  document.documentElement.setAttribute("data-theme", t);
+  $$("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeSet === t)));
+  saveProgress();
 }
 
 
@@ -5591,7 +5167,7 @@ const ICO_RX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 /* ---------- the floating panel ---------- */
 let readPopEl = null;
 function closeReadPop() {
-  if (readPopEl) { motion.leave(readPopEl, "menu"); readPopEl = null; }
+  if (readPopEl) { readPopEl.remove(); readPopEl = null; }
   $$("[data-readpop]").forEach(b => b.setAttribute("aria-expanded", "false"));
 }
 function openReadPop() {
@@ -6899,7 +6475,7 @@ function endDrill() {
   if (fullscreen.on()) fullscreen.exit();
   drill.fs = false;
   clock.end({ n: drill.rated, ok: drill.counts.learning + drill.counts.known });
-  if (drill.node) motion.leave(drill.node);
+  if (drill.node) drill.node.remove();
   drill.node = null;
   document.body.style.overflow = "";
   if (state.view === "lesson") renderLesson(state.currentId);
@@ -8375,7 +7951,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.1";
+const APP_VERSION = "3.0";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -8909,7 +8485,7 @@ function expandTo(id) {
 let modalNode = null, modalResolve = null;
 function closeModal(value) {
   if (!modalNode) return;
-  motion.leave(modalNode, "modal"); modalNode = null;
+  modalNode.remove(); modalNode = null;
   const r = modalResolve; modalResolve = null;
   if (r) r(value);
 }
@@ -10283,12 +9859,11 @@ function cd(id) {
   state.settings.cwd = state.cwd;
   saveProgress();
   renderLibrary();
-  motion.enter($("#view-library"));
 }
 
 /* ---------- context menus ---------- */
 let menuNode = null;
-function closeMenu() { if (menuNode) { motion.leave(menuNode, "menu"); menuNode = null; } }
+function closeMenu() { if (menuNode) { menuNode.remove(); menuNode = null; } }
 function openMenu(anchor, items) {
   closeMenu();
   const m = el("div", "menu");
@@ -11166,7 +10741,7 @@ function endSpelling() {
   if (fullscreen.on()) fullscreen.exit();
   spell.fs = false;
   clock.end({ n: spell.done, ok: spell.counts.ok, m: "sp" });
-  if (spell.node) motion.leave(spell.node);
+  if (spell.node) spell.node.remove();
   spell.node = null;
   document.body.style.overflow = "";
   invalidate("spell");
