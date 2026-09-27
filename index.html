@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.0 · neural German, cached on device -->
+<!-- Sprachlabor — v3.1 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -189,6 +189,50 @@ ul,ol{margin:0;padding:0;list-style:none}
 .page-head h1{font-size:27px;font-weight:600;letter-spacing:-.022em;line-height:1.15}
 .page-head p{font-size:13px;color:var(--ink-2);margin-top:5px;max-width:52ch}
 .page-head__actions{display:flex;gap:8px;flex:none}
+
+/* ---------- app bar — the name on the left; on the right, whether
+   GitHub holds everything, and the menu for the whole app ---------- */
+.appbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+.appbar__brand{
+  display:flex;align-items:center;gap:10px;min-width:0;
+  font-size:17px;font-weight:700;letter-spacing:-.02em;color:var(--ink);user-select:none;
+}
+/* the rail already carries the mark on a wide screen */
+.appbar__mark{
+  display:none;width:28px;height:28px;border-radius:var(--r-md);background:var(--ink);color:var(--paper);
+  place-items:center;font-size:13px;font-weight:700;letter-spacing:-.03em;flex:none;
+}
+.appbar__tools{display:flex;align-items:center;gap:6px;flex:none}
+.syncpill{
+  display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px 0 11px;
+  border:1px solid var(--rule);border-radius:100px;background:var(--surface);
+  font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--ink-2);white-space:nowrap;
+  transition:background .15s var(--ease),border-color .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
+}
+.syncpill:hover{background:var(--surface-2);border-color:var(--ink-3);color:var(--ink)}
+.syncpill:active{transform:scale(.97)}
+.syncpill i{width:8px;height:8px;border-radius:100px;background:var(--ink-3);flex:none;transition:background .2s var(--ease)}
+.syncpill.is-new span{animation:syncin .22s var(--ease) both}
+.syncpill.is-new i{animation:syncdot .3s var(--ease) both}
+.syncpill.is-ok i{background:var(--ok)}
+.syncpill.is-wait i{background:var(--warn)}
+.syncpill.is-busy i{background:var(--warn);animation:pulse 1s var(--ease) infinite}
+.syncpill.is-bad i{background:var(--die)}
+.syncpill.is-bad{color:var(--die);border-color:color-mix(in srgb,var(--die) 35%,var(--rule))}
+@keyframes syncin{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@keyframes syncdot{from{transform:scale(.4)}to{transform:none}}
+.appbar__more{
+  width:34px;height:34px;border-radius:var(--r-md);display:grid;place-items:center;color:var(--ink-2);
+  transition:background .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
+}
+.appbar__more:hover,.appbar__more[aria-expanded="true"]{background:var(--surface);color:var(--ink)}
+.appbar__more:active{transform:scale(.94)}
+.appbar__more svg{width:18px;height:18px}
+@media (max-width:860px){
+  .appbar{margin-bottom:18px}
+  .appbar__mark{display:grid}
+}
+@media print{.appbar__tools{display:none !important}}
 
 /* ============================================================
    SHARED CONTROLS — the search field, the segmented toggle and
@@ -917,6 +961,7 @@ pre.spec b{color:var(--signal);font-weight:500}
 .dot--ok{background:var(--ok)}
 .dot--bad{background:var(--die)}
 .dot--busy{background:var(--warn);animation:pulse 1s var(--ease) infinite}
+.dot--wait{background:var(--warn)}
 @keyframes pulse{50%{opacity:.35}}
 .status__main{font-size:14px;font-weight:600}
 .status__sub{font-size:12.5px;color:var(--ink-2);margin-top:3px}
@@ -1012,6 +1057,7 @@ pre.spec b{color:var(--signal);font-weight:500}
 .rail__badge.is-ok{background:var(--ok)}
 .rail__badge.is-bad{background:var(--die)}
 .rail__badge.is-busy{background:var(--warn);animation:pulse 1s var(--ease) infinite}
+.rail__badge.is-wait{background:var(--warn)}
 .rail__sep{width:32px;height:1px;background:var(--rule);margin:8px 0}
 
 /* ============================================================
@@ -1193,6 +1239,24 @@ pre.spec b{color:var(--signal);font-weight:500}
 .menu svg{width:15px;height:15px;flex:none;color:var(--ink-3)}
 .menu button:hover svg{color:inherit}
 .menu hr{border:none;border-top:1px solid var(--rule-2);margin:5px 2px}
+/* it grows out of the button that opened it, and leaves quicker than it came */
+.menu{--pop-y:-4px;transform-origin:top right}
+.menu.is-up{--pop-y:4px;transform-origin:bottom right}
+.menu.is-closing{animation:menuout .1s cubic-bezier(.4,0,1,1) both;pointer-events:none}
+@keyframes pop{from{opacity:0;transform:translateY(var(--pop-y)) scale(.97)}to{opacity:1;transform:none}}
+@keyframes menuout{to{opacity:0;transform:translateY(var(--pop-y)) scale(.97)}}
+.menu--app{min-width:214px}
+.menu__meta{margin-left:auto;padding-left:14px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.03em}
+.menu__sw{
+  margin-left:auto;width:32px;height:19px;border-radius:100px;background:var(--rule);position:relative;flex:none;
+  transition:background .18s var(--ease);
+}
+.menu__sw::after{
+  content:"";position:absolute;top:3px;left:3px;width:13px;height:13px;border-radius:100px;
+  background:var(--surface);transition:transform .18s var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+.menu [aria-checked="true"] .menu__sw{background:var(--signal)}
+.menu [aria-checked="true"] .menu__sw::after{transform:translateX(13px)}
 
 /* ============================================================
    PROGRESS — the calendar is the range picker for the numbers
@@ -1522,6 +1586,7 @@ pre.spec b{color:var(--signal);font-weight:500}
 .setnav__dot.is-ok{background:var(--ok)}
 .setnav__dot.is-bad{background:var(--die)}
 .setnav__dot.is-busy{background:var(--warn)}
+.setnav__dot.is-wait{background:var(--warn)}
 /* the way back to the menu — only a phone needs it */
 .setback{
   display:none;align-items:center;gap:3px;height:34px;padding:0 12px 0 4px;margin:0 0 14px -4px;
@@ -3283,9 +3348,17 @@ button.wrow:hover{background:var(--signal-soft)}
   <!-- ══════════════════ LIBRARY ══════════════════ -->
   <section class="view is-active" id="view-library">
     <div class="wrap">
+      <div class="appbar">
+        <div class="appbar__brand"><span class="appbar__mark" aria-hidden="true">S</span>Sprachlabor</div>
+        <div class="appbar__tools">
+          <button class="syncpill" id="syncPill"><i aria-hidden="true"></i><span>Not connected</span></button>
+          <button class="appbar__more" id="appMenuBtn" aria-label="More options" aria-haspopup="menu" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg>
+          </button>
+        </div>
+      </div>
       <header class="page-head">
         <div>
-          <div class="eyebrow" style="margin-bottom:8px">Deutsch → English</div>
           <h1>Library</h1>
           <p>Every file you own, filed the way you want it. Open one to read it, or send it straight to the cards.</p>
         </div>
@@ -7839,17 +7912,48 @@ function mergeEvents(remote) {
 let syncState = { kind: "idle", msg: "Not connected" };
 function setSync(kind, msg) {
   syncState = { kind: kind, msg: msg };
-  const cls = kind === "ok" ? " is-ok" : kind === "bad" ? " is-bad" : kind === "busy" ? " is-busy" : "";
+  paintSync();
+  if (state.view === "settings") renderSyncStatus();
+}
+
+/* What every sync light in the app shows. A good connection is not the
+   same as a saved library: it only reads "synced" once a sync has gone
+   through since the page opened and nothing has changed after it. */
+let syncedNow = false;
+function syncView() {
+  if (!ghReady()) return { k: "off", short: "Not connected", long: "This device is not connected yet" };
+  const kind = syncState.kind;
+  if (kind === "busy") return { k: "busy", short: "Syncing", long: syncState.msg };
+  if (kind === "bad") return { k: "bad", short: navigator.onLine ? "Sync failed" : "Offline", long: syncState.msg };
+  if (dirty) return { k: "wait", short: "Not synced", long: "Changes on this device are not on GitHub yet" };
+  if (!syncedNow) return { k: "wait", short: "Not synced", long: "Connected — not synced yet this session" };
+  return { k: "ok", short: "Synced", long: syncState.msg };
+}
+function paintSync() {
+  const v = syncView();
+  const cls = v.k === "off" ? "" : " is-" + v.k;
   const dot = $("#railSync");
   if (dot) dot.className = "rail__badge" + cls;
   const nd = $("#navSyncDot");
   if (nd) nd.className = "setnav__dot" + cls;
-  if (state.view === "settings") renderSyncStatus();
+  const p = $("#syncPill");
+  if (!p) return;
+  const was = p.dataset.k;
+  p.className = "syncpill" + cls + (was === v.k && p.classList.contains("is-new") ? " is-new" : "");
+  p.dataset.k = v.k;
+  p.querySelector("span").textContent = v.short;
+  const tip = v.long + (ghReady() ? " · last synced " + timeAgo(state.settings.lastSync) : "");
+  p.title = tip + (v.k === "off" ? " — tap to connect" : v.k === "busy" ? "" : " — tap to sync now");
+  p.setAttribute("aria-label", "Sync: " + tip);
+  /* a new state arrives rather than being swapped in */
+  if (was && was !== v.k) { void p.offsetWidth; p.classList.add("is-new"); }
 }
 
-let dirty = false, dirtyTimer = null;
+let dirty = false, dirtyGen = 0, dirtyTimer = null;
 function markDirty() {
   dirty = true;
+  dirtyGen++;
+  paintSync();
   if (!ghReady() || !state.settings.autoSync) return;
   clearTimeout(dirtyTimer);
   dirtyTimer = setTimeout(() => syncNow(false), 12000);   /* settle first, then sync once */
@@ -7862,6 +7966,7 @@ async function syncNow(manual) {
   if (!navigator.onLine) { setSync("bad", "Offline — will sync when you reconnect"); if (manual) toast("No internet connection", true); return; }
 
   syncing = true;
+  const gen = dirtyGen;
   setSync("busy", "Syncing…");
   try {
     const [lib, prog, evt] = await Promise.all([ghRead(GH_LIB), ghRead(GH_PROG), ghRead(GH_EVT)]);
@@ -7907,7 +8012,9 @@ async function syncNow(manual) {
       }, evt.sha, "History sync from " + deviceId());
     }
 
-    dirty = false;
+    /* an edit made while this was in flight may have missed the upload */
+    dirty = dirtyGen !== gen;
+    syncedNow = true;
     state.settings.lastSync = Date.now();
     saveLibrary(); saveProgress(); saveEvents();
     setSync("ok", "Everything is in step");
@@ -7951,7 +8058,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.0";
+const APP_VERSION = "3.1";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -7980,11 +8087,11 @@ function timeAgo(ms) {
 function renderSyncStatus() {
   const host = $("#syncStatus");
   if (!host) return;
-  const kind = syncState.kind;
-  const label = ghReady() ? syncState.msg : "This device is not connected yet";
+  const v = syncView();
+  const label = v.long;
   host.innerHTML =
     '<div class="status">' +
-      '<span class="dot ' + (kind === "ok" ? "dot--ok" : kind === "bad" ? "dot--bad" : kind === "busy" ? "dot--busy" : "") + '"></span>' +
+      '<span class="dot' + (v.k === "off" ? "" : " dot--" + v.k) + '"></span>' +
       "<div style='flex:1;min-width:180px'>" +
         '<div class="status__main">' + esc(label) + "</div>" +
         '<div class="status__sub">Last synced ' + timeAgo(state.settings.lastSync) +
@@ -9862,27 +9969,45 @@ function cd(id) {
 }
 
 /* ---------- context menus ---------- */
-let menuNode = null;
-function closeMenu() { if (menuNode) { menuNode.remove(); menuNode = null; } }
-function openMenu(anchor, items) {
+let menuNode = null, menuFrom = null;
+function closeMenu() {
+  if (!menuNode) return;
+  const m = menuNode;
+  menuNode = null;
+  if (menuFrom && menuFrom.hasAttribute("aria-expanded")) menuFrom.setAttribute("aria-expanded", "false");
+  menuFrom = null;
+  /* it plays its way out, then goes; the timer covers a tab in the background */
+  m.classList.add("is-closing");
+  m.addEventListener("animationend", () => m.remove(), { once: true });
+  setTimeout(() => m.remove(), 240);
+}
+/* An item with `on` is a switch: it reports its state, flips in place
+   and leaves the menu open, so you see it take. */
+function openMenu(anchor, items, cls) {
   closeMenu();
-  const m = el("div", "menu");
+  const m = el("div", "menu" + (cls ? " " + cls : ""));
   m.innerHTML = items.map(it => it === "-" ? "<hr>" :
-    '<button data-mi="' + esc(it.id) + '"' + (it.danger ? ' class="is-danger"' : "") + ">" +
-    (it.icon || "") + "<span>" + esc(it.label) + "</span></button>").join("");
+    '<button data-mi="' + esc(it.id) + '"' + (it.danger ? ' class="is-danger"' : "") +
+    (it.on ? ' role="menuitemcheckbox" aria-checked="' + String(!!it.on()) + '"' : "") + ">" +
+    (it.icon || "") + "<span>" + esc(it.label) + "</span>" +
+    (it.meta ? '<small class="menu__meta">' + esc(it.meta) + "</small>" : "") +
+    (it.on ? '<i class="menu__sw" aria-hidden="true"></i>' : "") + "</button>").join("");
   document.body.appendChild(m);
   const r = anchor.getBoundingClientRect();
   let left = r.right + window.scrollX - m.offsetWidth;
   left = Math.max(10 + window.scrollX, Math.min(left, window.scrollX + document.documentElement.clientWidth - m.offsetWidth - 10));
   let top = r.bottom + window.scrollY + 5;
-  if (r.bottom + m.offsetHeight + 16 > window.innerHeight) top = r.top + window.scrollY - m.offsetHeight - 5;
+  if (r.bottom + m.offsetHeight + 16 > window.innerHeight) { top = r.top + window.scrollY - m.offsetHeight - 5; m.classList.add("is-up"); }
   m.style.left = left + "px"; m.style.top = Math.max(8, top) + "px";
   menuNode = m;
+  menuFrom = anchor;
+  if (anchor.hasAttribute("aria-expanded")) anchor.setAttribute("aria-expanded", "true");
   m.addEventListener("click", e => {
     const b = e.target.closest("[data-mi]");
     if (!b) return;
-    closeMenu();
     const it = items.find(x => x !== "-" && x.id === b.dataset.mi);
+    if (it && it.on) { it.run(); b.setAttribute("aria-checked", String(!!it.on())); return; }
+    closeMenu();
     if (it && it.run) it.run();
   });
 }
@@ -9893,8 +10018,25 @@ const MI = {
   move:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V6a1 1 0 0 1 1-1h4l2 2.5h8a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M12 16v-5M9.5 13.5L12 11l2.5 2.5"/></svg>',
   add:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   down:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v11M8 11l4 4 4-4M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>',
-  trash:  ICO_TRASH
+  trash:  ICO_TRASH,
+  sync:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.1-5.1M4 13a8 8 0 0 0 14.1 5.1"/><path d="M4 4v5h5M20 20v-5h-5"/></svg>',
+  moon:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>',
+  gear:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M19.4 14.6a1.5 1.5 0 0 0 .3 1.7l.1.1a1.8 1.8 0 1 1-2.6 2.6l-.1-.1a1.5 1.5 0 0 0-1.7-.3 1.5 1.5 0 0 0-.9 1.4v.2a1.8 1.8 0 1 1-3.6 0V20a1.5 1.5 0 0 0-1-1.4 1.5 1.5 0 0 0-1.7.3l-.1.1a1.8 1.8 0 1 1-2.6-2.6l.1-.1a1.5 1.5 0 0 0 .3-1.7 1.5 1.5 0 0 0-1.4-.9H4a1.8 1.8 0 1 1 0-3.6h.2a1.5 1.5 0 0 0 1.3-1 1.5 1.5 0 0 0-.3-1.7l-.1-.1a1.8 1.8 0 1 1 2.6-2.6l.1.1a1.5 1.5 0 0 0 1.7.3H9.7a1.5 1.5 0 0 0 .9-1.4V4a1.8 1.8 0 1 1 3.6 0v.2a1.5 1.5 0 0 0 .9 1.4 1.5 1.5 0 0 0 1.7-.3l.1-.1a1.8 1.8 0 1 1 2.6 2.6l-.1.1a1.5 1.5 0 0 0-.3 1.7v.1a1.5 1.5 0 0 0 1.4.9h.2a1.8 1.8 0 1 1 0 3.6H20a1.5 1.5 0 0 0-1.4.9z"/></svg>'
 };
+
+/* the menu behind the dots in the app bar */
+function appMenu(anchor) {
+  const items = [];
+  if (ghReady()) items.push({ id: "sync", label: "Sync now", icon: MI.sync, meta: syncing ? "syncing" : timeAgo(state.settings.lastSync), run: () => syncNow(true) });
+  else items.push({ id: "sync", label: "Connect GitHub", icon: MI.sync, run: () => go("settings", "sync") });
+  items.push(
+    { id: "theme", label: "Dark mode", icon: MI.moon, on: () => state.settings.theme === "dark",
+      run: () => setTheme(state.settings.theme === "dark" ? "light" : "dark") },
+    "-",
+    { id: "settings", label: "Settings", icon: MI.gear, run: () => go("settings") }
+  );
+  openMenu(anchor, items, "menu--app");
+}
 
 function folderMenu(anchor, id) {
   const f = folderById(id);
@@ -10098,7 +10240,13 @@ function extraClick(e) {
     return true;
   }
 
+  /* --- the app bar: the dots open and close their own menu --- */
+  const amb = t.closest("#appMenuBtn");
+  if (amb) { e.stopPropagation(); if (menuNode && menuFrom === amb) closeMenu(); else appMenu(amb); return true; }
+
   if (menuNode && !t.closest(".menu")) closeMenu();
+
+  if (t.closest("#syncPill")) { if (ghReady()) syncNow(true); else go("settings", "sync"); return true; }
 
   /* --- folder menus --- */
   const fm = t.closest("[data-fmenu]");
@@ -12417,7 +12565,7 @@ function spellTheTrouble() {
     }
   });
   window.addEventListener("online", () => {
-    if (ghReady() && state.settings.autoSync !== false && dirty) syncNow(false);
+    if (ghReady() && state.settings.autoSync !== false && (dirty || syncState.kind === "bad")) syncNow(false);
   });
 
   window.addEventListener("beforeunload", () => store.flush());
