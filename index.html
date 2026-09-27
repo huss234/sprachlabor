@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.1 · neural German, cached on device -->
+<!-- Sprachlabor — v3.2 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -1999,6 +1999,71 @@ pre.spec b{color:var(--signal);font-weight:500}
 .pop .ex{gap:8px}
 .drill__card .ex{border-left-color:var(--rule);padding-left:14px;gap:7px}
 
+/* ---------- more than one sentence ----------
+   The rule down the left of the block splits into one segment per
+   sentence, lit where you are, and the count at the end of the label is
+   the way through them. The sentences share one grid cell, so the block
+   is as tall as its longest sentence and never changes height as you
+   step — nothing below it moves. */
+.ex.ex--multi{position:relative;border-left-color:transparent}
+.ex__rail{
+  position:absolute;left:-2px;top:0;bottom:0;width:2px;
+  display:flex;flex-direction:column;gap:3px;pointer-events:none;
+}
+.ex__rail i{flex:1;border-radius:2px;background:var(--rule-2);transition:background-color .22s var(--ease)}
+.pop .ex__rail i,.drill__card .ex__rail i{background:var(--rule)}
+.ex__rail i.is-on{background:var(--signal)}
+.exgo{
+  position:relative;margin-left:auto;flex:none;
+  display:inline-flex;align-items:center;gap:1px;height:22px;padding:0 3px 0 8px;
+  border:1px solid var(--rule);border-radius:100px;background:var(--surface);
+  color:var(--ink-3);font-family:var(--mono);font-size:10.5px;font-weight:500;line-height:1;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:background-color .16s var(--ease),color .16s var(--ease),
+             border-color .16s var(--ease),transform .12s var(--ease);
+}
+/* a thumb needs more than the pill it can see */
+.exgo::after{content:"";position:absolute;inset:-9px -6px}
+.exgo b{display:inline-block;font-weight:600;color:var(--ink-2);transition:color .16s var(--ease)}
+.exgo svg{width:12px;height:12px;transition:transform .18s var(--ease)}
+.exgo:hover{background:var(--signal-soft);border-color:transparent;color:var(--signal)}
+.exgo:hover b{color:var(--signal)}
+.exgo:hover svg{transform:translateX(1.5px)}
+.exgo:active{transform:scale(.94)}
+.exgo:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.exgo b.is-tick{animation:extick .26s var(--ease)}
+@keyframes extick{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.pop .exgo{height:28px;padding:0 5px 0 11px;font-size:12px}
+.pop .exgo svg{width:14px;height:14px}
+.ex--lg .exgo{height:25px;padding:0 4px 0 10px;font-size:11.5px}
+
+.ex__deck{display:grid;gap:inherit;touch-action:pan-y}
+.ex__slide{
+  grid-area:1/1;display:flex;flex-direction:column;gap:inherit;min-width:0;
+  opacity:0;visibility:hidden;transform:translateX(calc(var(--exdir, 1) * 22px));
+  transition:opacity .15s cubic-bezier(.4,0,1,1),transform .15s cubic-bezier(.4,0,1,1),visibility 0s linear .15s;
+}
+.ex__slide.is-on{
+  opacity:1;visibility:visible;transform:none;
+  transition:opacity .26s var(--ease) .05s,transform .32s var(--ease) .04s,visibility 0s;
+}
+.ex__slide.is-out{transform:translateX(calc(var(--exdir, 1) * -18px))}
+/* while a finger holds it, the sentence is exactly where the finger is */
+.ex--multi.is-dragging .ex__slide{transition:none}
+.ex__from{
+  display:flex;align-items:center;gap:5px;min-width:0;margin:1px 0 0;
+  font-family:var(--sans);font-size:9.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);white-space:nowrap;
+}
+.ex__from svg{width:11px;height:11px;flex:none;stroke-width:1.8}
+.ex__from span{overflow:hidden;text-overflow:ellipsis}
+.pop .ex__from{font-size:10.5px}
+@media (prefers-reduced-motion:reduce){
+  .ex__slide{transform:none !important}
+  .exgo b.is-tick{animation:none}
+  .exgo:hover svg,.exgo:active{transform:none}
+}
+
 /* a word is only a target if a thumb can land on it */
 @media (max-width:720px){
   .ex__de{font-size:15.5px}
@@ -2469,7 +2534,8 @@ pre.spec b{color:var(--signal);font-weight:500}
 :root[data-v-pos="0"] .fcard__top .pos,
 :root[data-v-pos="0"] .dface__top .pos,
 :root[data-v-pos="0"] .fcard__plural{display:none}
-:root[data-v-src="0"] .fcard__src{display:none}
+:root[data-v-src="0"] .fcard__src,
+:root[data-v-src="0"] .ex__from{display:none}
 :root[data-v-hint="0"] .fcard__hint,
 :root[data-v-hint="0"] .dhint,
 :root[data-v-hint="0"] .dtip{display:none}
@@ -4575,18 +4641,147 @@ function speakWordsHTML(text) {
    so it is in the same place on every card instead of wherever the text
    happened to stop, and the label says out loud that the words beneath
    it can be tapped — a target nobody knows about is not a target. */
-function exampleHTML(v, cls) {
-  if (!v.example || !v.example.de) return "";
-  const de = v.example.de;
+/* A card that has met its word in more than one file holds more than one
+   sentence. They share the block instead of stacking down the card: one
+   is shown, the rest wait behind it in the same space, so the card is
+   exactly as tall and as quiet as it was. The left rule splits into one
+   segment per sentence and the count sits at the end of the label —
+   the only two signs there is more, and the count is the way to it.
+   `lid` is the file the card is being read in; its own sentence leads. */
+function exampleHTML(v, cls, lid) {
+  const list = examplesFor(v, lid);
+  if (!list.length) return "";
+  const de = list[0].de;
   const btn = sayBtn(de, "the whole example sentence");
-  return '<div class="ex' + (cls ? " " + cls : "") + '">' +
-    '<div class="ex__head">' + btn +
+  const n = list.length;
+  const head = '<div class="ex__head">' + btn +
       '<span class="ex__label">' + (btn ? "In use \u00B7 tap any word" : "In use") + "</span>" +
+      (n > 1 ? '<button type="button" class="exgo" data-exgo="1"' +
+                 ' title="Next sentence \u2014 or swipe the sentence"' +
+                 ' aria-label="Show the next example sentence, 2 of ' + n + '">' +
+                 '<span class="exgo__n"><b>1</b>/' + n + "</span>" + ICO_EXGO + "</button>" : "") +
+    "</div>";
+  if (n < 2) {
+    return '<div class="ex' + (cls ? " " + cls : "") + '">' + head +
+      '<p class="ex__de">' + speakWordsHTML(de) + "</p>" +
+      (list[0].en ? '<p class="ex__en">' + esc(list[0].en) + "</p>" : "") +
+      "</div>";
+  }
+  return '<div class="ex ex--multi' + (cls ? " " + cls : "") + '" data-exi="0">' +
+    '<span class="ex__rail" aria-hidden="true">' + list.map((e, k) => "<i" + (k ? "" : ' class="is-on"') + "></i>").join("") + "</span>" +
+    head +
+    '<div class="ex__deck" aria-live="polite">' +
+      list.map((e, k) =>
+        '<div class="ex__slide' + (k ? "" : " is-on") + '" data-tts-line="' + esc(speech.clean(e.de)) + '"' +
+          (k ? ' aria-hidden="true"' : "") + ">" +
+          '<p class="ex__de">' + speakWordsHTML(e.de) + "</p>" +
+          (e.en ? '<p class="ex__en">' + esc(e.en) + "</p>" : "") +
+          '<p class="ex__from">' + exFrom(e, lid) + "</p>" +
+        "</div>").join("") +
     "</div>" +
-    '<p class="ex__de">' + speakWordsHTML(de) + "</p>" +
-    (v.example.en ? '<p class="ex__en">' + esc(v.example.en) + "</p>" : "") +
     "</div>";
 }
+const ICO_EXGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg>';
+
+/* Where a sentence came from, in the fewest words that say it. */
+function exFrom(e, lid) {
+  const l = e.src && state.lessons.find(x => x.id === e.src);
+  const where = !e.src ? "An earlier import"
+    : e.src === lid ? "This file"
+    : l ? fileName(l) : "A file since removed";
+  let when = "";
+  if (e.at) {
+    const d = new Date(e.at);
+    if (!isNaN(d)) when = " \u00B7 " + d.getDate() + " " + MON3[d.getMonth()] +
+      (d.getFullYear() !== new Date().getFullYear() ? " " + d.getFullYear() : "");
+  }
+  return ICO_DOC + "<span>" + esc(where) + "</span>" + when;
+}
+
+/* Step a sentence block to another of its sentences. The one leaving
+   slides out the way you pushed it, the one arriving comes in from the
+   other side; the rail and the count follow, and the speaker in the
+   head now reads the sentence you can see. */
+function exShow(ex, to) {
+  const slides = ex.querySelectorAll(".ex__slide");
+  const n = slides.length;
+  const from = +ex.dataset.exi || 0;
+  if (n < 2) return;
+  const dir = to > from ? 1 : -1;
+  to = ((to % n) + n) % n;
+  if (to === from) return;
+  ex.style.setProperty("--exdir", dir);
+  const inc = slides[to];
+  inc.classList.remove("is-out");
+  inc.style.transition = "none";
+  inc.style.transform = "translateX(" + dir * 22 + "px)";
+  void inc.offsetWidth;
+  inc.style.transition = "";
+  slides.forEach((sl, k) => {
+    sl.style.transform = ""; sl.style.opacity = "";
+    sl.classList.toggle("is-on", k === to);
+    sl.classList.toggle("is-out", k === from);
+    if (k === to) sl.removeAttribute("aria-hidden"); else sl.setAttribute("aria-hidden", "true");
+  });
+  ex.dataset.exi = to;
+  ex.querySelectorAll(".ex__rail i").forEach((r, k) => r.classList.toggle("is-on", k === to));
+  const go = ex.querySelector(".exgo");
+  if (go) {
+    const b = go.querySelector("b");
+    b.textContent = to + 1;
+    b.classList.remove("is-tick"); void b.offsetWidth; b.classList.add("is-tick");
+    go.setAttribute("aria-label", "Show the next example sentence, " + ((to + 1) % n + 1) + " of " + n);
+  }
+  const say = ex.querySelector(".ex__head .tts");
+  if (say) say.dataset.tts = slides[to].dataset.ttsLine;
+}
+
+/* A sideways drag on the sentence moves it with the finger; let go past
+   a short distance and the next one (or the one before) comes in. An
+   upright drag is the page scrolling and is left alone, and the tap a
+   swipe ends with is eaten so the card underneath does not turn over. */
+let exDrag = null;
+document.addEventListener("pointerdown", e => {
+  const deck = e.target.closest && e.target.closest(".ex--multi .ex__deck");
+  if (!deck || (e.pointerType === "mouse" && e.button !== 0)) return;
+  exDrag = { deck: deck, ex: deck.closest(".ex"), x: e.clientX, y: e.clientY, dx: 0, on: false, id: e.pointerId };
+}, { passive: true });
+document.addEventListener("pointermove", e => {
+  const d = exDrag;
+  if (!d || e.pointerId !== d.id) return;
+  const dx = e.clientX - d.x, dy = e.clientY - d.y;
+  if (!d.on) {
+    if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { exDrag = null; return; }
+    if (Math.abs(dx) < 8) return;
+    d.on = true;
+    d.ex.classList.add("is-dragging");
+    d.slide = d.deck.querySelector(".ex__slide.is-on");
+  }
+  d.dx = dx;
+  const w = d.deck.offsetWidth || 240;
+  if (d.slide) {
+    d.slide.style.transform = "translateX(" + dx + "px)";
+    d.slide.style.opacity = String(Math.max(.25, 1 - Math.abs(dx) / w));
+  }
+}, { passive: true });
+function exDragEnd(e) {
+  const d = exDrag;
+  if (!d || e.pointerId !== d.id) return;
+  exDrag = null;
+  if (!d.on) return;
+  d.ex.classList.remove("is-dragging");
+  const swallow = ev => { ev.stopPropagation(); ev.preventDefault(); };
+  window.addEventListener("click", swallow, { capture: true, once: true });
+  setTimeout(() => window.removeEventListener("click", swallow, true), 400);
+  if (Math.abs(d.dx) > Math.min(56, (d.deck.offsetWidth || 240) * .22) && e.type === "pointerup") {
+    exShow(d.ex, (+d.ex.dataset.exi || 0) + (d.dx < 0 ? 1 : -1));
+  } else if (d.slide) {
+    /* not far enough: it settles back where it was */
+    d.slide.style.transform = ""; d.slide.style.opacity = "";
+  }
+}
+document.addEventListener("pointerup", exDragEnd, { passive: true });
+document.addEventListener("pointercancel", exDragEnd, { passive: true });
 
 function sayStrip(say, large) {
   if (!say) return "";
@@ -4708,7 +4903,67 @@ function richness(v) {
 }
 
 const CARD_FIELDS = ["word", "gender", "pos", "plural", "translation",
-                     "definition", "say", "note", "example"];
+                     "definition", "say", "note"];
+
+/* ---------- example sentences: pooled, never replaced ----------
+   The same word arrives again in a new file with the same meaning and a
+   new sentence. The meaning is not news; the sentence is. So a card
+   keeps every sentence it has ever been given: `example` is the lead,
+   the newest one, and every older one waits in `examples` behind it.
+   Each sentence remembers when it came in and from which file, so every
+   device picks the same lead without talking, and the card can say
+   where a sentence came from. A sentence met twice is one sentence —
+   case, spacing and the closing full stop do not make it new. */
+const exKey = e => String((e && e.de) || "").toLowerCase()
+  .replace(/[\u201C\u201D\u201E\u00AB\u00BB"']/g, "").replace(/[\s.!?\u2026]+$/, "")
+  .replace(/\s+/g, " ").trim();
+
+function exClean(e) {
+  if (!e || !(e.de || e.en)) return null;
+  const out = { de: String(e.de || "").trim(), en: String(e.en || "").trim() };
+  if (e.at) out.at = String(e.at);
+  if (e.src) out.src = String(e.src);
+  return out.de ? out : null;
+}
+
+/* Fold any number of sentence lists into one card. A repeat keeps the
+   first time it was seen — re-importing a file must not push its old
+   sentence back to the front — and fills in an English line it lacked.
+   A sentence with no date predates dating, so it sorts behind them. */
+function poolExamples(card, list) {
+  const seen = Object.create(null), out = [];
+  list.forEach(raw => {
+    const e = exClean(raw), k = e && exKey(e);
+    if (!k) return;
+    const cur = seen[k];
+    if (!cur) { seen[k] = e; out.push(e); return; }
+    if (!cur.en && e.en) cur.en = e.en;
+    if (cur.at && (!e.at || e.at < cur.at)) {
+      if (e.at) cur.at = e.at; else delete cur.at;
+      if (e.src) cur.src = e.src; else delete cur.src;
+    }
+  });
+  out.sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+  card.example = out[0] || null;
+  if (out.length > 1) card.examples = out.slice(1); else delete card.examples;
+  return card;
+}
+const allExamples = v => (v.example ? [v.example] : []).concat(v.examples || []);
+
+/* The order a card shows its sentences in. The one that came with the
+   file you are reading leads, because that is the sentence the passage
+   around it was written with; the rest follow, newest first. */
+function examplesFor(v, lid) {
+  const all = allExamples(v);
+  const own = lid ? all.findIndex(e => e.src === lid) : -1;
+  if (own > 0) all.unshift(all.splice(own, 1)[0]);
+  return all;
+}
+
+/* Set only while addLessons() folds new files in: the moment they
+   arrived. Sentences that come in without a date take it, and the file
+   they came with, so a card can tell a new sentence from an old one. */
+let exStamp = "";
 
 /* Fold a card into the registry and hand back the one object that
    speaks for that word. Forms always pool: whichever file supplied a
@@ -4722,6 +4977,8 @@ function intern(v) {
     CARD_FIELDS.forEach(k => { if (v[k]) cur[k] = v[k]; });
     cur.auto = !!(cur.auto && v.auto);
   }
+  /* whichever card knew more, the sentences of both survive */
+  poolExamples(cur, allExamples(cur).concat(allExamples(v)));
   const pool = (cur.forms || []).concat(v.forms || []);
   if (pool.length) {
     const seen = Object.create(null), out = [];
@@ -4767,7 +5024,7 @@ function normalizeCard(v) {
   v = v || {};
   const word = String(v.word || v.de || v.front || v.term || "").trim();
   const gm = word.match(/^(der|die|das)\s+/i);
-  return {
+  return poolExamples({
     id: cardId(word),
     word: word,
     gender: v.gender || (gm ? gm[1].toLowerCase() : ""),
@@ -4778,10 +5035,8 @@ function normalizeCard(v) {
     definition: String(v.definition || v.meaning || "").trim(),
     say: String(v.say || v.pronunciation || v.phonetic || v.respelling || "").trim(),
     note: String(v.note || v.notes || v.sayNote || v.pronunciationNote || v.pronunciation_note || "").trim(),
-    auto: v.auto === true,
-    example: (v.example && (v.example.de || v.example.en))
-      ? { de: String(v.example.de || ""), en: String(v.example.en || "") } : null
-  };
+    auto: v.auto === true
+  }, [v.example].concat(Array.isArray(v.examples) ? v.examples : []));
 }
 
 function normalizeLesson(raw) {
@@ -4830,6 +5085,10 @@ function normalizeLesson(raw) {
     dropped: Array.isArray(raw.dropped) ? raw.dropped.map(normWord).filter(Boolean) : [],
     vocabulary: vocabulary
   };
+  if (exStamp) vocabulary.forEach(v => {
+    allExamples(v).forEach(e => { if (!e.at) { e.at = exStamp; e.src = lesson.id; } });
+    poolExamples(v, allExamples(v));
+  });
   ensureCoverage(lesson);
   internLesson(lesson);
   return lesson;
@@ -4894,6 +5153,7 @@ function download(filename, text) {
 
 function addLessons(list, quiet) {
   let added = 0, replaced = 0, bad = 0, why = "";
+  exStamp = new Date().toISOString();
   for (const raw of list) {
     let l;
     try { l = normalizeLesson(raw); }
@@ -4903,6 +5163,7 @@ function addLessons(list, quiet) {
     delete state.deleted[l.id];
     if (i >= 0) { state.lessons[i] = l; replaced++; } else { state.lessons.push(l); added++; }
   }
+  exStamp = "";
   if (added || replaced) { saveLibrary(); markDirty(); }
   if (!quiet) {
     const bits = [];
@@ -5328,7 +5589,7 @@ function renderReadSettings() {
         '<div class="rswitches">' +
           rSwitch("ex", "Example sentence") +
           rSwitch("exen", "Example translation", "The English under the example sentence.") +
-          rSwitch("src", "File name on the card") +
+          rSwitch("src", "File name on the card", "Also the file each example sentence came from.") +
           rSwitch("hint", "Keyboard and flip hints") +
         "</div>" +
       "</div>" +
@@ -6179,7 +6440,7 @@ function cardHTML(lesson, v, i, src, also) {
             (v.definition ? '<div class="fcard__def">' + esc(v.definition) + "</div>" : "") +
           "</div>" +
           noteHTML(v) +
-          exampleHTML(v) +
+          exampleHTML(v, "", lid) +
           '<div class="fcard__hint">' + ICO_FLIP + "Tap to flip back</div>" +
         "</div>" +
 
@@ -6411,7 +6672,7 @@ function openPop(tok, lesson, v, i) {
         ? '<div class="pop__gap">This word has a card, but the file carried no translation for it. Re-run the paragraph prompt to fill it in.</div>' : "") +
       (v.say || v.note
         ? '<div class="pop__sound">' + (v.say ? sayStrip(v.say) : "") + noteHTML(v) + "</div>" : "") +
-      exampleHTML(v) +
+      exampleHTML(v, "", lesson.id) +
     "</div>" +
     statusBar(lesson.id, v, i, true, true) +
     '<div class="pop__foot"></div>';
@@ -6680,7 +6941,7 @@ function paintDrill() {
               '<div class="drill__tr">' + (v.translation ? esc(v.translation) : "—") + "</div>" +
               (v.definition ? '<div class="drill__def">' + esc(v.definition) + "</div>" : "") +
               noteHTML(v) +
-              exampleHTML(v, "ex--lg") +
+              exampleHTML(v, "ex--lg", cur.lid) +
             "</div>" +
             '<div class="dhint">' + ICO_FLIP + "How did that go? Rate it below</div>" +
           "</div>" +
@@ -7642,7 +7903,7 @@ document.addEventListener("change", e => {
 document.addEventListener("keydown", e => {
   /* A focused speaker button owns its own Enter and Space — otherwise
      the drill below would flip the card out from under it. */
-  if ((e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("[data-tts]")) return;
+  if ((e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("[data-tts], [data-exgo]")) return;
 
   /* the reading panel floats over everything, so it answers Escape first,
      and it keeps its own sliders' keys to itself */
@@ -8058,7 +8319,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.1";
+const APP_VERSION = "3.2";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -10237,6 +10498,15 @@ function extraClick(e) {
     e.preventDefault(); e.stopPropagation();
     clock.bump();
     speech.say(spk.dataset.tts, spk);
+    return true;
+  }
+
+  /* the next example sentence — inside a card that flips, so it stops here */
+  const exg = t.closest("[data-exgo]");
+  if (exg) {
+    e.preventDefault(); e.stopPropagation();
+    const ex = exg.closest(".ex");
+    exShow(ex, (+ex.dataset.exi || 0) + 1);
     return true;
   }
 
