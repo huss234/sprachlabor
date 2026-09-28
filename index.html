@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.29 · neural German, cached on device -->
+<!-- Sprachlabor — v3.30 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -4000,10 +4000,59 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
   .winput{height:calc(52px * var(--fs-w));font-size:calc(22px * var(--fs-w));line-height:calc(52px * var(--fs-w) - 2px)}
   .wgo{width:104px;font-size:11.5px}
   .wkey{min-width:38px;height:36px;font-size:calc(17px * var(--fs-w))}
+  /* the seven letters and Show me share one line: the keys share what the
+     button leaves, so the row never wraps onto a second one */
+  .wkeys{flex-wrap:nowrap;gap:5px}
+  .wkey{flex:1 1 0;min-width:0;padding:0}
+  .wkey--wide{flex:none;padding:0 11px;font-size:11px}
+  .wkeys__sep{display:none}
   .wtiny{display:none}
   .wgo-row .btn{flex:1;justify-content:center}
   .wbarline .selectbox{min-width:0;width:100%}
 }
+
+/* The session with the keyboard up (`.is-tight`, set by spFitViewport when
+   the visible height drops under 560px). The keyboard takes half the
+   screen, so what stays has to be what typing needs: the bar folds to one
+   line (close, name, place, and the tally as dots with counts, the rail
+   thin beneath), the card loses its label lines and tightens, the longer
+   definition drops below the sentence and the hints, and the answer bar
+   gives up height to fit the article row when a noun asks for one. The
+   Aa and full-screen keys wait for the keyboard to go. `.is-tiny` (under
+   380px, a phone on its side) also drops the meta line and the rail. */
+.spell.is-tight .wbar{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:7px 14px 8px;
+}
+.spell.is-tight .sbar__top{grid-column:1;grid-row:1;min-height:34px;gap:9px}
+.spell.is-tight .sbar__top .dclose{width:32px;height:32px}
+.spell.is-tight .sbar__top .dclose:not([data-spclose]){display:none}
+.spell.is-tight .sbar__top .dcount{margin:0}
+.spell.is-tight .dcount b{font-size:17px}
+.spell.is-tight .dlegend{grid-column:2;grid-row:1;gap:9px;justify-content:flex-end}
+.spell.is-tight .dleg{font-size:0;gap:4px}
+.spell.is-tight .wrail{grid-column:1 / -1;grid-row:2;height:4px}
+.spell.is-tight .wstage{padding:8px 13px}
+.spell.is-tight .wcard{padding:11px 15px 12px;gap:9px}
+.spell.is-tight .wcard > *:not(.wtop){animation:fade .18s var(--ease) backwards}
+.spell.is-tight .wtop{padding-bottom:0;border-bottom:0}
+.spell.is-tight .wask{display:none}
+.spell.is-tight .wtr{font-size:calc(19px * var(--fs-card))}
+.spell.is-tight .wcard:not(.is-ok):not(.is-near):not(.is-no) .wdef{order:1}
+.spell.is-tight .wdef{font-size:calc(13px * var(--fs-card));line-height:1.5}
+.spell.is-tight .wcloze{padding:9px 12px;gap:4px}
+.spell.is-tight .wcloze__de{font-size:calc(16px * var(--fs-card));line-height:1.5}
+.spell.is-tight .wcloze__en{font-size:calc(12px * var(--fs-card));line-height:1.45}
+.spell.is-tight .whintb{height:28px;padding:0 10px}
+.spell.is-tight .whintout{padding:7px 11px}
+.spell.is-tight .wfoot{padding:8px 13px calc(8px + env(safe-area-inset-bottom))}
+.spell.is-tight .wform{gap:7px}
+.spell.is-tight .winput{height:calc(46px * var(--fs-w));font-size:calc(20px * var(--fs-w));line-height:calc(46px * var(--fs-w) - 2px)}
+.spell.is-tight .wgo{width:96px}
+.spell.is-tight .wart{height:32px}
+.spell.is-tight .wkey{height:34px}
+.spell.is-tiny .wtop,.spell.is-tiny .wrail{display:none}
+.spell.is-tiny .wart{height:28px}
+@media (prefers-reduced-motion:reduce){.spell.is-tight .wcard > *:not(.wtop){animation:none}}
 
 /* ════════════════════════════════════════════════════════════
    v2.1 — THE CLOCK, AND WHAT IT LETS THE PAGE SAY
@@ -10790,7 +10839,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.29";
+const APP_VERSION = "3.30";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -14617,7 +14666,9 @@ function endSpelling() {
    A fixed overlay keeps the height of the layout viewport, which on
    Android is the height *behind* the keyboard — so the answer box ends
    up underneath it. The visual viewport knows better, so the overlay is
-   sized from that instead and follows it up and down. */
+   sized from that instead and follows it up and down. What is left above
+   the keyboard also decides the layout: under 560px the session goes
+   `.is-tight` (see its CSS), under 380px `.is-tiny`. */
 let spVVHandler = null;
 function spFitViewport() {
   const vv = window.visualViewport;
@@ -14625,6 +14676,8 @@ function spFitViewport() {
   spell.node.style.height = Math.round(vv.height) + "px";
   spell.node.style.top = Math.round(vv.offsetTop) + "px";
   spell.node.style.bottom = "auto";
+  spell.node.classList.toggle("is-tight", vv.height < 560);
+  spell.node.classList.toggle("is-tiny", vv.height < 380);
 }
 function spKeyboardWatch(on) {
   const vv = window.visualViewport;
