@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.2 · neural German, cached on device -->
+<!-- Sprachlabor — v3.3 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -203,23 +203,84 @@ ul,ol{margin:0;padding:0;list-style:none}
   place-items:center;font-size:13px;font-weight:700;letter-spacing:-.03em;flex:none;
 }
 .appbar__tools{display:flex;align-items:center;gap:6px;flex:none}
+/* The sync control: the pill syncs, and the segment welded to its end
+   opens the details. The segment slides out on a tap and folds away a
+   few seconds after the sync settles; while sync needs you it stays
+   out and carries the warning. */
+.syncsplit{display:inline-flex;align-items:center;gap:3px;flex:none}
 .syncpill{
+  position:relative;overflow:hidden;
   display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px 0 11px;
   border:1px solid var(--rule);border-radius:100px;background:var(--surface);
   font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--ink-2);white-space:nowrap;
-  transition:background .15s var(--ease),border-color .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  transition:background .15s var(--ease),border-color .15s var(--ease),color .15s var(--ease),transform .1s var(--ease),border-radius .22s var(--ease);
 }
 .syncpill:hover{background:var(--surface-2);border-color:var(--ink-3);color:var(--ink)}
 .syncpill:active{transform:scale(.97)}
 .syncpill i{width:8px;height:8px;border-radius:100px;background:var(--ink-3);flex:none;transition:background .2s var(--ease)}
-.syncpill.is-new span{animation:syncin .22s var(--ease) both}
+.syncpill__t{font-variant-numeric:tabular-nums}
+/* while the width moves the words keep their full size; the pill clips them, never an ellipsis */
+.syncpill.is-morph .syncpill__t{flex-shrink:0}
+.syncpill__old{position:absolute;pointer-events:none}
 .syncpill.is-new i{animation:syncdot .3s var(--ease) both}
+.syncsplit.is-open .syncpill{border-radius:100px var(--r-sm) var(--r-sm) 100px}
+.syncmore{
+  width:0;height:32px;margin-left:-3px;padding:0;flex:none;overflow:hidden;
+  display:grid;place-items:center;opacity:0;pointer-events:none;
+  border:1px solid transparent;border-radius:var(--r-sm) 100px 100px var(--r-sm);
+  background:var(--surface);color:var(--ink-2);
+  transition:width .2s cubic-bezier(.4,0,1,1),margin-left .2s cubic-bezier(.4,0,1,1),opacity .12s cubic-bezier(.4,0,1,1),
+             border-color .15s var(--ease),background .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
+}
+.syncsplit.is-open .syncmore{
+  width:30px;margin-left:0;opacity:1;pointer-events:auto;border-color:var(--rule);
+  transition:width .26s var(--ease),margin-left .26s var(--ease),opacity .2s var(--ease) .04s,
+             border-color .15s var(--ease),background .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
+}
+.syncmore:hover{background:var(--surface-2);border-color:var(--ink-3);color:var(--ink)}
+.syncmore:active{transform:scale(.94)}
+.syncmore svg{grid-area:1/1;width:14px;height:14px;transition:transform .26s var(--ease),opacity .16s var(--ease)}
+.syncsplit:not(.is-open) .syncmore svg{transform:scale(.5) rotate(-90deg)}
+.syncmore[aria-expanded="true"] .syncmore__chev{transform:rotate(180deg)}
+.syncmore__attn{opacity:0}
+.syncsplit.is-attn .syncmore{color:var(--die);border-color:color-mix(in srgb,var(--die) 35%,var(--rule))}
+.syncsplit.is-attn .syncmore__chev{opacity:0}
+.syncsplit.is-attn .syncmore__attn{opacity:1}
+/* the details, grown out of the control like any other menu */
+.menu--sync{width:min(320px,calc(100vw - 20px));padding:14px 14px 12px;cursor:default}
+.syncp__head{display:flex;align-items:flex-start;gap:10px;padding:0 2px 12px;border-bottom:1px solid var(--rule-2)}
+.syncp__head .dot{margin-top:5px}
+.syncp__head b{display:block;font-size:13.5px;font-weight:600;line-height:1.4;letter-spacing:-.005em}
+.syncp__head span{display:block;font-size:12px;color:var(--ink-2);margin-top:2px}
+.syncp__rows{margin:4px 0 12px}
+.syncp__rows div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:7px 2px;border-bottom:1px solid var(--rule-2)}
+.syncp__rows dt{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);flex:none}
+.syncp__rows dd{margin:0;font-family:var(--mono);font-size:11.5px;color:var(--ink);text-align:right;min-width:0;overflow-wrap:anywhere}
+.syncp__rows small{margin-left:5px;font-family:var(--sans);font-size:10.5px;color:var(--ink-3)}
+.syncp__acts{display:flex;gap:8px}
+/* real buttons inside a menu: they keep the app's button look, not the menu row's */
+.menu.menu--sync .syncp__acts .btn{flex:1;width:auto;justify-content:center;padding:0 11px;border-radius:var(--r-md);color:var(--ink);transition:background .15s var(--ease),border-color .15s var(--ease),transform .1s var(--ease)}
+.menu.menu--sync .syncp__acts .btn:hover{background:var(--surface-2)}
+.menu.menu--sync .syncp__acts .btn:active{transform:scale(.97)}
+.menu.menu--sync .syncp__acts .btn--primary,.menu.menu--sync .syncp__acts .btn--primary:hover{background:var(--signal);border-color:var(--signal);color:#fff}
+:root[data-theme="dark"] .menu.menu--sync .syncp__acts .btn--primary{color:#0B0E10}
+.menu.menu--sync .syncp__acts .btn--primary:hover{filter:brightness(1.08)}
+.menu.menu--sync .syncp__acts .btn--primary svg{color:inherit}
+.syncp__log{margin-top:14px}
+.syncp__log ol{margin-top:7px;display:grid;gap:6px;max-height:140px;overflow-y:auto;overscroll-behavior:contain}
+.syncp__log li{display:flex;gap:10px;font-size:12px;line-height:1.45;color:var(--ink-2)}
+.syncp__log time{flex:none;min-width:44px;font-size:10.5px;color:var(--ink-3);padding-top:1px}
+.syncp__none{font-size:12px;color:var(--ink-3);margin-top:6px}
+@media (prefers-reduced-motion:reduce){
+  .syncmore,.syncsplit.is-open .syncmore,.syncmore svg{transition:opacity .16s var(--ease),border-color .15s var(--ease),background .15s var(--ease),color .15s var(--ease)}
+  .syncsplit:not(.is-open) .syncmore svg,.syncmore[aria-expanded="true"] .syncmore__chev{transform:none}
+}
 .syncpill.is-ok i{background:var(--ok)}
 .syncpill.is-wait i{background:var(--warn)}
 .syncpill.is-busy i{background:var(--warn);animation:pulse 1s var(--ease) infinite}
 .syncpill.is-bad i{background:var(--die)}
 .syncpill.is-bad{color:var(--die);border-color:color-mix(in srgb,var(--die) 35%,var(--rule))}
-@keyframes syncin{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 @keyframes syncdot{from{transform:scale(.4)}to{transform:none}}
 .appbar__more{
   width:34px;height:34px;border-radius:var(--r-md);display:grid;place-items:center;color:var(--ink-2);
@@ -3417,7 +3478,13 @@ button.wrow:hover{background:var(--signal-soft)}
       <div class="appbar">
         <div class="appbar__brand"><span class="appbar__mark" aria-hidden="true">S</span>Sprachlabor</div>
         <div class="appbar__tools">
-          <button class="syncpill" id="syncPill"><i aria-hidden="true"></i><span>Not connected</span></button>
+          <div class="syncsplit" id="syncSplit">
+            <button class="syncpill" id="syncPill"><i aria-hidden="true"></i><span class="syncpill__t">Not connected</span></button>
+            <button class="syncmore" id="syncMore" aria-label="Sync details" aria-haspopup="dialog" aria-expanded="false" aria-hidden="true" tabindex="-1">
+              <svg class="syncmore__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5l6 6 6-6"/></svg>
+              <svg class="syncmore__attn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5.5v8"/><path d="M12 18.5v.01"/></svg>
+            </button>
+          </div>
           <button class="appbar__more" id="appMenuBtn" aria-label="More options" aria-haspopup="menu" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg>
           </button>
@@ -3866,7 +3933,7 @@ button.wrow:hover{background:var(--signal-soft)}
 
             <div class="panel">
               <h3>Automatic sync</h3>
-              <p>When this is on, the app syncs quietly after you study and whenever you reopen it. Turn it off to sync only with the button above.</p>
+              <p>When this is on, the app syncs quietly after you study and whenever you reopen it, and while it is open it checks every minute for anything new from your other device. Turn it off to sync only with the button above.</p>
               <label class="switch">
                 <input type="checkbox" id="ghAuto">
                 <i></i>
@@ -3876,7 +3943,8 @@ button.wrow:hover{background:var(--signal-soft)}
 
             <div class="panel">
               <h3>How the merge works</h3>
-              <p style="margin-bottom:0">Your two devices never overwrite each other wholesale. Lessons merge one by one and the newest edit wins. Progress merges word by word, so a session on your phone and a session on your tablet both survive. Your study history is append-only, which means it cannot conflict at all — the two devices simply pool what each of them recorded.</p>
+              <p>Your two devices never overwrite each other wholesale. Lessons merge one by one and the newest edit wins; a deletion wins over anything older than it. Progress merges word by word, so a session on your phone and a session on your tablet both survive. Your study history is append-only, which means it cannot conflict at all — the two devices simply pool what each of them recorded.</p>
+              <p style="margin-bottom:0">Each sync sends only what changed since the last one, as one small file in a single commit, and fetches only what the other device added since. When nothing is new, finding that out costs one quick question to GitHub. Once a week the app folds those small files back into the main copy. Each device also keeps its own settings there, so a phone or tablet you set up again gets its settings back.</p>
             </div>
           </div>
 
@@ -4098,6 +4166,7 @@ const state = {
   events: [],            // append-only study history — the source for every statistic
   deleted: {},           // { lessonId: timestamp } tombstones, so deletes survive a merge
   deletedFolders: {},    // the same, for folders
+  resetAt: 0,            // when progress was last reset, on any device; older progress stays gone
   settings: {
     theme: "light", translation: "off", autoSync: true, deviceId: "",
     github: { user: "huss234", repo: "sprachlabor-data", token: "", branch: "main" },
@@ -4160,7 +4229,7 @@ function dehydrate() {
   });
   return { format: "sprachlabor.library", version: 3,
            cards: cards, lessons: lessons, folders: state.folders,
-           deleted: state.deleted, deletedFolders: state.deletedFolders };
+           deleted: state.deleted, deletedFolders: state.deletedFolders, resetAt: state.resetAt || 0 };
 }
 
 /* Put the cards back on the lessons that reference them. A lesson
@@ -7981,25 +8050,45 @@ window.addEventListener("scroll", () => { if (menuNode) closeMenu(); }, { passiv
 
 /* ============================================================
    GITHUB SYNC
-   Your private repo holds three files. Each merges differently:
-     library.json   → per lesson, newest edit wins (+ tombstones)
-     progress.json  → per word, newest rating wins
-     events.json    → union of ids; conflicts are impossible
+   Your private repo holds the library as a snapshot cut into small
+   files, plus a journal: one small file per sync, holding only what
+   that sync changed.
+     meta.json                  the format, and when the snapshot was cut
+     data/lessons/NN.json       lessons, spread over shards by id
+     data/folders.json          folders
+     data/graves.json           deletions, so they survive a merge
+     data/progress/NN.json      one record per card
+     data/events/YYYY-MM.json   the study history, a file per month
+     devices/<id>.json          each device's own settings
+     journal/YYYY/MM/DD/….json  what each sync sent since the snapshot
+   The branch's head commit is the library's version stamp. The same
+   head as last time means there is nothing to fetch, and GitHub says
+   so without charging a request. Otherwise only the files that changed
+   since that head are read, all in one request. Sending is one commit
+   that carries one journal file, and it fails cleanly if the other
+   device committed first; the app then pulls and tries again.
+   A shadow, one short hash per record GitHub holds, is how this device
+   knows what it still has to send. It only moves once GitHub has
+   confirmed the commit, so nothing is marked sent that did not land.
+   The merges are the ones the app always had:
+     lessons, folders → one by one, newest edit wins, a deletion wins
+                        over anything older than it
+     progress         → per card, newest rating wins, tallies take the
+                        larger count
+     history          → pooled by id; conflicts are impossible
+   Before v3.3 the repo held library.json, progress.json and
+   events.json. The first sync from v3.3 reads them, merges them in,
+   writes the new layout and removes them in the same commit; any
+   copy an older build writes later is merged in the same way.
    ============================================================ */
 const GH_LIB = "library.json", GH_PROG = "progress.json", GH_EVT = "events.json";
 
-/* btoa() breaks on umlauts — go through UTF-8 bytes both ways. */
+/* btoa() breaks on umlauts — go through UTF-8 bytes. */
 function b64enc(str) {
   const bytes = new TextEncoder().encode(str);
   let bin = "", CH = 0x8000;
   for (let i = 0; i < bytes.length; i += CH) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
   return btoa(bin);
-}
-function b64dec(b64) {
-  const bin = atob(String(b64).replace(/\s/g, ""));
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return new TextDecoder().decode(bytes);
 }
 /* key-sorted stringify so an unchanged object always looks unchanged */
 function stable(v) {
@@ -8041,41 +8130,163 @@ function ghFetch(url, opts) {
   });
 }
 
-async function ghRead(file) {
-  const c = ghCfg();
-  const url = ghBase() + "/contents/" + file + "?ref=" + encodeURIComponent(c.branch || "main") + "&_=" + Date.now();
-  const res = await ghFetch(url);
-  if (res.status === 404) return { data: null, sha: null };
-  if (!res.ok) throw new Error(ghMsg(res));
-  const j = await res.json();
-  let text;
-  if (j.content) text = b64dec(j.content);
-  else {                                    /* files over 1 MB come back empty here */
-    const b = await ghFetch(ghBase() + "/git/blobs/" + j.sha);
-    if (!b.ok) throw new Error(ghMsg(b));
-    text = b64dec((await b.json()).content);
-  }
-  let data = null;
-  try { data = JSON.parse(text); } catch (e) { data = null; }
-  return { data: data, sha: j.sha };
+class SyncError extends Error {
+  constructor(kind, msg, extra) { super(msg); this.kind = kind; Object.assign(this, extra || {}); }
 }
 
-async function ghWrite(file, obj, sha, message) {
-  const c = ghCfg();
-  const body = {
-    message: message,
-    content: b64enc(JSON.stringify(obj, null, 2)),
-    branch: c.branch || "main"
-  };
-  if (sha) body.sha = sha;
-  const res = await ghFetch(ghBase() + "/contents/" + file, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) throw new Error(ghMsg(res));
-  return res;
-}
+/* The GitHub side, and nothing else. Reads go through GraphQL where one
+   request can carry sixty files; writes are one createCommitOnBranch,
+   which is atomic and refuses to land on top of a commit it has not
+   seen. */
+const GH = {
+  api: "https://api.github.com",
+  head0: null,                              /* { tag, oid, repo } from the last head read */
+  rate: { remaining: null, limit: null, reset: 0 },
+  waitUntil: 0,
+  repoKey() { const c = ghCfg(); return c.user + "/" + c.repo + "#" + (c.branch || "main"); },
+  path(rest) { return ghBase().slice(this.api.length) + (rest || ""); },
+
+  async req(method, path, o) {
+    o = o || {};
+    if (Date.now() < this.waitUntil) throw new SyncError("rate", "GitHub asked for a pause", { until: this.waitUntil });
+    if (navigator.onLine === false) throw new SyncError("offline", "You are offline");
+    const h = {
+      "Accept": o.accept || "application/vnd.github+json",
+      "Authorization": "Bearer " + ghCfg().token,
+      "X-GitHub-Api-Version": "2022-11-28"
+    };
+    if (o.etag) h["If-None-Match"] = o.etag;
+    const body = o.body == null ? undefined : JSON.stringify(o.body);
+    if (body) h["Content-Type"] = "application/json";
+    let res;
+    try {
+      res = await fetch(this.api + path, { method: method, headers: h, body: body, cache: "no-store",
+        keepalive: !!o.keepalive && (!body || body.length < 60000) });
+    } catch (e) { throw new SyncError(navigator.onLine === false ? "offline" : "net", "Could not reach GitHub"); }
+    this.readHeaders(res);
+    if (res.status === 304) return { status: 304, res: res };
+    if ((o.allow || []).indexOf(res.status) >= 0) {
+      let data = null; try { data = await res.json(); } catch (e) {}
+      return { status: res.status, data: data, res: res };
+    }
+    if (res.status === 401) throw new SyncError("auth", ghMsg(res));
+    if (res.status === 403 || res.status === 429) {
+      let msg = ""; try { msg = (await res.json()).message || ""; } catch (e) {}
+      const retry = +res.headers.get("retry-after");
+      if (retry || this.rate.remaining === 0 || /rate limit|abuse/i.test(msg)) {
+        this.waitUntil = retry ? Date.now() + retry * 1000 : (this.rate.reset ? this.rate.reset * 1000 + 1000 : Date.now() + 60000);
+        throw new SyncError("rate", "GitHub asked for a pause", { until: this.waitUntil });
+      }
+      throw new SyncError("forbidden", ghMsg(res));
+    }
+    if (res.status === 404) throw new SyncError("notfound", ghMsg(res));
+    if (res.status === 409) throw new SyncError("conflict", ghMsg(res));
+    if (res.status === 413) throw new SyncError("big", "Too much for one request");
+    if (res.status >= 500) throw new SyncError("server", "GitHub is having trouble (" + res.status + ")");
+    if (!res.ok) throw new SyncError("http", ghMsg(res));
+    const data = o.text ? await res.text() : (res.status === 204 ? null : await res.json());
+    return { status: res.status, data: data, res: res };
+  },
+  readHeaders(res) {
+    const g = k => res.headers.get(k);
+    if (g("x-ratelimit-remaining") != null) this.rate.remaining = +g("x-ratelimit-remaining");
+    if (g("x-ratelimit-limit") != null) this.rate.limit = +g("x-ratelimit-limit");
+    if (g("x-ratelimit-reset") != null) this.rate.reset = +g("x-ratelimit-reset");
+  },
+  async gql(query, variables, o) {
+    const r = await this.req("POST", "/graphql", Object.assign({ body: { query: query, variables: variables } }, o || {}));
+    const d = r.data || {};
+    if (d.errors && d.errors.length) {
+      const type = d.errors[0].type || "", msg = d.errors[0].message || "";
+      if (type === "RATE_LIMITED" || /rate limit/i.test(msg)) {
+        this.waitUntil = this.rate.reset ? this.rate.reset * 1000 + 1000 : Date.now() + 60000;
+        throw new SyncError("rate", "GitHub asked for a pause", { until: this.waitUntil });
+      }
+      if (type === "STALE_DATA" || /expected branch to point to|expectedHeadOid|head.*(moved|changed)/i.test(msg)) throw new SyncError("conflict", msg);
+      if (type === "NOT_FOUND") throw new SyncError("notfound", "Could not find that repository. Check the username and the repository name.");
+      if (type === "FORBIDDEN" || /resource not accessible/i.test(msg)) throw new SyncError("forbidden", "GitHub refused the request — the token needs read and write access to this repository's contents.");
+      if (/too large|payload|body.*size/i.test(msg)) throw new SyncError("big", msg);
+      throw new SyncError("gql", msg || "GitHub returned an error");
+    }
+    return d.data;
+  },
+
+  /* the head commit; asked conditionally, so "nothing new" is free */
+  async head() {
+    const key = this.repoKey(), c = ghCfg();
+    const prev = this.head0 && this.head0.repo === key ? this.head0 : null;
+    const r = await this.req("GET", this.path("/git/ref/heads/" + encodeURIComponent(c.branch || "main")),
+      { etag: prev && prev.tag, allow: [404, 409] });
+    if (r.status === 304 && prev) return { oid: prev.oid };
+    if (r.status === 404 || r.status === 409) {
+      /* an empty repository has no branch yet; a missing one is an error */
+      const repo = await this.req("GET", this.path(), { allow: [404] });
+      if (repo.status === 404) throw new SyncError("notfound", "Could not find that repository. Check the username and the repository name.");
+      return { oid: null, empty: true };
+    }
+    const oid = r.data.object.sha, tag = r.res.headers.get("etag");
+    this.head0 = tag ? { tag: tag, oid: oid, repo: key } : null;
+    return { oid: oid };
+  },
+  async ensureBranch() {
+    const c = ghCfg();
+    await this.req("PUT", this.path("/contents/README.md"), { body: {
+      message: "Start Sprachlabor storage", branch: c.branch || "main",
+      content: b64enc("# " + c.repo + "\n\nWritten by the Sprachlabor app. Please do not edit it by hand.\n") } });
+    this.head0 = null;
+    return (await this.head()).oid;
+  },
+  async compare(base, head) {
+    const r = await this.req("GET", this.path("/compare/" + base + "..." + head + "?per_page=1"), { allow: [404] });
+    if (r.status === 404) return null;
+    const files = r.data.files || [];
+    return { status: r.data.status, files: files, truncated: files.length >= 300 };
+  },
+  async tree(oid) {
+    const r = await this.req("GET", this.path("/git/trees/" + oid + "?recursive=1"));
+    return (r.data.tree || []).filter(t => t.type === "blob").map(t => ({ path: t.path, size: t.size || 0 }));
+  },
+  /* many files in one GraphQL read; a file too big for it comes raw */
+  async readFiles(oid, paths, sizes, onProgress) {
+    const out = {}, c = ghCfg();
+    let i = 0, done = 0;
+    while (i < paths.length) {
+      const group = []; let bytes = 0;
+      while (i < paths.length && group.length < 60 && (bytes < 4e6 || !group.length)) { group.push(paths[i]); bytes += (sizes && sizes[paths[i]]) || 20000; i++; }
+      const vars = { o: c.user, r: c.repo };
+      const decl = group.map((p, k) => "$e" + k + ":String!").join(",");
+      const body = group.map((p, k) => { vars["e" + k] = oid + ":" + p; return "f" + k + ":object(expression:$e" + k + "){... on Blob{text isTruncated}}"; }).join(" ");
+      const d = await this.gql("query($o:String!,$r:String!," + decl + "){repository(owner:$o,name:$r){" + body + "}}", vars);
+      const rd = (d && d.repository) || {};
+      for (let k = 0; k < group.length; k++) {
+        const b = rd["f" + k];
+        if (!b) { out[group[k]] = null; continue; }
+        out[group[k]] = b.isTruncated || b.text == null ? await this.raw(group[k], oid) : b.text;
+      }
+      done += group.length;
+      if (onProgress) onProgress(done, paths.length);
+    }
+    return out;
+  },
+  async raw(path, ref) {
+    const r = await this.req("GET", this.path("/contents/" + path.split("/").map(encodeURIComponent).join("/") + "?ref=" + encodeURIComponent(ref)),
+      { accept: "application/vnd.github.raw+json", text: true });
+    return r.data;
+  },
+  /* one atomic commit; refused if the branch moved since `expected` */
+  async commit(expected, headline, additions, deletions, o) {
+    const c = ghCfg(), fileChanges = {};
+    if (additions && additions.length) fileChanges.additions = additions.map(f => ({ path: f.path, contents: b64enc(f.text) }));
+    if (deletions && deletions.length) fileChanges.deletions = deletions.map(p => ({ path: p }));
+    const input = { branch: { repositoryNameWithOwner: c.user + "/" + c.repo, branchName: c.branch || "main" },
+                    expectedHeadOid: expected, message: { headline: headline }, fileChanges: fileChanges };
+    const d = await this.gql("mutation($input:CreateCommitOnBranchInput!){createCommitOnBranch(input:$input){commit{oid}}}", { input: input }, o);
+    const cm = d && d.createCommitOnBranch && d.createCommitOnBranch.commit;
+    if (!cm || !cm.oid) throw new SyncError("gql", "GitHub did not confirm the commit");
+    this.head0 = null;
+    return cm.oid;
+  }
+};
 
 function cleanLesson(l) {
   const c = {};
@@ -8084,111 +8295,627 @@ function cleanLesson(l) {
   return c;
 }
 
-/* ---- merges ---- */
-function mergeLibrary(remote) {
-  const tomb = Object.assign({}, (remote && remote.deleted) || {}, state.deleted || {});
-  const map = new Map();
-  const take = raw => {
+/* ---- records ---- */
+/* a fast 53-bit string hash (cyrb53); records are compared by it, never by content */
+function h53(str) {
+  let a = 0xdeadbeef, b = 0x41c6ce57;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    a = Math.imul(a ^ c, 2654435761); b = Math.imul(b ^ c, 1597334677);
+  }
+  a = Math.imul(a ^ (a >>> 16), 2246822507) ^ Math.imul(b ^ (b >>> 13), 3266489909);
+  b = Math.imul(b ^ (b >>> 16), 2246822507) ^ Math.imul(a ^ (a >>> 13), 3266489909);
+  return 4294967296 * (2097151 & b) + (a >>> 0);
+}
+const recHash = s => h53(s).toString(36);
+const lessonHash = l => recHash(JSON.stringify(cleanLesson(l)));
+function cleanFolder(f) {
+  return { id: String(f.id), name: String(f.name).slice(0, 64), parent: f.parent || null,
+           created: f.created || f.updatedAt || "", updatedAt: f.updatedAt || f.created || "" };
+}
+/* the last moment anything touched a progress record */
+function progStamp(r) { return Math.max(r.t || 0, r.lastView || 0, (r.sp && r.sp.t) || 0); }
+
+/* One card's progress from two devices. The rung follows whichever side
+   rated it last; the tallies take the larger count, because a view
+   counted on a phone is not undone by a laptop that never saw it. The
+   spelling record goes by its own clock, so a spelling session is not
+   lost to a rating made elsewhere. Ties are broken the same way on
+   both devices, so the two always land on the same record. */
+function mergeProgRec(cur, inc) {
+  const ta = cur.t || 0, tb = inc.t || 0;
+  const incWins = tb !== ta ? tb > ta : stable(inc) > stable(cur);
+  const m = incWins ? Object.assign({}, cur, inc) : Object.assign({}, inc, cur);
+  ["views", "seen", "ok", "lastView"].forEach(k => {
+    if (k in cur || k in inc) m[k] = Math.max(cur[k] || 0, inc[k] || 0);
+  });
+  const sa = cur.sp, sb = inc.sp;
+  if (sa && sb) {
+    const bw = (sb.t || 0) !== (sa.t || 0) ? (sb.t || 0) > (sa.t || 0) : stable(sb) > stable(sa);
+    m.sp = Object.assign({}, bw ? sb : sa);
+  } else if (sa || sb) m.sp = Object.assign({}, sa || sb);
+  return m;
+}
+
+/* The settings that belong to this device and travel only to its own
+   file on GitHub: what it looks like, how it reads, which voice. Where
+   you last were in the app is not a setting, and neither is the token. */
+const DEV_SKIP = ["github", "deviceId", "lastSync", "cwd", "settingsSection", "ptab", "recent", "expanded"];
+function devSettings() {
+  const o = {};
+  Object.keys(state.settings).forEach(k => { if (DEV_SKIP.indexOf(k) < 0) o[k] = state.settings[k]; });
+  return o;
+}
+const devForm = () => Math.min(screen.width, screen.height) >= 600 ? "tablet" : "phone";
+
+const KEY_SYNC = "sprachlabor-sync-v1", KEY_SHADOW = "sprachlabor-shadow-v1";
+const SYNC_FORMAT = "sprachlabor.sync";
+const SYNC_BULK = 1500;          /* more waiting than this → rewrite the snapshot instead of a journal */
+const JOURNAL_MAX = 800000;      /* bytes per journal file */
+const SNAP_SHARDS = { l: 16, p: 8 };
+const LEGACY = [GH_LIB, GH_PROG, GH_EVT];
+const hex2 = i => (i < 16 ? "0" : "") + i.toString(16);
+const pause = ms => new Promise(r => setTimeout(r, ms));
+const monthOf = ms => { const d = new Date(ms || 0); return d.getUTCFullYear() + "-" + (d.getUTCMonth() < 9 ? "0" : "") + (d.getUTCMonth() + 1); };
+const fileRank = p => p === "meta.json" ? 0 : p === "data/graves.json" ? 1 : p === "data/folders.json" ? 2 :
+  p.startsWith("data/lessons/") ? 3 : p.startsWith("data/progress/") ? 4 : p.startsWith("data/events/") ? 5 :
+  p.startsWith("journal/") ? 6 : p === GH_LIB ? 7 : p === GH_PROG ? 8 : p === GH_EVT ? 9 : 10;
+const byRank = (a, b) => fileRank(a) - fileRank(b) || (a < b ? -1 : a > b ? 1 : 0);
+
+const Sync = {
+  st: null,              /* where this device stands: last head seen, snapshot time, log */
+  sh: null,              /* the shadow: a hash per record GitHub holds */
+  evIds: new Set(),      /* ids of the history rows GitHub holds */
+  busy: false, again: false, shown: false, checking: false, current: null,
+  lastError: null, okThisSession: false, progress: null, waiting: 0,
+  timers: {}, maxCommit: 4e6, hashRev: -1, hashes: null,
+
+  defaults() { return { v: 1, repo: "", lastOid: null, snapshotAt: 0, journalCount: 0, lastPushAt: 0, lastSyncAt: 0, remote: null, log: [] }; },
+  /* l, f, p: hash per lesson, folder, card · lm, fm: the edit time of that
+     lesson or folder · g: deletions · e: history ids · z: last reset */
+  emptyShadow() { return { v: 1, l: {}, lm: {}, f: {}, fm: {}, g: {}, p: {}, e: [], z: 0, dev: "" }; },
+  /* `fresh`: this device held nothing before this launch, so its first
+     full read also takes back the settings it had saved on GitHub */
+  async load(fresh) {
+    const [st, sh] = await Promise.all([store.get(KEY_SYNC), store.get(KEY_SHADOW)]);
+    this.st = Object.assign(this.defaults(), st || {});
+    if (!Array.isArray(this.st.log)) this.st.log = [];
+    if (fresh) { this.st.restore = true; this.saveState(); }
+    this.sh = sh && sh.v === 1 ? Object.assign(this.emptyShadow(), sh) : this.emptyShadow();
+    this.evIds = new Set(this.sh.e);
+    /* without its shadow this device cannot tell what GitHub already
+       has, so it reads everything before it sends anything */
+    if (!sh || sh.v !== 1) this.forget();
+    if (this.st.lastSyncAt > (state.settings.lastSync || 0)) state.settings.lastSync = this.st.lastSyncAt;
+    this.recount();
+  },
+  forget() {
+    this.st.lastOid = null; this.st.snapshotAt = 0; this.st.journalCount = 0;
+    this.sh = this.emptyShadow(); this.evIds = new Set();
+  },
+  saveState() { return store.set(KEY_SYNC, this.st); },
+  save() {
+    this.sh.e = Array.from(this.evIds);
+    return Promise.all([store.set(KEY_SYNC, this.st), store.set(KEY_SHADOW, this.sh)]);
+  },
+  log1(text) {
+    this.st.log.unshift({ at: Date.now(), text: text });
+    if (this.st.log.length > 40) this.st.log.length = 40;
+  },
+
+  /* ---------- what this device has that GitHub does not ---------- */
+  diff() {
+    const S = this.sh, d = { l: [], f: [], g: [], p: [], e: [], z: false, lost: false, n: 0 };
+    /* a lesson only changes through a save, so its hash is kept until the next one */
+    if (this.hashRev !== libRev || !this.hashes) { this.hashes = new Map(); this.hashRev = libRev; }
+    const H = this.hashes, have = new Set();
+    state.lessons.forEach(l => {
+      have.add(l.id);
+      let h = H.get(l);
+      if (h === undefined) { h = lessonHash(l); H.set(l, h); }
+      if (S.l[l.id] !== h) d.l.push([l.id, h, l]);
+    });
+    const fhave = new Set();
+    state.folders.forEach(f => {
+      fhave.add(f.id);
+      const c = cleanFolder(f), h = recHash(stable(c));
+      if (S.f[f.id] !== h) d.f.push([f.id, h, c]);
+    });
+    Object.keys(state.deleted || {}).forEach(id => { if (S.g["l:" + id] !== state.deleted[id]) d.g.push(["l:" + id, state.deleted[id]]); });
+    Object.keys(state.deletedFolders || {}).forEach(id => { if (S.g["f:" + id] !== state.deletedFolders[id]) d.g.push(["f:" + id, state.deletedFolders[id]]); });
+    /* something GitHub holds that this device has lost without deleting
+       it: no deletion here as new as the copy GitHub has */
+    const gone = (tomb, id, at) => tomb && tomb[id] && String(tomb[id]) >= String(at || "");
+    for (const id in S.l) if (!have.has(id) && !gone(state.deleted, id, S.lm[id])) { d.lost = true; break; }
+    if (!d.lost) for (const id in S.f) if (!fhave.has(id) && !gone(state.deletedFolders, id, S.fm[id])) { d.lost = true; break; }
+    d.z = (state.resetAt || 0) > (S.z || 0);
+    Object.keys(state.progress).forEach(id => {
+      const r = state.progress[id];
+      if (!r || typeof r !== "object") return;
+      const h = recHash(stable(r));
+      if (S.p[id] !== h) d.p.push([id, h, r]);
+    });
+    const local = new Set();
+    state.events.forEach(e => {
+      if (!e || !e.id) return;
+      local.add(e.id);
+      if (!this.evIds.has(e.id)) d.e.push(e);
+    });
+    /* after a reset the old records are meant to be gone */
+    if (!d.z && !d.lost) {
+      for (const id in S.p) if (!(id in state.progress)) { d.lost = true; break; }
+      if (!d.lost) for (const id of this.evIds) if (!local.has(id)) { d.lost = true; break; }
+    }
+    d.n = d.l.length + d.f.length + d.g.length + d.p.length + d.e.length + (d.z ? 1 : 0);
+    return d;
+  },
+  devHash() { return recHash(stable(devSettings())) + ":" + devForm(); },
+  devFile() {
+    return { path: "devices/" + deviceId() + ".json", text: JSON.stringify({
+      v: 1, id: deviceId(), form: devForm(), at: Date.now(), app: APP_VERSION, settings: devSettings() }) };
+  },
+  needsPush(d) { return d.n > 0 || !this.st.snapshotAt || this.devHash() !== this.sh.dev; },
+  /* nothing to send, not even this device's settings: a sync can just look */
+  idle() {
+    if (!this.st) return false;
+    this.waiting = this.diff().n;          /* counted now: a change a moment ago must not be missed */
+    return this.waiting === 0 && !!this.st.snapshotAt && this.devHash() === this.sh.dev;
+  },
+  recount() { if (!this.st) return; this.waiting = this.diff().n; paintSync(); },
+  recountSoon() { clearTimeout(this.timers.count); this.timers.count = setTimeout(() => this.recount(), 400); },
+
+  /* ---------- sending ---------- */
+  journalFiles(d, batch) {
+    const parts = []; let cur = null, size = 0;
+    const fresh = () => { cur = { v: 1, dev: deviceId(), batch: batch, at: Date.now() }; size = 120; parts.push(cur); };
+    const room = add => { if (size + add > JOURNAL_MAX && size > 120) fresh(); size += add; };
+    const put = (k, key, val) => { room(JSON.stringify(val).length + key.length + 8); (cur[k] || (cur[k] = {}))[key] = val; };
+    fresh();
+    d.g.forEach(x => put("g", x[0], x[1]));
+    d.f.forEach(x => put("f", x[0], x[2]));
+    d.l.forEach(x => put("l", x[0], cleanLesson(x[2])));
+    d.p.forEach(x => put("p", x[0], x[2]));
+    d.e.forEach(e => { room(JSON.stringify(e).length + 2); (cur.e || (cur.e = [])).push(e); });
+    if (!d.n) return [];
+    const now = new Date(), y = now.getUTCFullYear(), mo = now.getUTCMonth() + 1, da = now.getUTCDate();
+    const base = "journal/" + y + "/" + (mo < 10 ? "0" : "") + mo + "/" + (da < 10 ? "0" : "") + da + "/" + now.getTime() + "-" + deviceId() + "-" + batch;
+    return parts.map((p, i) => ({ path: parts.length > 1 ? base + ".p" + i + ".json" : base + ".json", text: JSON.stringify(p) }));
+  },
+  async push(d, o) {
+    if (!this.st.snapshotAt || d.z || d.n > SYNC_BULK) {
+      /* too big to send while the page is closing, and never written
+         from a device that is missing something GitHub holds */
+      if (o.keepalive || d.lost) return { sent: 0 };
+      const first = !this.st.snapshotAt;
+      await this.writeSnapshot(d.z ? "Reset progress from " + deviceId()
+        : first ? "Library in the new storage layout, from " + deviceId()
+        : "Sync from " + deviceId() + ": " + plural(d.n, "change", "changes"));
+      if (first) this.log1("GitHub now holds the library in small files, so each sync sends only what changed");
+      if (d.z) this.log1("Progress reset sent to GitHub");
+      return { sent: d.n };
+    }
+    const dh = this.devHash(), batch = Math.random().toString(36).slice(2, 10);
+    const files = this.journalFiles(d, batch);
+    const adds = dh !== this.sh.dev ? files.concat([this.devFile()]) : files;
+    if (!adds.length) return { sent: 0 };
+    if (d.n) { this.shown = true; paintSync(); }
+    const oid = await GH.commit(this.st.lastOid, d.n ? "Sync from " + deviceId() + ": " + plural(d.n, "change", "changes") : "Settings of " + deviceId(), adds, [], { keepalive: o.keepalive });
+    /* GitHub confirmed: now, and only now, the shadow moves */
+    const S = this.sh;
+    d.l.forEach(x => { S.l[x[0]] = x[1]; S.lm[x[0]] = x[2].updatedAt || ""; });
+    d.f.forEach(x => { S.f[x[0]] = x[1]; S.fm[x[0]] = x[2].updatedAt || ""; });
+    d.p.forEach(x => { S.p[x[0]] = x[1]; });
+    d.e.forEach(e => this.evIds.add(e.id));
+    d.g.forEach(x => {
+      S.g[x[0]] = x[1];
+      const id = x[0].slice(2);
+      if (x[0][0] === "l" && !state.lessons.some(l => l.id === id)) { delete S.l[id]; delete S.lm[id]; }
+      if (x[0][0] === "f" && !folderById(id)) { delete S.f[id]; delete S.fm[id]; }
+    });
+    S.dev = dh;
+    this.st.lastOid = oid; this.st.lastPushAt = Date.now();
+    this.st.journalCount = (this.st.journalCount || 0) + files.length;
+    await this.save();
+    return { sent: d.n };
+  },
+
+  /* ---------- the snapshot: the whole library, rewritten ----------
+     Used for the first upload, a reset, a very large change, and the
+     weekly tidy-up that folds the journal back in. It is only ever
+     written right after a pull, when this device holds everything
+     GitHub holds, and it removes the journal files it has absorbed. */
+  async writeSnapshot(headline) {
+    this.shown = true;
+    this.progress = { what: "Writing the library to GitHub", done: 0, total: 1 };
+    paintSync();
+    const existing = this.st.lastOid ? (await GH.tree(this.st.lastOid)).map(f => f.path) : [];
+    const S = this.emptyShadow(), ev = new Set(), files = [], snapAt = Date.now();
+    const lb = Array.from({ length: SNAP_SHARDS.l }, () => ({}));
+    state.lessons.forEach(l => {
+      const c = cleanLesson(l);
+      lb[h53(String(l.id)) % SNAP_SHARDS.l][l.id] = c;
+      S.l[l.id] = recHash(JSON.stringify(c)); S.lm[l.id] = c.updatedAt || "";
+    });
+    lb.forEach((o, i) => files.push({ path: "data/lessons/" + hex2(i) + ".json", text: JSON.stringify(o) }));
+    const fo = {};
+    state.folders.forEach(f => { const c = cleanFolder(f); fo[c.id] = c; S.f[c.id] = recHash(stable(c)); S.fm[c.id] = c.updatedAt; });
+    files.push({ path: "data/folders.json", text: JSON.stringify(fo) });
+    const gr = {};
+    Object.keys(state.deleted || {}).forEach(id => { gr["l:" + id] = S.g["l:" + id] = state.deleted[id]; });
+    Object.keys(state.deletedFolders || {}).forEach(id => { gr["f:" + id] = S.g["f:" + id] = state.deletedFolders[id]; });
+    files.push({ path: "data/graves.json", text: JSON.stringify(gr) });
+    const pb = Array.from({ length: SNAP_SHARDS.p }, () => ({}));
+    Object.keys(state.progress).forEach(id => {
+      const r = state.progress[id];
+      if (!r || typeof r !== "object") return;
+      pb[h53(id) % SNAP_SHARDS.p][id] = r;
+      S.p[id] = recHash(stable(r));
+    });
+    pb.forEach((o, i) => files.push({ path: "data/progress/" + hex2(i) + ".json", text: JSON.stringify(o) }));
+    const months = new Map();
+    state.events.forEach(e => {
+      if (!e || !e.id) return;
+      const m = monthOf(e.t);
+      if (!months.has(m)) months.set(m, []);
+      months.get(m).push(e); ev.add(e.id);
+    });
+    months.forEach((list, m) => files.push({ path: "data/events/" + m + ".json", text: JSON.stringify(list) }));
+    S.z = state.resetAt || 0;
+    files.push(this.devFile()); S.dev = this.devHash();
+    const counts = { lessons: state.lessons.length, folders: state.folders.length, cards: Object.keys(state.progress).length, reviews: ev.size };
+    files.push({ path: "meta.json", text: JSON.stringify({ format: SYNC_FORMAT, version: 4, snapshotAt: snapAt,
+      resetAt: S.z, shards: SNAP_SHARDS, counts: counts, app: APP_VERSION, by: deviceId() }) });
+    const keep = new Set(files.map(f => f.path));
+    const gone = existing.filter(p => (p.startsWith("data/") && !keep.has(p)) || p.startsWith("journal/") || LEGACY.indexOf(p) >= 0);
+    await this.commitFiles(files, headline, gone);
+    this.progress = null;
+    this.sh = S; this.evIds = ev;
+    this.st.snapshotAt = snapAt; this.st.journalCount = 0; this.st.remote = counts; this.st.lastPushAt = Date.now();
+    await this.save();
+  },
+  /* a few MB per commit, the removals and meta.json in the last one */
+  async commitFiles(files, headline, gone) {
+    const total = files.reduce((s, f) => s + f.text.length, 0);
+    let i = 0, n = 0, done = 0;
+    while (i < files.length) {
+      const group = []; let bytes = 0;
+      while (i < files.length && (bytes + files[i].text.length < this.maxCommit || !group.length)) { group.push(files[i]); bytes += files[i].text.length; i++; }
+      const last = i >= files.length, many = n > 0 || !last;
+      try {
+        this.st.lastOid = await GH.commit(this.st.lastOid, headline + (many ? " (" + (++n) + ")" : ""), group, last ? gone : []);
+        await this.saveState();
+      } catch (e) {
+        if (e.kind === "big" && this.maxCommit > 4e5) { this.maxCommit = Math.floor(this.maxCommit / 2); i -= group.length; if (many && n) n--; continue; }
+        throw e;
+      }
+      done += bytes;
+      this.progress = Object.assign({}, this.progress, { done: done, total: total });
+      paintSync();
+    }
+  },
+  async maybeCompact() {
+    const jc = this.st.journalCount || 0;
+    if (!this.st.snapshotAt || !jc) return;
+    if (jc <= 150 && Date.now() - this.st.snapshotAt < 7 * 864e5) return;
+    const d = this.diff();
+    if (d.n || d.lost) return;
+    if ((await GH.head()).oid !== this.st.lastOid) return;    /* the other device wrote: next time */
+    try { await this.writeSnapshot("Fold " + plural(jc, "journal file", "journal files") + " into the library"); }
+    catch (e) { this.progress = null; if (e.kind === "conflict") return; throw e; }
+    this.log1("Tidied the GitHub copy: " + plural(jc, "small file", "small files") + " folded into the library");
+  },
+
+  /* ---------- receiving ---------- */
+  newCtx() { return { n: 0, lib: false, prog: false, ev: false, evSet: null, idx: null, meta: null, devs: [] }; },
+  lessonIdx(ctx) {
+    if (!ctx.idx) { ctx.idx = new Map(); state.lessons.forEach((l, i) => ctx.idx.set(l.id, i)); }
+    return ctx.idx;
+  },
+  applyLesson(raw, ctx) {
+    if (!raw || typeof raw !== "object" || !raw.id) return;
     let l;
     try { l = normalizeLesson(raw); } catch (e) { return; }
-    const prev = map.get(l.id);
-    if (!prev || String(l.updatedAt || "") > String(prev.updatedAt || "")) map.set(l.id, l);
-  };
-  ((remote && remote.lessons) || []).forEach(take);
-  state.lessons.forEach(take);
-
-  const out = [];
-  map.forEach((l, id) => {
-    const t = tomb[id];
-    if (t && String(t) >= String(l.updatedAt || "")) return;   /* deleted after its last edit */
-    out.push(l);
-  });
-  out.sort((a, b) => String(a.level + a.title).localeCompare(String(b.level + b.title)));
-  state.deleted = tomb;
-  return out;
-}
-
-function mergeFolders(remote) {
-  const tomb = Object.assign({}, (remote && remote.deletedFolders) || {}, state.deletedFolders || {});
-  const map = new Map();
-  const take = raw => {
+    const mod = String(l.updatedAt || ""), g = (state.deleted || {})[l.id];
+    if (g && String(g) >= mod) return;                  /* deleted after its last edit */
+    const h = lessonHash(l), idx = this.lessonIdx(ctx), i = idx.get(l.id);
+    this.sh.l[l.id] = h; this.sh.lm[l.id] = mod;
+    if (i === undefined) { idx.set(l.id, state.lessons.length); state.lessons.push(l); ctx.lib = true; ctx.n++; return; }
+    const cur = state.lessons[i], ch = lessonHash(cur), cm = String(cur.updatedAt || "");
+    if (ch === h) return;
+    if (mod > cm || (mod === cm && h > ch)) { state.lessons[i] = l; ctx.lib = true; ctx.n++; }
+  },
+  applyFolder(raw, ctx) {
     if (!raw || !raw.id || !raw.name) return;
-    const f = {
-      id: String(raw.id), name: String(raw.name).slice(0, 64),
-      parent: raw.parent || null,
-      created: raw.created || new Date().toISOString(),
-      updatedAt: raw.updatedAt || raw.created || new Date().toISOString()
-    };
-    const prev = map.get(f.id);
-    if (!prev || String(f.updatedAt) > String(prev.updatedAt)) map.set(f.id, f);
-  };
-  ((remote && remote.folders) || []).forEach(take);
-  state.folders.forEach(take);
-
-  const out = [];
-  map.forEach((f, id) => {
-    const t = tomb[id];
-    if (t && String(t) >= String(f.updatedAt || "")) return;
-    out.push(f);
-  });
-  state.deletedFolders = tomb;
-  return out;
-}
-
-/* Flat now, and keyed by card id, so two devices that met the same
-   word in different files still agree on one record. The rung follows
-   whichever side touched it last; the tallies take the larger count,
-   because a view counted on a phone is not undone by a laptop that
-   never saw it. */
-function mergeProgress(remote) {
-  const out = {};
-  [migrateProgress(remote || {}), state.progress || {}].forEach(src => {
-    Object.keys(src).forEach(id => {
-      const inc = src[id], cur = out[id];
-      if (!inc || typeof inc !== "object") return;
-      if (!cur) { out[id] = Object.assign({}, inc); return; }
-      const merged = (inc.t || 0) >= (cur.t || 0)
-        ? Object.assign({}, cur, inc) : Object.assign({}, inc, cur);
-      merged.views = Math.max(cur.views || 0, inc.views || 0);
-      merged.seen  = Math.max(cur.seen  || 0, inc.seen  || 0);
-      merged.ok    = Math.max(cur.ok    || 0, inc.ok    || 0);
-      out[id] = merged;
+    const now = new Date().toISOString();
+    const f = cleanFolder({ id: raw.id, name: raw.name, parent: raw.parent, created: raw.created || now, updatedAt: raw.updatedAt || raw.created || now });
+    const t = (state.deletedFolders || {})[f.id];
+    if (t && String(t) >= String(f.updatedAt)) return;
+    const h = recHash(stable(f)), cur = folderById(f.id);
+    this.sh.f[f.id] = h; this.sh.fm[f.id] = f.updatedAt;
+    if (!cur) { state.folders.push(f); ctx.lib = true; ctx.n++; return; }
+    const ch = recHash(stable(cleanFolder(cur)));
+    if (ch === h) return;
+    if (String(f.updatedAt) > String(cur.updatedAt || "") || (String(f.updatedAt) === String(cur.updatedAt || "") && h > ch)) {
+      Object.assign(cur, f); ctx.lib = true; ctx.n++;
+    }
+  },
+  applyGrave(key, at, ctx) {
+    if (typeof at !== "string" || key.length < 3) return;
+    const kind = key[0], id = key.slice(2);
+    if (!this.sh.g[key] || this.sh.g[key] < at) this.sh.g[key] = at;
+    if (kind === "l") {
+      if (!state.deleted[id] || String(state.deleted[id]) < at) { state.deleted[id] = at; ctx.lib = true; }
+      const idx = this.lessonIdx(ctx), i = idx.get(id);
+      if (i !== undefined && at >= String(state.lessons[i].updatedAt || "")) {
+        state.lessons.splice(i, 1); ctx.idx = null; delete this.sh.l[id]; delete this.sh.lm[id]; ctx.lib = true; ctx.n++;
+      }
+    } else if (kind === "f") {
+      if (!state.deletedFolders[id] || String(state.deletedFolders[id]) < at) { state.deletedFolders[id] = at; ctx.lib = true; }
+      const f = folderById(id);
+      if (f && at >= String(f.updatedAt || "")) {
+        state.folders = state.folders.filter(x => x.id !== id); delete this.sh.f[id]; delete this.sh.fm[id]; ctx.lib = true; ctx.n++;
+      }
+    }
+  },
+  applyProg(id, rec, ctx) {
+    if (!rec || typeof rec !== "object") return;
+    if (state.resetAt && progStamp(rec) <= state.resetAt) return;
+    this.sh.p[id] = recHash(stable(rec));
+    const cur = state.progress[id];
+    if (!cur || typeof cur !== "object") { state.progress[id] = Object.assign({}, rec); ctx.prog = true; ctx.n++; return; }
+    const m = mergeProgRec(cur, rec);
+    if (stable(m) === stable(cur)) return;
+    /* the record is updated in place, so a screen holding it sees the change */
+    Object.keys(cur).forEach(k => { if (!(k in m)) delete cur[k]; });
+    Object.assign(cur, m); ctx.prog = true; ctx.n++;
+  },
+  applyEvents(list, ctx) {
+    if (!Array.isArray(list)) return;
+    if (!ctx.evSet) ctx.evSet = new Set(state.events.map(e => e && e.id));
+    list.forEach(e => {
+      if (!e || !e.id) return;
+      if (state.resetAt && (e.t || 0) <= state.resetAt) return;
+      this.evIds.add(e.id);
+      if (ctx.evSet.has(e.id)) return;
+      ctx.evSet.add(e.id); state.events.push(e); ctx.ev = true; ctx.n++;
     });
-  });
-  return out;
-}
+  },
+  /* "Reset progress" on another device: everything studied before that moment goes here too */
+  applyReset(at, ctx) {
+    at = +at || 0;
+    if (at > (this.sh.z || 0)) this.sh.z = at;
+    if (at <= (state.resetAt || 0)) return;
+    state.resetAt = at; ctx.lib = true;
+    Object.keys(state.progress).forEach(id => { const r = state.progress[id]; if (!r || progStamp(r) <= at) { delete state.progress[id]; ctx.prog = true; } });
+    const before = state.events.length;
+    state.events = state.events.filter(e => e && (e.t || 0) > at);
+    if (state.events.length !== before) { ctx.ev = true; ctx.evSet = null; }
+    /* what GitHub held from before the reset is being removed there too */
+    Object.keys(this.sh.p).forEach(id => { if (!(id in state.progress)) delete this.sh.p[id]; });
+    const keep = new Set(state.events.map(e => e.id));
+    this.evIds.forEach(id => { if (!keep.has(id)) this.evIds.delete(id); });
+    ctx.n++;
+  },
+  applyJournal(j, ctx) {
+    if (!j || typeof j !== "object") return;
+    if (j.z) this.applyReset(j.z, ctx);
+    if (j.g) Object.keys(j.g).forEach(k => this.applyGrave(k, j.g[k], ctx));
+    if (j.f) Object.keys(j.f).forEach(id => this.applyFolder(j.f[id], ctx));
+    if (j.l) Object.keys(j.l).forEach(id => this.applyLesson(j.l[id], ctx));
+    if (j.p) Object.keys(j.p).forEach(id => this.applyProg(id, j.p[id], ctx));
+    if (j.e) this.applyEvents(j.e, ctx);
+  },
+  applyFile(path, text, ctx) {
+    if (text == null) return;
+    let o;
+    try { o = JSON.parse(text); } catch (e) { return; }
+    if (!o || typeof o !== "object") return;
+    if (path === "meta.json") { ctx.meta = o; if (o.resetAt) this.applyReset(o.resetAt, ctx); }
+    else if (path.startsWith("journal/")) this.applyJournal(o, ctx);
+    else if (path === "data/graves.json") Object.keys(o).forEach(k => this.applyGrave(k, o[k], ctx));
+    else if (path === "data/folders.json") Object.keys(o).forEach(id => this.applyFolder(o[id], ctx));
+    else if (path.startsWith("data/lessons/")) Object.keys(o).forEach(id => this.applyLesson(o[id], ctx));
+    else if (path.startsWith("data/progress/")) Object.keys(o).forEach(id => this.applyProg(id, o[id], ctx));
+    else if (path.startsWith("data/events/")) this.applyEvents(o, ctx);
+    else if (path.startsWith("devices/")) ctx.devs.push(o);
+    /* the three files written before v3.3, by an older build */
+    else if (path === GH_LIB) {
+      Object.keys(o.deleted || {}).forEach(id => this.applyGrave("l:" + id, o.deleted[id], ctx));
+      Object.keys(o.deletedFolders || {}).forEach(id => this.applyGrave("f:" + id, o.deletedFolders[id], ctx));
+      (Array.isArray(o.folders) ? o.folders : []).forEach(f => this.applyFolder(f, ctx));
+      (rehydrate(o) || []).forEach(l => this.applyLesson(l, ctx));
+    } else if (path === GH_PROG) {
+      const p = migrateProgress(o.progress && typeof o.progress === "object" ? o.progress : o);
+      Object.keys(p).forEach(id => this.applyProg(id, p[id], ctx));
+    } else if (path === GH_EVT) this.applyEvents(Array.isArray(o) ? o : o.events, ctx);
+  },
+  /* the merged library is on disk before the shadow says it came from GitHub */
+  async finishApply(ctx) {
+    if (ctx.ev) { state.events.sort((a, b) => (a.t || 0) - (b.t || 0)); eventsRev++; }
+    if (ctx.lib) {
+      reattachOrphans();
+      if (state.cwd && !folderById(state.cwd)) state.cwd = null;
+      libRev++;
+    }
+    const w = [];
+    if (ctx.lib) w.push(store.set(KEY_LIB, dehydrate()));
+    if (ctx.prog) w.push(store.set(KEY_PROG, { progress: state.progress, settings: state.settings }));
+    if (ctx.ev) w.push(store.set(KEY_EVT, state.events));
+    await Promise.all(w);
+    if (ctx.lib || ctx.prog || ctx.ev) invalidate();
+    if (ctx.meta) {
+      if (ctx.meta.counts) this.st.remote = ctx.meta.counts;
+      if (ctx.meta.snapshotAt) this.st.snapshotAt = ctx.meta.snapshotAt;
+    }
+  },
+  async pull(o) {
+    const h = await GH.head();
+    if (h.empty) return { empty: true };
+    if (!o.full && this.st.lastOid && h.oid === this.st.lastOid) return { received: 0 };
+    if (o.full || !this.st.lastOid) return this.fullDownload(h.oid);
+    const cmp = await GH.compare(this.st.lastOid, h.oid);
+    if (!cmp || cmp.truncated || cmp.status === "diverged" || cmp.status === "behind") return this.fullDownload(h.oid);
+    const want = cmp.files.filter(f => f.status !== "removed").map(f => f.filename).filter(p => fileRank(p) < 10).sort(byRank);
+    const ctx = this.newCtx();
+    if (want.length) {
+      const texts = await GH.readFiles(h.oid, want, {});
+      want.forEach(p => this.applyFile(p, texts[p], ctx));
+    }
+    const jAdd = want.filter(p => p.startsWith("journal/")).length;
+    const jGone = cmp.files.filter(f => f.status === "removed" && f.filename.startsWith("journal/")).length;
+    this.st.journalCount = Math.max(0, (this.st.journalCount || 0) + jAdd - jGone);
+    await this.finishApply(ctx);
+    this.st.lastOid = h.oid;
+    await this.save();
+    return { received: ctx.n };
+  },
+  /* first sync, a lost shadow, or a repair: read all of it and merge */
+  async fullDownload(oid) {
+    const tree = await GH.tree(oid), sizes = {};
+    tree.forEach(f => { sizes[f.path] = f.size; });
+    const paths = tree.map(f => f.path);
+    const v4 = paths.indexOf("meta.json") >= 0;
+    const own = "devices/" + deviceId() + ".json";
+    const want = paths.filter(p => (v4 && fileRank(p) < 7) || LEGACY.indexOf(p) >= 0 || (this.st.restore && p.startsWith("devices/") && p !== own)).sort(byRank);
+    this.progress = { what: "Reading the library from GitHub", done: 0, total: want.length || 1 };
+    if (want.length > 3) { this.shown = true; paintSync(); }
+    const texts = want.length ? await GH.readFiles(oid, want, sizes, (dn, t) => { this.progress = Object.assign({}, this.progress, { done: dn, total: t }); paintSync(); }) : {};
+    /* the shadow is rebuilt from exactly what GitHub holds */
+    this.sh = this.emptyShadow(); this.evIds = new Set();
+    const ctx = this.newCtx();
+    want.forEach(p => { this.applyFile(p, texts[p], ctx); texts[p] = null; });
+    this.progress = null;
+    await this.finishApply(ctx);
+    if (this.st.restore) { this.st.restore = false; this.restoreDevice(ctx.devs); }
+    this.st.lastOid = oid;
+    this.st.journalCount = paths.filter(p => p.startsWith("journal/")).length;
+    /* no meta.json: the old three-file layout, or nothing yet — the next push writes the new one */
+    if (!v4) this.st.snapshotAt = 0;
+    await this.save();
+    return { received: ctx.n };
+  },
+  /* a device starting from nothing takes back the settings of the last
+     device of its kind (phone or tablet) that saved them */
+  restoreDevice(devs) {
+    const form = devForm();
+    const best = devs.filter(r => r && r.settings && typeof r.settings === "object" && r.id !== deviceId() && r.form === form)
+      .sort((a, b) => (b.at || 0) - (a.at || 0))[0];
+    if (!best) return;
+    Object.keys(best.settings).forEach(k => { if (DEV_SKIP.indexOf(k) < 0) state.settings[k] = best.settings[k]; });
+    document.documentElement.setAttribute("data-theme", state.settings.theme || "light");
+    applyRead();
+    saveProgress();
+    this.log1("Settings restored from your other " + form);
+    toast("Settings restored from your other " + form);
+  },
 
-function mergeEvents(remote) {
-  const seen = new Set(), out = [];
-  (Array.isArray(remote) ? remote : []).concat(state.events || []).forEach(e => {
-    if (!e || !e.id || seen.has(e.id)) return;
-    seen.add(e.id);
-    out.push(e);
-  });
-  out.sort((a, b) => (a.t || 0) - (b.t || 0));
-  return out;
+  /* ---------- one sync ---------- */
+  requestPush(delay) {
+    if (!this.st || !ghReady() || state.settings.autoSync === false) return;
+    clearTimeout(this.timers.push);
+    const wait = Math.max(delay, 20000 - (Date.now() - (this.st.lastPushAt || 0)));
+    this.timers.push = setTimeout(() => this.run({ reason: "auto" }), wait);
+  },
+  run(o) {
+    o = o || {};
+    if (!ghReady() || !this.st) return Promise.resolve(null);
+    if (this.busy) { if (!o.pullOnly) this.again = true; return this.current || Promise.resolve(null); }
+    this.busy = true; this.lastError = null; this.shown = o.reason === "manual";
+    clearTimeout(this.timers.retry);
+    paintSync();
+    const res = { sent: 0, received: 0 };
+    this.current = (async () => {
+      try {
+        if (this.st.repo !== GH.repoKey()) { this.forget(); this.st.repo = GH.repoKey(); }
+        for (let attempt = 0; ; attempt++) {
+          const lost = this.diff().lost;
+          const p = await this.pull({ full: lost });
+          if (p.empty) {
+            if (o.pullOnly) break;
+            this.st.lastOid = await GH.ensureBranch(); this.st.snapshotAt = 0;
+          }
+          if (p.received) { res.received += p.received; afterRemote(); }
+          if (o.pullOnly) break;
+          const d = this.diff();
+          if (d.lost && !lost) continue;               /* read everything once more, then send */
+          if (!this.needsPush(d)) break;
+          try { res.sent += (await this.push(d, o)).sent; break; }
+          catch (e) {
+            this.progress = null;
+            if (e.kind !== "conflict" || attempt >= 4) throw e;
+            await pause(400 * Math.pow(2, attempt) + Math.random() * 300);
+          }
+        }
+        if (!o.pullOnly && !o.keepalive) { try { await this.maybeCompact(); } catch (e) { console.warn("sync tidy-up", e); } }
+        this.okThisSession = true;
+        this.st.lastSyncAt = state.settings.lastSync = Date.now();
+        if (res.sent || res.received) this.log1("Synced · " + res.sent + " sent, " + res.received + " received");
+        await this.saveState();
+      } catch (e) {
+        this.progress = null;
+        this.lastError = e.kind ? e : new SyncError("error", e.message || "Sync failed");
+        res.error = this.lastError;
+        const k = this.lastError.kind;
+        if (k !== "offline" && k !== "net") {
+          this.log1("Problem: " + (k === "rate" ? "GitHub asked for a pause of " + Math.max(1, Math.ceil((GH.waitUntil - Date.now()) / 60000)) + " min" : this.lastError.message));
+          this.saveState();
+        }
+        const again = k === "rate" ? Math.max(5000, GH.waitUntil - Date.now() + 1000) : k === "conflict" ? 30000 : (k === "net" || k === "server") ? 60000 : 0;
+        if (again && state.settings.autoSync !== false) this.timers.retry = setTimeout(() => this.run({ reason: "retry" }), again);
+      } finally {
+        this.busy = false; this.current = null; this.shown = false;
+        this.recount();
+        if (state.view === "settings") renderSyncStatus();
+        if (this.again) { this.again = false; setTimeout(() => this.run({ reason: "auto" }), 500); }
+      }
+      return res;
+    })();
+    return this.current;
+  }
+};
+
+/* what the screen does after something arrived from the other device */
+function afterRemote() {
+  if (state.view === "library") renderLibrary();
+  if (state.view === "lesson" && !drill.on) renderLesson(state.currentId);
+  if (state.view === "progress") renderProgress();
+  if (state.view === "settings") renderData();
 }
 
 /* ---- status ---- */
-let syncState = { kind: "idle", msg: "Not connected" };
-function setSync(kind, msg) {
-  syncState = { kind: kind, msg: msg };
-  paintSync();
-  if (state.view === "settings") renderSyncStatus();
+function syncStatus() {
+  if (!ghReady()) return "off";
+  const e = Sync.lastError;
+  if (Sync.checking || (Sync.busy && (Sync.shown || Sync.progress))) return "syncing";
+  if (e && e.kind === "auth") return "auth";
+  if (e && e.kind === "rate" && GH.waitUntil > Date.now()) return "rate";
+  if (navigator.onLine === false || (e && (e.kind === "offline" || e.kind === "net"))) return "offline";
+  if (e) return "error";
+  if (Sync.waiting > 0) return "waiting";
+  if (!Sync.okThisSession) return Sync.busy ? "syncing" : "waiting";
+  return "saved";
 }
-
 /* What every sync light in the app shows. A good connection is not the
    same as a saved library: it only reads "synced" once a sync has gone
    through since the page opened and nothing has changed after it. */
-let syncedNow = false;
 function syncView() {
-  if (!ghReady()) return { k: "off", short: "Not connected", long: "This device is not connected yet" };
-  const kind = syncState.kind;
-  if (kind === "busy") return { k: "busy", short: "Syncing", long: syncState.msg };
-  if (kind === "bad") return { k: "bad", short: navigator.onLine ? "Sync failed" : "Offline", long: syncState.msg };
-  if (dirty) return { k: "wait", short: "Not synced", long: "Changes on this device are not on GitHub yet" };
-  if (!syncedNow) return { k: "wait", short: "Not synced", long: "Connected — not synced yet this session" };
-  return { k: "ok", short: "Synced", long: syncState.msg };
+  const s = syncStatus(), n = Sync.waiting, e = Sync.lastError;
+  const mins = Math.max(1, Math.ceil((GH.waitUntil - Date.now()) / 60000));
+  const pr = Sync.progress, pct = pr && pr.total > 1 ? Math.round(100 * pr.done / pr.total) : null;
+  const ch = plural(n, "change", "changes");
+  switch (s) {
+    case "off":     return { s: s, k: "off",  short: "Not connected", long: "This device is not connected yet" };
+    case "saved":   return { s: s, k: "ok",   short: "Synced", long: "Everything is on GitHub" };
+    case "waiting": return { s: s, k: "wait", short: n ? n + " waiting" : "Not synced",
+                             long: n ? ch + " on this device " + (n === 1 ? "is" : "are") + " not on GitHub yet" : "Connected — not synced yet this session" };
+    case "syncing": return { s: s, k: "busy", short: pct != null ? "Syncing " + pct + "%" : "Syncing",
+                             long: Sync.checking ? "Checking the connection…" : pr ? pr.what + (pct != null ? " — " + pct + "%" : "") : "Syncing with GitHub…" };
+    case "offline": return { s: s, k: "wait", short: n ? "Offline · " + n + " waiting" : "Offline",
+                             long: n ? "Offline — " + ch + " will sync when you reconnect" : "Offline — will sync when you reconnect" };
+    case "rate":    return { s: s, k: "wait", short: "Wait " + mins + " min", long: "GitHub asked for a pause. Nothing is lost; it tries again in " + mins + " min" };
+    case "auth":    return { s: s, k: "bad",  short: "Token problem", long: (e && e.message) || "GitHub did not accept the token" };
+    default:        return { s: s, k: "bad",  short: "Sync failed", long: (e && e.message) || "Sync failed" };
+  }
 }
 function paintSync() {
   const v = syncView();
@@ -8198,120 +8925,220 @@ function paintSync() {
   const nd = $("#navSyncDot");
   if (nd) nd.className = "setnav__dot" + cls;
   const p = $("#syncPill");
-  if (!p) return;
-  const was = p.dataset.k;
-  p.className = "syncpill" + cls + (was === v.k && p.classList.contains("is-new") ? " is-new" : "");
-  p.dataset.k = v.k;
-  p.querySelector("span").textContent = v.short;
-  const tip = v.long + (ghReady() ? " · last synced " + timeAgo(state.settings.lastSync) : "");
-  p.title = tip + (v.k === "off" ? " — tap to connect" : v.k === "busy" ? "" : " — tap to sync now");
-  p.setAttribute("aria-label", "Sync: " + tip);
-  /* a new state arrives rather than being swapped in */
-  if (was && was !== v.k) { void p.offsetWidth; p.classList.add("is-new"); }
-}
-
-let dirty = false, dirtyGen = 0, dirtyTimer = null;
-function markDirty() {
-  dirty = true;
-  dirtyGen++;
-  paintSync();
-  if (!ghReady() || !state.settings.autoSync) return;
-  clearTimeout(dirtyTimer);
-  dirtyTimer = setTimeout(() => syncNow(false), 12000);   /* settle first, then sync once */
-}
-
-let syncing = false;
-async function syncNow(manual) {
-  if (syncing) return;
-  if (!ghReady()) { if (manual) toast("Add your GitHub details below first", true); return; }
-  if (!navigator.onLine) { setSync("bad", "Offline — will sync when you reconnect"); if (manual) toast("No internet connection", true); return; }
-
-  syncing = true;
-  const gen = dirtyGen;
-  setSync("busy", "Syncing…");
-  try {
-    const [lib, prog, evt] = await Promise.all([ghRead(GH_LIB), ghRead(GH_PROG), ghRead(GH_EVT)]);
-
-    const remoteProg = prog.data && prog.data.progress ? prog.data.progress : (prog.data || {});
-    const remoteEvts = evt.data && evt.data.events ? evt.data.events : (Array.isArray(evt.data) ? evt.data : []);
-
-    const beforeLib  = stable([
-      (lib.data && lib.data.deleted) || {},
-      (lib.data && lib.data.deletedFolders) || {},
-      (lib.data && lib.data.folders) || [],
-      ((lib.data && lib.data.lessons) || []).map(x => { try { return cleanLesson(normalizeLesson(x)); } catch (e) { return null; } })
-    ]);
-    const beforeProg = stable(remoteProg);
-    const beforeEvt  = remoteEvts.length;
-
-    state.folders  = mergeFolders(lib.data);
-    state.lessons  = mergeLibrary(lib.data);
-    state.progress = mergeProgress(remoteProg);
-    state.events   = mergeEvents(remoteEvts);
-    eventsRev++;
-    reattachOrphans();
-
-    const now = new Date().toISOString();
-    const afterLib = stable([state.deleted, state.deletedFolders, state.folders, state.lessons.map(cleanLesson)]);
-    const afterProg = stable(state.progress);
-
-    if (afterLib !== beforeLib) {
-      await ghWrite(GH_LIB, {
-        format: "sprachlabor.library", version: 3, updated: now,
-        deleted: state.deleted, deletedFolders: state.deletedFolders,
-        folders: state.folders, lessons: state.lessons.map(cleanLesson)
-      }, lib.sha, "Library sync from " + deviceId());
-    }
-    if (afterProg !== beforeProg) {
-      await ghWrite(GH_PROG, {
-        format: "sprachlabor.progress", version: 2, updated: now, progress: state.progress
-      }, prog.sha, "Progress sync from " + deviceId());
-    }
-    if (state.events.length !== beforeEvt) {
-      await ghWrite(GH_EVT, {
-        format: "sprachlabor.events", version: 2, updated: now, events: state.events
-      }, evt.sha, "History sync from " + deviceId());
-    }
-
-    /* an edit made while this was in flight may have missed the upload */
-    dirty = dirtyGen !== gen;
-    syncedNow = true;
-    state.settings.lastSync = Date.now();
-    saveLibrary(); saveProgress(); saveEvents();
-    setSync("ok", "Everything is in step");
-    if (manual) toast("Synced — " + state.lessons.length + " lessons, " + state.events.length + " reviews");
-    if (state.view === "library") renderLibrary();
-    if (state.view === "lesson" && !drill.on) renderLesson(state.currentId);
-    if (state.view === "progress") renderProgress();
-    if (state.view === "settings") renderData();
-  } catch (err) {
-    setSync("bad", err.message || "Sync failed");
-    if (manual) toast(err.message || "Sync failed", true);
-  } finally {
-    syncing = false;
-    if (state.view === "settings") renderSyncStatus();
+  if (p) {
+    const was = p.dataset.k;
+    p.className = "syncpill" + cls + (p.classList.contains("is-morph") ? " is-morph" : "") +
+      (was === v.k && p.classList.contains("is-new") ? " is-new" : "");
+    p.dataset.k = v.k;
+    morphPill(p, v.short);
+    const tip = v.long + (ghReady() ? " · last synced " + timeAgo(state.settings.lastSync) : "");
+    p.title = tip + (v.k === "off" ? " — tap to connect" : v.k === "busy" ? "" : " — tap to sync, hold for details");
+    p.setAttribute("aria-label", "Sync: " + tip);
+    /* a new state arrives rather than being swapped in */
+    if (was && was !== v.k) { void p.offsetWidth; p.classList.add("is-new"); }
   }
+  SyncUI.apply();
+  SyncPanel.paint();
+}
+
+/* ---- the sync control in the app bar ----
+   One pill, and a second segment welded to its end. A tap syncs, and
+   the segment slides out beside it for a few seconds: that is the way
+   to the details. It folds away once the sync has settled, and stays
+   out, with a warning in it, while sync needs you. Holding the pill
+   opens the details as well. */
+const SyncUI = {
+  open: false, t: 0,
+  attn() { const s = syncStatus(); return s === "error" || s === "auth"; },
+  expand() { this.open = true; this.apply(); this.arm(); },
+  arm() {
+    clearTimeout(this.t);
+    this.t = setTimeout(() => {
+      if (Sync.busy || SyncPanel.live()) return this.arm();
+      this.open = false; this.apply();
+    }, 4500);
+  },
+  apply() {
+    const box = $("#syncSplit"), more = $("#syncMore");
+    if (!box || !more) return;
+    const attn = ghReady() && this.attn(), on = ghReady() && (this.open || attn || SyncPanel.live());
+    box.classList.toggle("is-open", on);
+    box.classList.toggle("is-attn", attn);
+    more.tabIndex = on ? 0 : -1;
+    more.setAttribute("aria-hidden", String(!on));
+    more.setAttribute("aria-label", attn ? "Sync needs you — details" : "Sync details");
+  }
+};
+
+/* the share of an easing's run after which it stays past progress p */
+function syncReach(p, easing) {
+  if (!(p > 0)) return 0;
+  try {
+    const a = new Animation(new KeyframeEffect(null, null, { duration: 1000, easing: easing }));
+    let last = 0;
+    for (let t = 0; t < 1000; t += 20) { a.currentTime = t; if (a.effect.getComputedTiming().progress < Math.min(p, 1)) last = t + 20; }
+    return last / 1000;
+  } catch (e) { return 1; }
+}
+/* The pill's words change in place. Its width moves rather than jumps,
+   and no word is ever cut by the edge: a pill that shrinks waits for the
+   old words to fade first, and on one that grows the new words arrive
+   once the edge has passed them. A number ticking over just changes. */
+function morphPill(p, text) {
+  const t = p.querySelector(".syncpill__t");
+  if (!t || t.textContent === text) return;
+  const old = t.textContent;
+  const calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (calm || !old || !p.offsetWidth || typeof p.animate !== "function") { t.textContent = text; return; }
+  const w0 = p.getBoundingClientRect().width, a0 = +getComputedStyle(t).opacity || 0;
+  const ox = t.offsetLeft, oy = t.offsetTop;
+  p.getAnimations().forEach(a => { if (a.id === "sync-w") a.cancel(); });
+  t.getAnimations().forEach(a => a.cancel());
+  t.textContent = text;
+  const w1 = p.getBoundingClientRect().width;
+  const swap = old.replace(/\d+/g, "#") !== text.replace(/\d+/g, "#");
+  const FADE = 120, DUR = 240, EASE = "cubic-bezier(.2,.7,.3,1)";
+  let fading = 0;
+  p.querySelectorAll(".syncpill__old").forEach(g => g.getAnimations().forEach(a => {
+    fading = Math.max(fading, a.effect.getComputedTiming().endTime - (a.currentTime || 0));
+  }));
+  const shrink = w1 < w0 - 1;
+  const hold = shrink ? Math.max(swap && a0 > .05 ? FADE : 0, fading ? fading + 20 : 0) : 0;
+  let enter = swap ? FADE / 2 : 0;
+  /* a number growing in place: the pill simply takes its new width */
+  if (!swap && !shrink) { p.classList.remove("is-morph"); return; }
+  if (Math.abs(w1 - w0) > 1) {
+    p.classList.add("is-morph");
+    const wa = p.animate([{ width: w0 + "px" }, { width: w1 + "px" }], { duration: DUR, delay: hold, easing: EASE, fill: "backwards", id: "sync-w" });
+    const settle = () => { if (!p.getAnimations().some(a => a !== wa && a.id === "sync-w" && a.playState === "running")) p.classList.remove("is-morph"); };
+    wa.onfinish = settle; wa.oncancel = settle;
+    if (!shrink) enter = Math.max(enter, syncReach((t.offsetLeft + t.offsetWidth + 2 - w0) / (w1 - w0), EASE) * DUR);
+  }
+  if (swap && a0 > .05) {
+    const g = document.createElement("span");
+    g.className = "syncpill__t syncpill__old"; g.textContent = old; g.setAttribute("aria-hidden", "true");
+    g.style.left = ox + "px"; g.style.top = oy + "px";
+    p.appendChild(g);
+    g.animate([{ opacity: a0, transform: "none" }, { opacity: 0, transform: "translateY(-4px)" }],
+      { duration: FADE, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }).onfinish = () => g.remove();
+  }
+  if (swap || enter > FADE) t.animate([{ opacity: 0, transform: swap ? "translateY(4px)" : "none" }, { opacity: 1, transform: "none" }],
+    { duration: 200, delay: enter, easing: EASE, fill: "backwards" });
+}
+
+/* ---- the details, under the sync control ---- */
+function syncWhen(ms) {
+  const d = new Date(ms), now = new Date();
+  const hm = (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes();
+  return d.toDateString() === now.toDateString() ? hm : d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+const SyncPanel = {
+  node: null, last: "",
+  open(anchor) {
+    closeMenu();
+    const m = el("div", "menu menu--sync");
+    m.setAttribute("role", "dialog");
+    m.setAttribute("aria-label", "Sync details");
+    document.body.appendChild(m);
+    this.node = m; this.last = "";
+    menuNode = m; menuFrom = anchor;
+    anchor.setAttribute("aria-expanded", "true");
+    this.paint();
+    const r = anchor.closest("#syncSplit").getBoundingClientRect();
+    let left = r.right + window.scrollX - m.offsetWidth;
+    left = Math.max(10 + window.scrollX, Math.min(left, window.scrollX + document.documentElement.clientWidth - m.offsetWidth - 10));
+    m.style.left = left + "px";
+    m.style.top = (r.bottom + window.scrollY + 6) + "px";
+    m.addEventListener("click", e => {
+      const b = e.target.closest("[data-sx]");
+      if (!b) return;
+      if (b.dataset.sx === "now") syncNow(true);
+      if (b.dataset.sx === "settings") { closeMenu(); go("settings", "sync"); }
+    });
+    SyncUI.apply();
+  },
+  /* open, and not already closed as a menu is (a tap outside, Escape, a scroll) */
+  live() {
+    if (this.node && (menuNode !== this.node || !this.node.isConnected)) this.node = null;
+    return !!this.node;
+  },
+  paint() {
+    if (!this.live()) return;
+    const html = this.html();
+    if (html !== this.last) { this.node.innerHTML = html; this.last = html; }
+  },
+  html() {
+    const v = syncView(), row = (k, val) => "<div><dt>" + k + "</dt><dd>" + val + "</dd></div>";
+    const lim = GH.rate.remaining == null ? "—" : GH.rate.remaining.toLocaleString() + " / " + (GH.rate.limit || 0).toLocaleString();
+    const log = Sync.st.log.slice(0, 12);
+    return '<div class="syncp__head"><span class="dot' + (v.k === "off" ? "" : " dot--" + v.k) + '"></span>' +
+        "<div><b>" + esc(v.long) + "</b><span>Last synced " + esc(timeAgo(state.settings.lastSync)) + "</span></div></div>" +
+      '<dl class="syncp__rows">' +
+        row("Waiting", Sync.waiting ? plural(Sync.waiting, "change", "changes") : "nothing") +
+        row("Library", plural(state.lessons.length, "file", "files") + " · " + plural(state.events.length, "review", "reviews")) +
+        row("This device", esc(deviceId())) +
+        row("Requests left", lim + '<small>this hour</small>') +
+      "</dl>" +
+      '<div class="syncp__acts">' +
+        '<button class="btn btn--primary btn--sm" data-sx="now"' + (Sync.busy ? " disabled" : "") + ">" + MI.sync + "Sync now</button>" +
+        '<button class="btn btn--sm" data-sx="settings">' + MI.gear + "Sync settings</button>" +
+      "</div>" +
+      '<div class="syncp__log"><div class="eyebrow">Recent</div>' +
+        (log.length ? "<ol>" + log.map(x => '<li><time class="mono">' + esc(syncWhen(x.at)) + "</time><span>" + esc(x.text) + "</span></li>").join("") + "</ol>"
+          : '<p class="syncp__none">Nothing yet.</p>') +
+      "</div>";
+  }
+};
+
+/* ---- when to sync ---- */
+function markDirty() {
+  Sync.recountSoon();
+  Sync.requestPush(12000);       /* settle first, then sync once */
+}
+
+async function syncNow(manual) {
+  if (!ghReady()) { if (manual) toast("Add your GitHub details below first", true); return; }
+  if (!manual) { Sync.run({ reason: "auto" }); return; }
+  if (navigator.onLine === false) {
+    paintSync();
+    toast(Sync.waiting ? "Offline — " + plural(Sync.waiting, "change", "changes") + " will sync when you reconnect" : "No internet connection", true);
+    return;
+  }
+  const r = await Sync.run({ reason: "manual" });
+  if (!r) return;
+  if (r.error) {
+    const e = r.error;
+    toast(e.kind === "rate" ? "GitHub asked for a pause of " + Math.max(1, Math.ceil((GH.waitUntil - Date.now()) / 60000)) + " min. Nothing is lost; it will try again." : e.message || "Sync failed", true);
+    return;
+  }
+  toast(r.sent || r.received ? "Synced — " + r.sent + " sent, " + r.received + " received" : "Synced — already in step");
 }
 
 async function ghTest() {
-  if (!ghReady()) { toast("Fill in all three fields first", true); return; }
-  setSync("busy", "Checking…");
+  if (!ghReady()) { toast("Fill in all three fields first", true); return false; }
+  Sync.checking = true; paintSync();
+  let ok = false;
   try {
-    const res = await ghFetch(ghBase());
-    if (!res.ok) throw new Error(ghMsg(res));
+    let res;
+    try { res = await ghFetch(ghBase()); }
+    catch (e) { throw new SyncError(navigator.onLine === false ? "offline" : "net", "Could not reach GitHub"); }
+    if (!res.ok) throw new SyncError(res.status === 401 ? "auth" : "error", ghMsg(res));
     const j = await res.json();
     if (!j.private) {
-      setSync("bad", "That repository is public");
+      Sync.lastError = new SyncError("error", "That repository is public");
       toast("Careful — that repository is public. Use your private one.", true);
-      return;
+    } else {
+      Sync.lastError = null; ok = true;
+      toast("Connected to " + j.full_name);
     }
-    setSync("ok", "Connected to " + j.full_name);
-    toast("Connected to " + j.full_name);
   } catch (err) {
-    setSync("bad", err.message || "Could not connect");
+    Sync.lastError = err.kind ? err : new SyncError("error", err.message || "Could not connect");
     toast(err.message || "Could not connect", true);
   }
+  Sync.checking = false;
+  paintSync();
   renderSyncStatus();
+  return ok;
 }
 
 /* ============================================================
@@ -8319,7 +9146,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.2";
+const APP_VERSION = "3.3";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -8356,6 +9183,7 @@ function renderSyncStatus() {
       "<div style='flex:1;min-width:180px'>" +
         '<div class="status__main">' + esc(label) + "</div>" +
         '<div class="status__sub">Last synced ' + timeAgo(state.settings.lastSync) +
+          (ghReady() ? " · " + (Sync.waiting ? plural(Sync.waiting, "change", "changes") + " waiting" : "nothing waiting") : "") +
           " · " + state.lessons.length + " lessons · " + state.events.length + " reviews recorded</div>" +
       "</div>" +
     "</div>" +
@@ -10288,7 +11116,7 @@ const MI = {
 /* the menu behind the dots in the app bar */
 function appMenu(anchor) {
   const items = [];
-  if (ghReady()) items.push({ id: "sync", label: "Sync now", icon: MI.sync, meta: syncing ? "syncing" : timeAgo(state.settings.lastSync), run: () => syncNow(true) });
+  if (ghReady()) items.push({ id: "sync", label: "Sync now", icon: MI.sync, meta: Sync.busy ? "syncing" : timeAgo(state.settings.lastSync), run: () => syncNow(true) });
   else items.push({ id: "sync", label: "Connect GitHub", icon: MI.sync, run: () => go("settings", "sync") });
   items.push(
     { id: "theme", label: "Dark mode", icon: MI.moon, on: () => state.settings.theme === "dark",
@@ -10482,6 +11310,32 @@ document.addEventListener("drop", e => {
   }
 });
 
+/* Holding the sync pill opens its details, and the tap that ends the
+   hold does not also start a sync. */
+(() => {
+  let t = null, held = false;
+  const stop = () => { clearTimeout(t); t = null; };
+  document.addEventListener("pointerdown", e => {
+    const p = e.target.closest && e.target.closest("#syncPill");
+    if (!p || e.button > 0) return;
+    held = false; stop();
+    t = setTimeout(() => {
+      t = null;
+      if (!ghReady()) return;
+      held = true;
+      SyncUI.expand();
+      SyncPanel.open($("#syncMore"));
+    }, 550);
+  });
+  document.addEventListener("pointerup", stop);
+  document.addEventListener("pointercancel", stop);
+  document.addEventListener("pointermove", e => { if (t && Math.abs(e.movementX) + Math.abs(e.movementY) > 6) stop(); });
+  document.addEventListener("click", e => {
+    if (held && e.target.closest && e.target.closest("#syncPill")) { held = false; e.stopPropagation(); e.preventDefault(); }
+  }, true);
+  document.addEventListener("contextmenu", e => { if (e.target.closest && e.target.closest("#syncPill")) e.preventDefault(); });
+})();
+
 /* ============================================================
    CLICK ROUTING for everything added above.
    Returns true when it has handled the event.
@@ -10513,10 +11367,22 @@ function extraClick(e) {
   /* --- the app bar: the dots open and close their own menu --- */
   const amb = t.closest("#appMenuBtn");
   if (amb) { e.stopPropagation(); if (menuNode && menuFrom === amb) closeMenu(); else appMenu(amb); return true; }
+  /* and so does the details segment of the sync control */
+  const smo = t.closest("#syncMore");
+  if (smo) {
+    e.stopPropagation();
+    if (SyncPanel.live()) closeMenu(); else SyncPanel.open(smo);
+    SyncUI.arm();
+    return true;
+  }
 
   if (menuNode && !t.closest(".menu")) closeMenu();
 
-  if (t.closest("#syncPill")) { if (ghReady()) syncNow(true); else go("settings", "sync"); return true; }
+  if (t.closest("#syncPill")) {
+    if (!ghReady()) { go("settings", "sync"); return true; }
+    SyncUI.expand(); syncNow(true);
+    return true;
+  }
 
   /* --- folder menus --- */
   const fm = t.closest("[data-fmenu]");
@@ -12603,11 +13469,15 @@ function spellTheTrouble() {
   const rawLessons = rehydrate(lib);
   state.deleted = (lib && lib.deleted) || {};
   state.deletedFolders = (lib && lib.deletedFolders) || {};
+  state.resetAt = (lib && +lib.resetAt) || 0;
   state.folders = (lib && Array.isArray(lib.folders) ? lib.folders : []).filter(f => f && f.id && f.name);
   if (rawLessons && rawLessons.length) {
     state.lessons = rawLessons.map(l => { try { return normalizeLesson(l); } catch (e) { return null; } }).filter(Boolean);
   } else if (!rawLessons) {
-    state.lessons = SAMPLES.map(normalizeLesson);
+    /* The samples a device starts with are older than anything you did,
+       so on sync they never beat your copy of them, your edits or your
+       deletion of them. */
+    state.lessons = SAMPLES.map(x => normalizeLesson(Object.assign({ updatedAt: "1970-01-01T00:00:00.000Z" }, x)));
     saveLibrary();
   } else {
     state.lessons = [];
@@ -12725,7 +13595,8 @@ function spellTheTrouble() {
     });
     if (!ok) return;
     state.progress = {}; state.events = []; eventsRev++;
-    saveProgress(); saveEvents(); markDirty(); renderData(); toast("Progress reset");
+    state.resetAt = Date.now();          /* the next sync carries the reset to the other devices */
+    saveLibrary(); saveProgress(); saveEvents(); markDirty(); renderData(); toast("Progress reset");
   });
 
   $("#btnWipe").addEventListener("click", async () => {
@@ -12739,6 +13610,7 @@ function spellTheTrouble() {
     state.lessons.forEach(l => { state.deleted[l.id] = now; });
     state.folders.forEach(f => { state.deletedFolders[f.id] = now; });
     state.lessons = []; state.folders = []; state.progress = {}; state.events = []; eventsRev++;
+    state.resetAt = Date.now();
     state.cwd = null; state.settings.cwd = null;
     saveLibrary(); saveProgress(); saveEvents(); markDirty(); renderData(); toast("Everything deleted");
   });
@@ -12762,8 +13634,7 @@ function spellTheTrouble() {
     if (!ghReady()) { toast("Please fill in all three fields", true); return; }
     saveProgress();
     toast("Saved on this device");
-    await ghTest();
-    if (syncState.kind === "ok") syncNow(true);
+    if (await ghTest()) syncNow(true);
   });
 
   $("#btnGhTest").addEventListener("click", () => { readForm(); saveProgress(); ghTest(); });
@@ -12773,7 +13644,7 @@ function spellTheTrouble() {
     ghCfg().token = "";
     $("#ghToken").value = "";
     saveProgress();
-    setSync("idle", "This device is not connected yet");
+    Sync.lastError = null; paintSync(); renderSyncStatus();
     toast("Token removed from this device");
   });
 
@@ -12825,27 +13696,26 @@ function spellTheTrouble() {
   window.addEventListener("focus", () => appClock.resume());
   paintHud();
 
-  /* pull when you come back to the app, push what is pending when you leave */
+  /* Pull when you come back to the app, and once a minute while it is
+     open: asking GitHub whether anything is new costs nothing when the
+     answer is no. Push what is pending when you leave, with a request
+     that is allowed to finish after the page has gone. */
+  const autoOn = () => ghReady() && state.settings.autoSync !== false;
   document.addEventListener("visibilitychange", () => {
-    if (!ghReady() || state.settings.autoSync === false) return;
-    if (document.visibilityState === "visible") {
-      if (Date.now() - (state.settings.lastSync || 0) > 60000) syncNow(false);
-    } else if (dirty) {
-      syncNow(false);
-    }
+    if (!autoOn()) return;
+    if (document.visibilityState === "visible") Sync.run({ reason: "auto", pullOnly: Sync.idle() });
+    else { store.flush(); if (!Sync.idle()) Sync.run({ reason: "background", keepalive: true }); }
   });
-  window.addEventListener("online", () => {
-    if (ghReady() && state.settings.autoSync !== false && (dirty || syncState.kind === "bad")) syncNow(false);
-  });
+  window.addEventListener("online", () => { paintSync(); if (autoOn()) Sync.run({ reason: "auto" }); });
+  window.addEventListener("offline", () => paintSync());
+  setInterval(() => {
+    if (document.visibilityState === "visible" && autoOn() && navigator.onLine !== false) Sync.run({ reason: "poll", pullOnly: Sync.idle() });
+  }, 60000);
 
   window.addEventListener("beforeunload", () => store.flush());
 
-  if (ghReady()) {
-    setSync("idle", "Connected — not synced yet this session");
-    if (state.settings.autoSync !== false) syncNow(false);
-  } else {
-    setSync("idle", "This device is not connected yet");
-  }
+  await Sync.load(!meta);
+  if (ghReady() && state.settings.autoSync !== false) Sync.run({ reason: "auto" });
 
   applyRoute();
 })();
