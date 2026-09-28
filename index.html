@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.11 · neural German, cached on device -->
+<!-- Sprachlabor — v3.12 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sprachlabor — German reading lab</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%2314181B' d='M12 0H36A12 12 0 0 1 48 12V36A12 12 0 0 1 36 48H0V12A12 12 0 0 1 12 0Z'/%3E%3Cg fill='none' stroke-width='5.5' stroke-linecap='round'%3E%3Cpath stroke='%23FFC800' d='M14.5 13V35'/%3E%3Cpath stroke='%23ECEEF0' d='M24 21V27M33.5 17.5V30.5'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
@@ -146,11 +147,8 @@ ul,ol{margin:0;padding:0;list-style:none}
   display:flex;flex-direction:column;align-items:center;
   padding:14px 0 16px;gap:4px;
 }
-.rail__mark{
-  width:34px;height:34px;border-radius:9px;background:var(--ink);color:var(--paper);
-  display:grid;place-items:center;font-weight:700;font-size:15px;letter-spacing:-.03em;
-  margin-bottom:14px;flex:none;
-}
+.rail__mark{width:34px;height:34px;margin-bottom:14px;flex:none}
+.rail__mark .bmark{width:100%;height:100%}
 .rail__btn{
   position:relative;width:60px;padding:9px 0 7px;border-radius:10px;
   display:flex;flex-direction:column;align-items:center;gap:5px;
@@ -232,14 +230,58 @@ ul,ol{margin:0;padding:0;list-style:none}
 /* ---------- app bar — the name on the left; on the right, whether
    GitHub holds everything, and the menu for the whole app ---------- */
 .appbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
-.appbar__brand{
-  display:flex;align-items:center;gap:10px;min-width:0;
-  font-size:17px;font-weight:700;letter-spacing:-.02em;color:var(--ink);user-select:none;
+.appbar__brand{display:flex;align-items:center;min-width:0;color:var(--ink);user-select:none}
+.appbar__brand .wmark{font-size:25px}
+
+/* ---------- the two marks ----------
+   Both are built from the name as the app says it: Sprach·la·bor,
+   three syllables with the stress on the first. The icon is a speech
+   bubble (one square corner is its tail) holding the three syllables
+   as a voice trace, the stressed one in --stress. The name is the
+   German word, so it is set in the German serif, with the same --stress
+   band under the stressed syllable that the pronunciation strip uses.
+   The icon lives in the tab, the rail and About; Home carries the name. */
+.bmark{display:block;overflow:visible}
+.bmark__tile{fill:var(--ink)}
+.bmark__bar{fill:none;stroke:var(--paper);stroke-width:5.5;stroke-linecap:round}
+.bmark__bar--stress{stroke:var(--stress)}
+:root[data-theme="dark"] .bmark__tile{fill:var(--surface-2);stroke:var(--rule);stroke-width:1;vector-effect:non-scaling-stroke}
+:root[data-theme="dark"] .bmark__bar{stroke:var(--ink)}
+:root[data-theme="dark"] .bmark__bar--stress{stroke:var(--stress)}
+.bmark.is-play .bmark__bar{transform-box:fill-box;transform-origin:center;animation:growy .6s var(--ease) .15s backwards}
+.bmark.is-play .bmark__bar:nth-of-type(3){animation-delay:.27s}
+.bmark.is-play .bmark__bar:nth-of-type(4){animation-delay:.39s}
+
+.wmark{
+  display:inline-flex;align-items:baseline;white-space:nowrap;isolation:isolate;
+  font-family:var(--serif);font-weight:400;letter-spacing:-.012em;line-height:1.2;color:var(--ink);
 }
-/* the rail already carries the mark on a wide screen */
-.appbar__mark{
-  display:none;width:28px;height:28px;border-radius:var(--r-md);background:var(--ink);color:var(--paper);
-  place-items:center;font-size:13px;font-weight:700;letter-spacing:-.03em;flex:none;
+.wmark__s{position:relative;display:inline-block}
+.wmark__s:first-child{font-weight:500}
+/* the stress band: under the stressed syllable, just below the baseline */
+.wmark__s:first-child::after{
+  content:"";position:absolute;left:.03em;right:.05em;bottom:.19em;height:.15em;z-index:-1;
+  border-radius:100px;background:var(--stress);
+}
+.wmark__m{display:inline-block;overflow:hidden;padding:0 .08em .2em 0;margin:0 -.08em -.2em 0;vertical-align:bottom}
+.wmark__t{display:inline-block}
+.wmark__dot{position:absolute;left:-.31em;top:0;width:0;display:flex;justify-content:center;color:var(--ink-3);font-weight:400;opacity:0}
+/* On start the name says itself: the syllables rise one after another,
+   held apart by dictionary dots, then close into the word, and the
+   stress band draws under the first. Every step fills backwards only,
+   so the finished word is just the resting state. */
+.wmark.is-play .wmark__t{animation:wmrise .62s var(--ease) calc(.1s + var(--n) * .15s) backwards}
+.wmark.is-play .wmark__s{animation:wmclose .6s var(--ease) 1.05s backwards}
+.wmark.is-play .wmark__dot{animation:wmdot 1.25s var(--ease) calc(.2s + var(--n) * .15s) backwards}
+.wmark.is-play .wmark__s:first-child::after{animation:wipe .5s var(--ease) 1.5s backwards}
+@keyframes wmrise{from{transform:translateY(110%)}to{transform:none}}
+@keyframes wmclose{from{transform:translateX(calc(var(--n) * .62em))}to{transform:none}}
+@keyframes wmdot{0%{opacity:0}25%{opacity:1}70%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  .bmark.is-play .bmark__bar{animation-name:fade}
+  .wmark.is-play .wmark__t{animation-name:fade}
+  .wmark.is-play .wmark__s,.wmark.is-play .wmark__dot{animation:none}
+  .wmark.is-play .wmark__s:first-child::after{animation-name:fade}
 }
 .appbar__tools{display:flex;align-items:center;gap:6px;flex:none}
 /* The sync control: the pill syncs, and the segment welded to its end
@@ -353,7 +395,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .appbar__more svg{width:18px;height:18px}
 @media (max-width:860px){
   .appbar{margin-bottom:18px}
-  .appbar__mark{display:grid}
+  .appbar__brand .wmark{font-size:23px}
 }
 @media print{.appbar__tools{display:none !important}}
 
@@ -2051,13 +2093,19 @@ pre.spec b{color:var(--signal);font-weight:500}
 
 /* ---------- About ---------- */
 .about__id{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.about__mark{
-  width:46px;height:46px;border-radius:12px;background:var(--ink);color:var(--paper);flex:none;
-  display:grid;place-items:center;font-weight:700;font-size:20px;letter-spacing:-.03em;
+.about__id .bmark{width:60px;height:60px;flex:none}
+.about__name{flex:1;min-width:0;padding-left:16px;border-left:1px solid var(--rule-2)}
+.about__name h3{margin-bottom:1px;font-weight:inherit}
+.about__name .wmark{display:flex;font-size:32px}
+.about__name > span{font-size:13px;color:var(--ink-2)}
+/* the name as a card would show it: article, word, how to say it, meaning */
+.about__entry{
+  display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-top:18px;padding:12px 14px;
+  background:var(--surface-2);border:1px solid var(--rule-2);border-radius:var(--r-md);font-size:13px;color:var(--ink-2);
 }
-.about__name{flex:1;min-width:0}
-.about__name h3{font-size:19px;margin-bottom:2px;letter-spacing:-.018em}
-.about__name span{font-size:13px;color:var(--ink-2)}
+.about__entry b{font-family:var(--serif);font-size:17px;font-weight:400;color:var(--ink)}
+.about__entry .art{font-family:var(--serif);font-size:17px;margin-right:4px}
+.about__entry .say{background:var(--surface)}
 .about__ver{
   font-family:var(--mono);font-size:12px;font-weight:600;padding:4px 10px;border-radius:100px;
   background:var(--signal-soft);color:var(--signal);flex:none;
@@ -3896,7 +3944,7 @@ button.wrow:active{transform:scale(.99)}
 </head>
 <body>
 <nav class="rail" aria-label="Main">
-  <div class="rail__mark" aria-hidden="true">S</div>
+  <div class="rail__mark" aria-hidden="true"><svg class="bmark" viewBox="0 0 48 48" aria-hidden="true"><path class="bmark__tile" d="M12 0H36A12 12 0 0 1 48 12V36A12 12 0 0 1 36 48H0V12A12 12 0 0 1 12 0Z"/><path class="bmark__bar bmark__bar--stress" d="M14.5 13V35"/><path class="bmark__bar" d="M24 21V27"/><path class="bmark__bar" d="M33.5 17.5V30.5"/></svg></div>
   <i class="rail__ind" id="railInd" aria-hidden="true"></i>
   <button class="rail__btn" data-nav="home" aria-current="true">
     <span class="rail__ico">
@@ -3937,7 +3985,7 @@ button.wrow:active{transform:scale(.99)}
   <section class="view" id="view-library">
     <div class="wrap">
       <div class="appbar">
-        <div class="appbar__brand"><span class="appbar__mark" aria-hidden="true">S</span>Sprachlabor</div>
+        <div class="appbar__brand"><span class="wmark" id="appWord" aria-label="Sprachlabor">Sprachlabor</span></div>
         <div class="appbar__tools">
           <div class="syncsplit" id="syncSplit">
             <button class="syncpill" id="syncPill"><i aria-hidden="true"></i><span class="syncpill__t">Not connected</span></button>
@@ -4452,13 +4500,14 @@ button.wrow:active{transform:scale(.99)}
 
             <div class="panel">
               <div class="about__id">
-                <div class="about__mark" aria-hidden="true">S</div>
+                <svg class="bmark" viewBox="0 0 48 48" aria-hidden="true"><path class="bmark__tile" d="M12 0H36A12 12 0 0 1 48 12V36A12 12 0 0 1 36 48H0V12A12 12 0 0 1 12 0Z"/><path class="bmark__bar bmark__bar--stress" d="M14.5 13V35"/><path class="bmark__bar" d="M24 21V27"/><path class="bmark__bar" d="M33.5 17.5V30.5"/></svg>
                 <div class="about__name">
-                  <h3>Sprachlabor</h3>
+                  <h3 class="wmark" id="aboutWord" aria-label="Sprachlabor">Sprachlabor</h3>
                   <span>A German reading lab</span>
                 </div>
                 <span class="about__ver" id="aboutVer"></span>
               </div>
+              <div class="about__entry"><b><span class="art art--das">das</span>Sprachlabor</b><span class="say" title="Say it like this"><i class="is-stress">SHPRAHKH</i><i>lah</i><i>bohr</i></span><span>the language lab</span></div>
               <p class="about__lede">Read real German with the English beside it. Every word in the text is also a card, so what you read is what you learn. The cards then come back to you until you know them.</p>
             </div>
 
@@ -5825,6 +5874,7 @@ function applyRoute() {
   });
   railPlate(tab);
   if (tabOf(prevView) === "practice" && tabOf(view) === "practice" && !sameView) practab(node, prevView);
+  if (view === "settings" && !sameView && state.setSection === "about") playMark($("#aboutWord"), $(".about__id .bmark"));
   closeMenu();
 
   /* 2 — the body, only if it is actually out of date. */
@@ -9807,7 +9857,33 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.11";
+const APP_VERSION = "3.12";
+
+/* The name logo. Built here rather than written out twice in the
+   markup; playMark() replays its entrance (and the icon's, beside it). */
+function wordmark(node) {
+  if (!node || node.dataset.built) return;
+  node.dataset.built = "1";
+  node.innerHTML = ["Sprach", "la", "bor"].map((t, n) =>
+    '<span class="wmark__s" style="--n:' + n + '" aria-hidden="true">' +
+    (n ? '<b class="wmark__dot">\u00b7</b>' : "") +
+    '<span class="wmark__m"><span class="wmark__t">' + t + "</span></span></span>").join("");
+}
+function playMark(...nodes) {
+  nodes.forEach(node => {
+    if (!node) return;
+    clearTimeout(node._markT);
+    node.classList.remove("is-play");
+    node.getBoundingClientRect();
+    node.classList.add("is-play");
+    /* off again once it has played, so the app bar moving between Home
+       and Library does not start it over */
+    node._markT = setTimeout(() => node.classList.remove("is-play"), 2200);
+  });
+}
+wordmark($("#appWord"));
+wordmark($("#aboutWord"));
+playMark($("#appWord"));
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -9867,11 +9943,14 @@ function setSection(sect) {
   state.settings.settingsSection = sect;
   if (moved) { invalidate("settings"); writeProgress(); }
   $$("#setNav button").forEach(b => b.setAttribute("aria-current", String(b.dataset.sect === sect)));
+  const aboutWas = !!$('.setsec.is-on[data-sec="about"]');
   $$(".setsec").forEach(n => n.classList.toggle("is-on", n.dataset.sec === sect));
   if (sect === "data" || sect === "files" || sect === "reference") renderData();
   if (sect === "sync") renderSyncStatus();
   if (sect === "look" || sect === "cards" || sect === "study") { renderReadSettings(); syncReadUI(); }
   if (sect === "about") renderAbout();
+  /* the marks play as you arrive at About, not on every quiet rebuild */
+  if (sect === "about" && !aboutWas) playMark($("#aboutWord"), $(".about__id .bmark"));
   window.scrollTo(0, 0);
 }
 
