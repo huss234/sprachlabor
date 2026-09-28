@@ -72,7 +72,9 @@ The primary button text is `#fff` in light theme and `#0B0E10` in dark.
 - Durations: press .1s · hover and colour .14–.16s · small things appearing .14–.22s · panels and modals .22–.26s · meters .5s.
 - Press feedback: `transform:scale(.97)`, or `.94` on small icon buttons, or `translateY(1px)` on `.btn`.
 - Hover on a card: `translateY(-3px)`, `--shadow-lift`, border `--ink-3`.
-- Keyframes to reuse: `pop` (menus: fade, 4px rise, scale .97), `menuout`, `deal` (modals: 14px rise, scale .985), `fade`, `rise`, `slide` / `slideout` (toasts), `pulse` (busy dot).
+- Keyframes to reuse: `pop` (menus: fade, 4px rise, scale .97), `menuout`, `deal` (modals: 14px rise, scale .985), `fade`, `rise`, `slide` / `slideout` (toasts), `pulse` (busy dot), `lift` (content blocks: fade, 8px rise), `growy` / `growx` (bars and meters from their base), `wipe` (a strip revealed left to right), `draw` (a `pathLength="1"` line writing itself), `calslide` (a calendar month sliding the way you went).
+- Data that arrives draws itself. On Progress, `progMotion()` plays the difference after every rebuild: `is-grow` on a host makes its bars, meters and lines grow, `is-lift` makes its cards rise in with a 40ms stagger, rings run from their last value (`data-rk`), and plain integers count up (`data-cu`, `countTo()`). Entering the page draws from zero; a quiet rebuild moves only what changed.
+- Hover effects that lift or scale sit inside `@media (hover:hover)` so they don't stick after a tap.
 - Name the exact properties in `transition`, never `all`. Animate `transform` and `opacity`. Remove things only after their exit animation ends.
 - Every new animation needs a `@media (prefers-reduced-motion:reduce)` rule that keeps the fades and drops the movement.
 - No springs, bounces, overshoot or ripples.
@@ -101,9 +103,12 @@ The primary button text is `#fff` in light theme and `#0B0E10` in dark.
 | List rows | `.rows` > `.row` | 11×14px, `--rule-2` dividers |
 | Warning box | `.warnbox` | `--surface-2`, 3px `--warn` left spine |
 | Status dot | `.dot` + `--ok` / `--wait` / `--busy` / `--bad` | 9px circle; busy pulses |
-| Disclosure | see `.syncp__log` | eyebrow row + count badge + chevron rotating 180°; body reveals with `grid-template-rows 0fr→1fr` plus fade; closed by default; `aria-expanded`; `inert` while closed |
+| Disclosure | `.fold` > `.fold__btn` + `.fold__body` (the `.syncp__log` pattern outside a menu) | eyebrow row + count badge + chevron rotating 180°; body reveals with `grid-template-rows 0fr→1fr` plus fade; closed by default; `aria-expanded`; `inert` while closed |
 | Empty state | `.empty` / `.pickdeck` | serif headline, 13–14px explanation, dashed rule border on `--surface-2` |
 | Meter | `.meter` > `i` | 3px track, `--signal` fill, `--ok` when full |
+| Milestone rows | `.miles` > `.mile` | inset list; label left, mono `now / next` right, a `.meter`, then "N to go" in `--ink-3` (`--signal` when 80% there, `.is-near`) |
+| Fresh marker | `.wchip.wchip--fresh` | `--signal-soft` pill with `--signal` text: a record or milestone reached this week |
+| Page tabs | `.ptabs` + `.ptabs__ind` | text tabs over a rule; one 2px `--signal` underline travels between them (`translateX` + `scaleX`, 300ms `--ease`); the row is built once and only updated |
 | Page header | `.page-head` | title, subtitle max 52ch, actions right, rule underneath |
 | Lesson header | `.masthead` + `.reader__bar` | eyebrow (level · topic) and mono `known/total` on one rule; serif title; one line of subtitle (German, then English in `--ink-3`); actions: one primary, one secondary, then a 38px dots button (`.masthead__more`) opening an `openMenu` for rarer actions. The sticky reader bar holds only the English `.seg` (eyebrow label) and a 36px `Aa` button |
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.6 · neural German, cached on device -->
+<!-- Sprachlabor — v3.7 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -1418,6 +1418,17 @@ pre.spec b{color:var(--signal);font-weight:500}
   padding:20px 22px;display:flex;flex-direction:column;gap:16px;
 }
 .today__row{display:flex;align-items:center;gap:20px}
+/* the one sentence about today, and the one button that acts on it */
+.today__head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:16px;border-bottom:1px solid var(--rule-2)}
+.today__head h3{font-size:19px;font-weight:600;letter-spacing:-.018em;line-height:1.25}
+.today__head p{font-size:13px;color:var(--ink-2);margin-top:5px;line-height:1.5;max-width:46ch}
+.today__head .btn{flex:none}
+.today__label{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:7px}
+.today__count{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--ink-3)}
+@media (max-width:520px){
+  .today__head{flex-direction:column;align-items:stretch}
+  .today__head .btn{justify-content:center}
+}
 .ring{width:96px;height:96px;flex:none;position:relative}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .ring__track{stroke:var(--rule);fill:none}
@@ -1443,8 +1454,9 @@ pre.spec b{color:var(--signal);font-weight:500}
   flex:1;min-width:0;padding:7px 2px 8px;border-right:1px solid var(--rule);
   display:flex;flex-direction:column;align-items:center;gap:5px;
   font-family:var(--mono);font-size:10px;font-weight:500;color:var(--ink-3);
-  letter-spacing:.04em;transition:background .14s var(--ease),color .14s var(--ease);
+  letter-spacing:.04em;transition:background .14s var(--ease),color .14s var(--ease),transform .1s var(--ease);
 }
+.weekstrip button:active{transform:scale(.94)}
 .weekstrip button:last-child{border-right:none}
 .weekstrip button:hover{background:var(--surface)}
 .weekstrip button b{
@@ -1470,8 +1482,9 @@ pre.spec b{color:var(--signal);font-weight:500}
 .pickup{display:flex;flex-direction:column;gap:1px;background:var(--rule-2);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden}
 .pickup button{
   display:flex;align-items:center;gap:11px;padding:9px 11px;background:var(--surface);
-  text-align:left;transition:background .13s var(--ease);
+  text-align:left;transition:background .13s var(--ease),transform .1s var(--ease);
 }
+.pickup button:active{transform:scale(.98)}
 .pickup button:hover{background:var(--signal-soft)}
 .pickup__t{flex:1;min-width:0;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pickup__m{width:46px;height:4px;background:var(--rule-2);border-radius:100px;overflow:hidden;flex:none}
@@ -1494,8 +1507,14 @@ pre.spec b{color:var(--signal);font-weight:500}
 .cal__nav{display:flex;gap:4px;align-items:center}
 .cal__nav button{
   width:30px;height:30px;border-radius:6px;display:grid;place-items:center;color:var(--ink-2);
-  border:1px solid var(--rule);background:var(--surface);transition:background .13s var(--ease),color .13s var(--ease);
+  border:1px solid var(--rule);background:var(--surface);transition:background .13s var(--ease),color .13s var(--ease),transform .1s var(--ease);
 }
+.cal__nav button:active{transform:scale(.94)}
+.cal__title{border-radius:var(--r-sm);padding:2px 4px;margin-left:-4px;transition:background .14s var(--ease),color .14s var(--ease),transform .1s var(--ease)}
+.cal__title:hover{background:var(--surface-2)}
+.cal__title:active{transform:scale(.97)}
+.cal__grid.is-slide{animation:calslide .22s var(--ease) both}
+@keyframes calslide{from{opacity:0;transform:translateX(var(--sx))}to{opacity:1;transform:none}}
 .cal__nav button:hover{background:var(--surface-2);color:var(--ink)}
 .cal__nav button svg{width:14px;height:14px}
 .cal__nav .btn--sm{width:auto}
@@ -1512,8 +1531,9 @@ pre.spec b{color:var(--signal);font-weight:500}
 .cal__week{display:grid;grid-template-columns:20px repeat(7,1fr);gap:3px}
 .cal__wk{
   font-family:var(--mono);font-size:9px;color:var(--ink-3);display:grid;place-items:center;
-  border-radius:3px;transition:background .13s var(--ease),color .13s var(--ease);
+  border-radius:3px;transition:background .13s var(--ease),color .13s var(--ease),transform .1s var(--ease);
 }
+.cal__wk:active{transform:scale(.94)}
 .cal__wk:hover{background:var(--surface-2);color:var(--ink)}
 .cal__wk[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .cday{
@@ -1523,7 +1543,8 @@ pre.spec b{color:var(--signal);font-weight:500}
   transition:transform .13s var(--ease),box-shadow .13s var(--ease);
   border:1px solid transparent;min-height:34px;
 }
-.cday:hover{transform:scale(1.06);box-shadow:var(--shadow);z-index:2}
+@media (hover:hover){.cday:hover{transform:scale(1.06);box-shadow:var(--shadow);z-index:2}}
+.cday:active{transform:scale(.94);transition-duration:.1s}
 .cday.is-out{opacity:.3}
 .cday.is-future{background:transparent;border:1px dashed var(--rule-2);color:var(--ink-3);opacity:.75}
 .cday.l1{background:var(--heat-1)}
@@ -1574,8 +1595,9 @@ pre.spec b{color:var(--signal);font-weight:500}
 .metrics{
   display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);
   border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px;
-  grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  grid-template-columns:repeat(4,1fr);
 }
+@media (max-width:640px){.metrics{grid-template-columns:repeat(2,1fr)}}
 .metric{background:var(--surface);padding:16px 18px}
 .metric__k{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 .metric__v{font-family:var(--mono);font-size:26px;font-weight:600;letter-spacing:-.03em;margin-top:7px;line-height:1}
@@ -1601,7 +1623,7 @@ pre.spec b{color:var(--signal);font-weight:500}
 .chart .bar.is-empty{fill:var(--rule)}
 .chart .bar.is-sel{fill:var(--stress)}
 .chart .bar-hit{fill:transparent;cursor:pointer}
-.chart .bar-hit:hover + .bar,.chart .bar-g:hover .bar{fill:var(--ink)}
+.chart .bar-hit:hover + .bar,.chart .bar-g:hover .bar,.chart .bar-g:active .bar{fill:var(--ink)}
 .chart .bar2{fill:var(--ok);opacity:.9}
 .chart .line{fill:none;stroke:var(--signal);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .chart .area{fill:var(--signal);opacity:.09}
@@ -1658,6 +1680,9 @@ pre.spec b{color:var(--signal);font-weight:500}
 .year i.l4{background:var(--heat-4)}
 .year i.is-pad{background:transparent}
 .year i.is-today{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.year i[data-day]{cursor:pointer;transition:transform .1s var(--ease)}
+@media (hover:hover){.year i[data-day]:hover{box-shadow:inset 0 0 0 1.5px var(--ink-3)}}
+.year i[data-day]:active{transform:scale(.8)}
 .year-months{display:flex;min-width:660px;margin-bottom:5px}
 .year-months span{font-size:9.5px;font-weight:600;letter-spacing:.06em;color:var(--ink-3);text-transform:uppercase}
 
@@ -3347,17 +3372,20 @@ pre.spec b{color:var(--signal);font-weight:500}
   -webkit-overflow-scrolling:touch;
 }
 .ptabs::-webkit-scrollbar{display:none}
+.ptabs{position:relative}
 .ptabs button{
   position:relative;flex:none;padding:11px 15px 12px;
   font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--ink-3);
   white-space:nowrap;border-radius:var(--r-md) var(--r-md) 0 0;
-  transition:color .14s var(--ease),background .14s var(--ease);
+  transition:color .14s var(--ease),background .14s var(--ease),transform .1s var(--ease);
 }
 .ptabs button:hover{color:var(--ink-2);background:var(--surface-2)}
+.ptabs button:active{transform:scale(.97)}
 .ptabs button[aria-selected="true"]{color:var(--ink)}
-.ptabs button[aria-selected="true"]::after{
-  content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2px;
-  background:var(--signal);border-radius:2px 2px 0 0;
+.ptabs__ind{
+  position:absolute;left:0;bottom:0;width:100px;height:2px;pointer-events:none;
+  background:var(--signal);border-radius:2px 2px 0 0;transform-origin:0 0;transform:scaleX(0);
+  transition:transform .3s var(--ease);
 }
 .ptabs button span{
   font-family:var(--mono);font-size:10px;color:var(--ink-3);margin-left:7px;
@@ -3432,7 +3460,9 @@ pre.spec b{color:var(--signal);font-weight:500}
   display:flex;align-items:center;gap:11px;padding:10px 13px;background:var(--surface);
   font-size:13px;width:100%;text-align:left;
 }
+button.wrow{transition:background .13s var(--ease),transform .1s var(--ease)}
 button.wrow:hover{background:var(--signal-soft)}
+button.wrow:active{transform:scale(.99)}
 .wrow__n{font-family:var(--mono);font-size:10px;color:var(--ink-3);width:17px;flex:none}
 .wrow__w{
   flex:1.3;min-width:0;font-family:var(--serif);font-size:15.5px;font-weight:500;
@@ -3516,6 +3546,74 @@ button.wrow:hover{background:var(--signal-soft)}
   background:var(--surface-2);border:1px solid var(--rule-2);border-radius:100px;padding:5px 11px;
 }
 .pace b{font-family:var(--mono);font-weight:600;color:var(--ink)}
+
+/* ---------- milestones: where you stand on each ladder ---------- */
+.miles{display:grid;gap:1px;background:var(--rule-2);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden}
+.mile{background:var(--surface);padding:12px 14px}
+.mile__top{display:flex;align-items:baseline;gap:10px}
+.mile__k{flex:1;min-width:0;font-size:12.5px;color:var(--ink-2)}
+.mile__v{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mile__v b{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+.mile .meter{display:block;margin:9px 0 7px}
+.mile__note{font-size:11.5px;color:var(--ink-3)}
+.mile.is-near .mile__note{color:var(--signal);font-weight:600}
+.wchip--fresh{background:var(--signal-soft);color:var(--signal)}
+.krow__v .wchip{font-family:var(--sans);vertical-align:2px;margin-right:4px}
+
+/* ---------- disclosure (the .syncp__log pattern, outside the menu) ---------- */
+.fold{margin-top:12px;border-top:1px solid var(--rule-2);padding-top:6px}
+.fold__btn{
+  display:flex;align-items:center;gap:8px;width:100%;padding:8px 4px;border-radius:var(--r-sm);
+  color:var(--ink-3);transition:background .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
+}
+.fold__btn:hover{background:var(--surface-2);color:var(--ink-2)}
+.fold__btn:active{transform:scale(.98)}
+.fold__btn .eyebrow{color:inherit}
+.fold__btn svg{width:14px;height:14px;margin-left:auto;transition:transform .26s var(--ease)}
+.fold.is-open .fold__btn svg{transform:rotate(180deg)}
+.fold__body{display:grid;grid-template-rows:0fr;opacity:0;
+  transition:grid-template-rows .2s cubic-bezier(.4,0,1,1),opacity .14s cubic-bezier(.4,0,1,1)}
+.fold.is-open .fold__body{grid-template-rows:1fr;opacity:1;
+  transition:grid-template-rows .28s var(--ease),opacity .22s var(--ease) .05s}
+.fold__body>div{min-height:0;overflow:hidden}
+.earned{
+  display:grid;gap:1px;background:var(--rule-2);border:1px solid var(--rule);border-radius:var(--r-md);
+  margin:6px 0 2px;max-height:252px;overflow-y:auto;overscroll-behavior:contain;
+}
+.earned div{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);font-size:12.5px}
+.earned span:first-child{flex:1;min-width:0}
+.earned time{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);flex:none}
+
+/* ---------- motion: the page arrives and the figures draw themselves ----------
+   is-grow  bars rise from the axis, meters run out, lines write themselves
+   is-lift  the cards below the range bar rise in, one after the other */
+@keyframes lift{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes growy{from{transform:scaleY(0)}to{transform:none}}
+@keyframes growx{from{transform:scaleX(0)}to{transform:none}}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.is-lift > :not(.cols),.is-lift > .cols > *{animation:lift .26s var(--ease) both}
+.is-lift > :nth-child(2){animation-delay:.04s}
+.is-lift > :nth-child(3){animation-delay:.08s}
+.is-lift > :nth-child(4){animation-delay:.12s}
+.is-lift > :nth-child(n+5){animation-delay:.16s}
+.is-lift > .cols > :nth-child(2){animation-delay:.05s}
+.is-grow .bar,.is-grow .dowcol i{transform-box:fill-box;transform-origin:50% 100%;animation:growy .5s var(--ease) both;animation-delay:var(--d,0s)}
+.is-grow .meter i,.is-grow .frow__bar i,.is-grow .lbrow__b i,.is-grow .wrow__b i,.is-grow .pickup__m i{
+  transform-origin:0 50%;animation:growx .5s var(--ease) .06s both;
+}
+.is-grow .mixbar,.is-grow .boxbar,.is-grow .spark,.is-grow .hours,.is-grow .year{animation:wipe .55s var(--ease) both}
+.is-grow .chart .line,.is-grow .chart .line2{stroke-dasharray:1 2;animation:draw .7s var(--ease) both}
+.is-grow .chart .area,.is-grow .chart .area2,.is-grow .chart .pt{animation:fade .4s var(--ease) .3s both}
+@media (prefers-reduced-motion:reduce){
+  .is-lift > :not(.cols),.is-lift > .cols > *{animation-name:fade}
+  .is-grow .bar,.is-grow .dowcol i,.is-grow .meter i,.is-grow .frow__bar i,.is-grow .lbrow__b i,.is-grow .wrow__b i,.is-grow .pickup__m i,
+  .is-grow .mixbar,.is-grow .boxbar,.is-grow .spark,.is-grow .hours,.is-grow .year,.is-grow .chart .line,.is-grow .chart .line2{animation:none}
+  .cal__grid.is-slide{animation-name:fade}
+  .ptabs__ind{transition:none}
+  .cday:active,.weekstrip button:active,.pickup button:active,.cal__nav button:active,.cal__wk:active,.ptabs button:active,
+  button.wrow:active,.fold__btn:active,.year i[data-day]:active,.cal__title:active{transform:none}
+}
 
 </style>
 </head>
@@ -4090,7 +4188,7 @@ button.wrow:hover{background:var(--signal-soft)}
                 <div><b>Lesson</b><span>The German text, with the English hidden, line by line, or in full. Tap any word to open its card.</span></div>
                 <div><b>Cards</b><span>Every card you own, in decks by how well you know it: hard, learning or known.</span></div>
                 <div><b>Spelling</b><span>You see the English and type the German — capitals, umlauts and der, die, das included.</span></div>
-                <div><b>Progress</b><span>Daily targets, your streak, a calendar, and the time you have studied.</span></div>
+                <div><b>Progress</b><span>Daily targets, your streak, milestones and records, a calendar, and the time you have studied.</span></div>
                 <div><b>Settings</b><span>How it looks, how it sounds, and where your files live.</span></div>
               </div>
             </div>
@@ -5436,6 +5534,7 @@ function applyRoute() {
   const key = view + "|" + (view === "lesson" ? (id || "") : view === "settings" ? state.setSection
     : view === "cards" ? state.cards.scope : view === "library" ? (state.cwd || "")
     : view === "spell" ? (spellCfg().scope + "\u0000" + spellCfg().deck + "\u0000" + libRev) : "");
+  if (view === "progress" && !sameView) pmo.mode = "enter";
   if (painted[view] !== key) {
     painted[view] = key;
     if (view === "library")  renderLibrary();
@@ -5445,6 +5544,7 @@ function applyRoute() {
     if (view === "progress") renderProgress();
     if (view === "settings") renderSettings();
   }
+  if (view === "progress" && pmo.mode) progMotion();
   /* stepping off the page closes whatever deck was open, so coming back
      costs the five tiles and nothing else */
   if (view !== "cards" && state.cards.open) { state.cards.open = null; invalidate("cards"); }
@@ -9349,7 +9449,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.6";
+const APP_VERSION = "3.7";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -10183,7 +10283,7 @@ function stats() {
     days, hours, spHours, lessons, cards, firstSeen, first: first || todayKey(),
     totalRev, totalOk, totalMs, totalAppMs, totalSp, totalSpOk,
     totalDrillMs, totalSpellMs, totalReadMs, totalDeskMs, totalManualMs,
-    graduated: graduated.size
+    graduated: graduated.size, voided
   };
   return statCache;
 }
@@ -10220,13 +10320,17 @@ function streakInfo() {
   }
 
   const keys = Array.from(S.days.keys()).filter(x => isActive(S.days.get(x)) || S.days.get(x).rest).sort();
+  /* A rest day bridges the chain but is not a day of it, the same rule
+     the current streak above follows, so the record can never be longer
+     than any number the counter has shown. */
   let best = 0, run = 0, prev = null;
   keys.forEach(x => {
-    if (prev && daysBetween(prev, x) === 1) run++; else run = 1;
-    if (isActive(S.days.get(x))) best = Math.max(best, run);
+    if (!prev || daysBetween(prev, x) !== 1) run = 0;
+    if (isActive(S.days.get(x))) { run++; best = Math.max(best, run); }
     prev = x;
   });
-  return { current: cur, best: Math.max(best, cur) };
+  const T = S.days.get(t);
+  return { current: cur, best: Math.max(best, cur), today: isActive(T), rest: !!(T && T.rest) };
 }
 
 /* ---------- range helpers ---------- */
@@ -10289,6 +10393,79 @@ function boxSpread() {
   return out;
 }
 
+/* ============================================================
+   MILESTONES AND RECORDS
+   The numbers above say how a period went. These say how far you
+   have come and what is next, because a target you can see from
+   where you stand is the one you turn up for. Each ladder is
+   walked day by day through the log, so every milestone carries
+   the day it was reached. "Known on sight" is read from the boxes
+   as they are now, which have no history, so it carries no date.
+   ============================================================ */
+const LADDERS = [
+  { k: "streak", label: "Days in a row", unit: "day",
+    steps: [3, 7, 14, 21, 30, 50, 75, 100, 150, 200, 365, 500, 730, 1000], name: n => n + "-day run" },
+  { k: "goal", label: "Days on target", unit: "day",
+    steps: [1, 5, 10, 25, 50, 100, 200, 365, 500, 1000], name: n => n === 1 ? "First day on target" : n + " days on target" },
+  { k: "words", label: "Words met", unit: "word",
+    steps: [10, 25, 50, 100, 200, 300, 500, 750, 1000, 1500, 2000, 3000, 5000], name: n => n + " words met" },
+  { k: "known", label: "Known on sight", unit: "word",
+    steps: [10, 25, 50, 100, 250, 500, 1000, 2000, 3000], name: n => n + " words known" },
+  { k: "cards", label: "Cards reviewed", unit: "card",
+    steps: [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000], name: n => n.toLocaleString("en") + " cards reviewed" },
+  { k: "hours", label: "Hours studied", unit: "hour",
+    steps: [1, 3, 5, 10, 25, 50, 100, 200, 500, 1000], name: n => plural(n, "hour") + " studied" }
+];
+
+function milestones() {
+  const S = stats();
+  const at = {}, idx = {};
+  LADDERS.forEach(L => { at[L.k] = []; idx[L.k] = 0; });
+  const reach = (k, v, day) => {
+    const L = LADDERS.find(x => x.k === k);
+    while (idx[k] < L.steps.length && v >= L.steps[idx[k]]) { at[k].push(day); idx[k]++; }
+  };
+  const met = new Map();
+  S.firstSeen.forEach(d => met.set(d, (met.get(d) || 0) + 1));
+  let cards = 0, ms = 0, words = 0, goal = 0, run = 0, prev = null;
+  let bestDay = null, bestMs = null;
+  const weeks = new Map(), months = new Map();
+  Array.from(S.days.keys()).sort().forEach(x => {
+    const D = S.days.get(x);
+    cards += D.rev; ms += D.ms; words += met.get(x) || 0;
+    if (goalMet(D)) goal++;
+    if (!prev || daysBetween(prev, x) !== 1) run = 0;
+    if (isActive(D)) run++;
+    prev = x;
+    reach("streak", run, x); reach("goal", goal, x); reach("words", words, x);
+    reach("cards", cards, x); reach("hours", ms / 36e5, x);
+    if (D.rev && (!bestDay || D.rev > bestDay.v)) bestDay = { k: x, v: D.rev };
+    if (D.ms && (!bestMs || D.ms > bestMs.v)) bestMs = { k: x, v: D.ms };
+    const wk = weekStartKey(x), mk = x.slice(0, 7);
+    weeks.set(wk, (weeks.get(wk) || 0) + D.rev);
+    months.set(mk, (months.get(mk) || 0) + D.rev);
+  });
+  const top = m => { let b = null; m.forEach((v, k) => { if (v && (!b || v > b.v)) b = { k: k, v: v }; }); return b; };
+
+  const st = streakInfo(), sp = boxSpread();
+  const now = { streak: st.current, goal: goal, words: S.firstSeen.size, known: sp[4] + sp[5],
+                cards: S.totalRev, hours: S.totalMs / 36e5 };
+  const earnedTo = { streak: st.best, known: now.known };
+  const rows = [], earned = [];
+  LADDERS.forEach(L => {
+    const cur = now[L.k];
+    const i = L.steps.findIndex(n => n > cur);
+    const next = i < 0 ? null : L.steps[i], from = i > 0 ? L.steps[i - 1] : 0;
+    rows.push({ L: L, cur: cur, next: next, frac: next ? (cur - from) / (next - from) : 1 });
+    L.steps.forEach((n, j) => {
+      if (n <= (earnedTo[L.k] != null ? earnedTo[L.k] : cur)) earned.push({ k: L.k, n: n, name: L.name(n), day: at[L.k][j] || null });
+    });
+  });
+  earned.sort((a, b) => (b.day || "").localeCompare(a.day || "") || b.n - a.n);
+  rows.sort((a, b) => (b.next ? 1 : 0) - (a.next ? 1 : 0) || b.frac - a.frac);
+  return { rows: rows, earned: earned, bestDay: bestDay, bestMs: bestMs, bestWeek: top(weeks), bestMonth: top(months), best: st.best, current: st.current };
+}
+
 
 /* ============================================================
    CHARTS — hand drawn SVG, no library, themed by CSS variables
@@ -10335,10 +10512,10 @@ function barChart(bars, o) {
   bars.forEach((b, i) => {
     const x = PL + i * bw, v = b.v || 0;
     const hgt = v > 0 ? Math.max(2, (v / top) * ih) : 0;
-    s += '<g class="bar-g"' + (b.k ? ' data-pick="' + esc(b.k) + '"' : "") + ' style="cursor:pointer">' +
+    s += '<g class="bar-g"' + (b.k ? ' data-pick="' + esc(b.k) + '"' + (o.pick ? ' data-pickkind="' + o.pick + '"' : "") : "") + ' style="cursor:pointer">' +
       '<rect class="bar-hit" x="' + x + '" y="' + PT + '" width="' + bw + '" height="' + ih + '"><title>' +
         esc(b.title || (b.label + " · " + v)) + "</title></rect>" +
-      (hgt ? '<rect class="bar' + (b.sel ? " is-sel" : "") + '" x="' + (x + (bw - barW) / 2) + '" y="' + (PT + ih - hgt) +
+      (hgt ? '<rect class="bar' + (b.sel ? " is-sel" : "") + '" style="--d:' + Math.round(i / bars.length * 260) + 'ms" x="' + (x + (bw - barW) / 2) + '" y="' + (PT + ih - hgt) +
         '" width="' + barW + '" height="' + hgt + '" rx="1.5"/>' : "") +
       "</g>";
     if (i % every === 0 || bars.length <= 8) {
@@ -10361,7 +10538,7 @@ function lineChart(pts, o) {
   let s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Accuracy trend">';
   [0, 50, 100].forEach(v => {
     s += '<line class="' + (v === 0 ? "axis" : "grid") + '" x1="' + PL + '" y1="' + y(v) + '" x2="' + (W - PR) + '" y2="' + y(v) + '"/>' +
-         '<text class="tick" x="' + (PL - 7) + '" y="' + (y(v) + 3.5) + '" text-anchor="end">' + v + "</text>";
+         '<text class="tick" x="' + (PL - 7) + '" y="' + (y(v) + 3.5) + '" text-anchor="end">' + (o.top ? Math.round(o.top * v / 100) : v) + "</text>";
   });
 
   let d = "", area = "", started = false, firstX = 0, lastX = 0;
@@ -10373,13 +10550,13 @@ function lineChart(pts, o) {
     lastX = px;
   });
   area += "L" + lastX + " " + (PT + ih) + "Z";
-  s += '<path class="area" d="' + area + '"/><path class="line" d="' + d + '"/>';
+  s += '<path class="area" d="' + area + '"/><path class="line" pathLength="1" d="' + d + '"/>';
 
   const every = Math.ceil(pts.length / Math.max(4, Math.floor(iw / 46)));
   pts.forEach((p, i) => {
     if (p.v != null && (pts.length <= 20 || i % every === 0)) {
       s += '<circle class="pt" cx="' + x(i) + '" cy="' + y(p.v) + '" r="3"><title>' +
-        esc(p.label + " · " + Math.round(p.v) + "%") + "</title></circle>";
+        esc(p.label + " · " + (o.fmt ? o.fmt(p.v) : Math.round(p.v) + "%")) + "</title></circle>";
     }
     if (i % every === 0 || pts.length <= 8) {
       s += '<text class="tick" x="' + x(i) + '" y="' + (PT + ih + 16) + '" text-anchor="middle">' + esc(p.label) + "</text>";
@@ -10495,7 +10672,7 @@ function yearHeat(year) {
       const D = S.days.get(day);
       const m = keyDate(day).getMonth();
       if (i === 0 && m !== lastMon) { months.push({ m: m, col: col }); lastMon = m; }
-      cells += '<i class="l' + heatLevel(D) + (day === t ? " is-today" : "") +
+      cells += '<i data-day="' + day + '" class="l' + heatLevel(D) + (day === t ? " is-today" : "") +
         '" title="' + esc(niceDay(day) + " · " + (D ? plural(D.rev, "card") : "nothing")) + '"></i>';
     }
     col++;
@@ -10542,10 +10719,11 @@ function renderToday() {
   }
 
   const note = st.current === 0
-    ? "Do one card today and the chain starts."
+    ? (st.best ? "Longest run: " + plural(st.best, "day") + "." : "One card starts the chain.")
     : st.current >= st.best && st.current > 1
       ? "That is your longest run so far."
       : "Longest run: " + plural(st.best, "day") + ".";
+  const nextRun = LADDERS[0].steps.find(n => n > st.current);
 
   /* A second ring, for minutes. The day has two targets and used to show
      one of them as a shape and the other as a sentence; now both are the
@@ -10554,29 +10732,62 @@ function renderToday() {
   const pt = Math.min(1, liveMs / (g.mins * 60000));
   const R2 = 42, C2 = 2 * Math.PI * R2;
 
+  /* The card opens with the one thing worth knowing today, said as a
+     sentence, and the one button that acts on it. Everything under it
+     is the evidence. */
+  const cardsLeft = Math.max(0, g.cards - D.rev);
+  const minsLeft = Math.max(1, Math.ceil((g.mins * 60000 - liveMs) / 60000));
+  const run = plural(st.current, "day");
+  const head = p >= 1 || pt >= 1
+    ? ["Today’s goal is met.", st.current > 1
+        ? "That makes " + run + " in a row" + (st.current >= st.best ? ", your longest run so far." : ".") + " Anything more is extra."
+        : "Anything more today is extra."]
+    : st.today
+      ? [plural(cardsLeft, "card") + " or " + minsLeft + " min to go.",
+         "Today already counts, so your streak stands at " + run + ". Either target meets the goal."]
+      : st.rest
+        ? ["Today is a rest day.", st.current ? "Your " + st.current + "-day streak is held. Nothing is lost by resting." : "Nothing is lost by resting."]
+        : st.current
+          ? ["Your " + st.current + "-day streak is waiting for today.", "One card keeps it going. " + plural(g.cards, "card") + " or " + g.mins + " min meets the goal."]
+          : [st.best ? "Start a new run today." : "Start your first run today.",
+             "One card starts a streak. " + plural(g.cards, "card") + " or " + g.mins + " min meets the goal."];
+  const go1 = weakestList(1)[0] || state.lessons.find(l => l.vocabulary.length);
+  const goL = go1 && (go1.l || go1);
+  const cta = goL
+    ? '<button class="btn' + (p >= 1 || pt >= 1 ? "" : " btn--primary") + '" data-practice="' + esc(goL.id) + '" title="' + esc(goL.title) + '">' +
+        ICO_DRILL + (p >= 1 || pt >= 1 ? "Keep going" : st.today ? "Continue" : "Start a review") + "</button>"
+    : "";
+  let wkOn = 0, wkPast = 0;
+  for (let i = 0; i < 7; i++) {
+    const day = shiftDay(wkStart, i);
+    if (day <= t) { wkPast++; if (goalMet(stats().days.get(day))) wkOn++; }
+  }
+
   host.innerHTML =
+    '<div class="today__head"><div><h3>' + esc(head[0]) + "</h3><p>" + esc(head[1]) + "</p></div>" + cta + "</div>" +
     '<div class="today__row">' +
       '<div class="tworings">' +
       '<div class="ring">' +
         '<svg viewBox="0 0 100 100">' +
           '<circle class="ring__track" cx="50" cy="50" r="' + R + '" stroke-width="8"/>' +
-          '<circle class="ring__fill' + (p >= 1 ? " is-done" : "") + '" cx="50" cy="50" r="' + R +
+          '<circle class="ring__fill' + (p >= 1 ? " is-done" : "") + '" data-rk="cards" data-c="' + C + '" data-p="' + p + '" cx="50" cy="50" r="' + R +
             '" stroke-width="8" stroke-dasharray="' + C + '" stroke-dashoffset="' + (C * (1 - p)) + '"/>' +
         "</svg>" +
-        '<div class="ring__mid"><b>' + D.rev + "</b><span>of " + g.cards + "</span></div>" +
+        '<div class="ring__mid"><b data-cu="' + D.rev + '" data-cuk="ring">' + D.rev + "</b><span>of " + g.cards + "</span></div>" +
       "</div>" +
       '<div class="ring ring--sm" title="Minutes studied today, counting the session you are in">' +
         '<svg viewBox="0 0 100 100">' +
           '<circle class="ring__track" cx="50" cy="50" r="' + R2 + '" stroke-width="10"/>' +
-          '<circle class="ring__fill ring__fill--time" cx="50" cy="50" r="' + R2 +
+          '<circle class="ring__fill ring__fill--time" id="ringTime" data-rk="time" data-c="' + C2 + '" data-p="' + pt + '" cx="50" cy="50" r="' + R2 +
             '" stroke-width="10" stroke-dasharray="' + C2 + '" stroke-dashoffset="' + (C2 * (1 - pt)) + '"/>' +
         "</svg>" +
-        '<div class="ring__mid"><b>' + Math.round(liveMs / 60000) + "</b><span>of " + g.mins + "m</span></div>" +
+        '<div class="ring__mid"><b id="ringTimeV">' + Math.round(liveMs / 60000) + "</b><span>of " + g.mins + "m</span></div>" +
       "</div>" +
       "</div>" +
       '<div class="today__facts">' +
-        '<div class="today__streak"><b>' + st.current + "</b><span>day streak</span></div>" +
-        '<div class="today__note">' + esc(note) + "</div>" +
+        '<div class="today__streak"><b data-cu="' + st.current + '" data-cuk="streak">' + st.current + "</b><span>day streak</span></div>" +
+        '<div class="today__note">' + esc(note) +
+          (nextRun ? " " + plural(nextRun - st.current, "day") + " to a " + nextRun + "-day run." : "") + "</div>" +
         '<div class="today__note" style="margin-top:6px">' +
           (clock.kind
             ? '<span style="color:var(--ok);font-weight:600">' + esc(clockLabel()) + " now</span> · " +
@@ -10585,7 +10796,8 @@ function renderToday() {
           " · " + fmtMins(liveAppTodayMs()) + " in the app today</div>" +
       "</div>" +
     "</div>" +
-    '<div><div class="eyebrow" style="margin-bottom:7px">This week</div>' +
+    '<div><div class="today__label"><span class="eyebrow">This week</span>' +
+      '<span class="today__count">' + wkOn + "/" + wkPast + " on target</span></div>" +
       '<div class="weekstrip">' + strip + "</div></div>" +
     weakestBlock() +
     '<div class="today__fill"><div class="eyebrow" style="margin-bottom:7px">Last 30 days</div>' +
@@ -10594,12 +10806,15 @@ function renderToday() {
 
 /* The page reports; this is the one place it also offers to act.
    Weakest first, because that is the order the drill queue uses too. */
-function weakestBlock() {
-  const list = state.lessons
+function weakestList(n) {
+  return state.lessons
     .map(l => ({ l: l, pct: lessonScore(l) }))
     .filter(x => x.l.vocabulary.length && x.pct < 100)
     .sort((a, b) => a.pct - b.pct)
-    .slice(0, 3);
+    .slice(0, n);
+}
+function weakestBlock() {
+  const list = weakestList(3);
   if (!list.length) {
     return '<div><div class="eyebrow" style="margin-bottom:7px">Weakest lessons</div>' +
       '<div style="font-size:12.5px;color:var(--ink-3);line-height:1.5">' +
@@ -10648,14 +10863,14 @@ function renderScopeBar() {
   const A = aggregate(r.from, r.to);
   const acc = A.rev ? Math.round(A.ok / A.rev * 100) : 0;
   const sub = sc.kind === "day"
-    ? (A.rev ? plural(A.sessions, "drill") + " · " + A.lessons.size + " lessons touched" : "No reviews recorded")
+    ? (A.rev ? plural(A.sessions, "drill") + " · " + plural(A.lessons.size, "lesson") + " touched" : "No reviews recorded")
     : A.activeDays + " of " + A.spanDays + " days active · " + A.goalDays + " hit the goal";
 
   host.innerHTML =
     '<div class="scope">' +
       '<div class="scope__what"><b>' + esc(scopeTitle(sc)) + "</b><span>" + esc(sub) + "</span></div>" +
       '<div class="scope__nums">' +
-        "<div><b>" + A.rev + "</b><span>Cards</span></div>" +
+        '<div><b data-cu="' + A.rev + '" data-cuk="scope">' + A.rev + "</b><span>Cards</span></div>" +
         "<div><b>" + acc + "%</b><span>Correct</span></div>" +
         "<div><b>" + fmtMins(A.ms) + "</b><span>Time</span></div>" +
       "</div>" +
@@ -10682,6 +10897,29 @@ function deltaChip(now, before, label, invert) {
     Math.abs(pct) + "% vs " + esc(label) + "</span>";
 }
 
+/* accuracy is already a share, so its change is told in points: 75% to
+   80% is five points, not "7% up" */
+function deltaPts(now, before, has, label) {
+  if (!has) return now ? '<span class="metric__d">no comparison yet</span>' : "";
+  const d = now - before;
+  if (!d) return '<span class="metric__d">same as ' + esc(label) + "</span>";
+  return deltaChip(100 + d, 100, label).replace(/\d+% vs/, Math.abs(d) + (Math.abs(d) === 1 ? " point" : " points") + " vs");
+}
+
+/* Yesterday up to this time of day. A morning measured against a whole
+   finished day always looks like a fall, and that is not news. */
+function dayUntil(k, cut) {
+  const S = stats(), out = { rev: 0, ok: 0, ms: 0, drillRev: 0, drillMs: 0, spellMs: 0 };
+  state.events.forEach(e => {
+    if (!e || !e.t || e.t > cut || S.voided.has(e.id) || dkey(e.t) !== k) return;
+    const kind = e.k || "r";
+    if (kind === "r") { out.rev++; if (e.r) out.ok++; if (e.m !== "sp") out.drillRev++; }
+    else if (kind === "s") { out.ms += e.ms || 0; if (e.m === "sp") out.spellMs += e.ms || 0; else out.drillMs += e.ms || 0; }
+    else if (kind === "v" || kind === "m") out.ms += e.ms || 0;
+  });
+  return out;
+}
+
 function renderMetrics() {
   const host = $("#progMetrics");
   if (!host) return;
@@ -10697,11 +10935,13 @@ function renderMetrics() {
     const cut = shiftDay(pr.from, elapsed);
     prTo = cut < pr.to ? cut : pr.to;
   }
+  const today = sc.kind === "day" && sc.key === t;
   const label = sc.kind === "all" ? "before"
-    : sc.kind === "day" ? "yesterday"
+    : sc.kind === "day" ? (today ? "yesterday by now" : "the day before")
     : "last " + sc.kind + (running ? " so far" : "");
 
   const A = aggregate(r.from, r.to), B = aggregate(pr.from, prTo);
+  if (today) Object.assign(B, dayUntil(pr.from, Date.now() - 864e5));
   const acc = A.rev ? Math.round(A.ok / A.rev * 100) : 0;
   const pacc = B.rev ? Math.round(B.ok / B.rev * 100) : 0;
 
@@ -10713,7 +10953,7 @@ function renderMetrics() {
 
   const tiles = [
     ["Cards reviewed", A.rev, deltaChip(A.rev, B.rev, label)],
-    ["Correct", acc + "<small>%</small>", deltaChip(acc, pacc, label)],
+    ["Correct", acc + "<small>%</small>", deltaPts(acc, pacc, A.rev && B.rev, label)],
     ["Time studied", fmtMins(A.ms), deltaChip(A.ms, B.ms, label)],
     ["Seconds per card", perCard ? (perCard / 1000).toFixed(1) + "<small>s</small>" : "\u2014",
       perCard && pPerCard ? deltaChip(Math.round(perCard), Math.round(pPerCard), label, true)
@@ -10729,8 +10969,9 @@ function renderMetrics() {
          '<span class="metric__d">' + A.goalDays + " hit the goal</span>"]
   ];
 
-  host.innerHTML = '<div class="metrics">' + tiles.map(t =>
-    '<div class="metric"><div class="metric__k">' + t[0] + '</div><div class="metric__v">' + t[1] + "</div>" +
+  host.innerHTML = '<div class="metrics">' + tiles.map((t, i) =>
+    '<div class="metric"><div class="metric__k">' + t[0] + '</div><div class="metric__v"' +
+    (typeof t[1] === "number" ? ' data-cu="' + t[1] + '" data-cuk="m' + i + '"' : "") + ">" + t[1] + "</div>" +
     (t[2] || "") + "</div>").join("") + "</div>";
 }
 
@@ -10837,6 +11078,67 @@ function dayJournal(k) {
   return '<div class="dayjournal">' + rows.join("") + "</div>";
 }
 
+/* Next milestones beside personal records. Both are all time, so they
+   stay put while the range above them changes. The list of milestones
+   already reached grows for as long as you study, so it is folded. */
+let milesOpen = false;
+const ICO_CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+function milesBlock() {
+  const M = milestones(), t = todayKey(), weekAgo = shiftDay(t, -6);
+  const fmt = (L, v) => L.k === "hours" ? (v < 10 ? (Math.floor(v * 10) / 10).toFixed(1) : Math.floor(v)) : v.toLocaleString("en");
+  const rows = M.rows.map(x => {
+    const L = x.L;
+    if (!x.next) return '<div class="mile is-top"><div class="mile__top"><span class="mile__k">' + esc(L.label) + "</span>" +
+      '<span class="mile__v"><b>' + fmt(L, x.cur) + "</b></span></div>" +
+      '<div class="meter"><i class="is-full" style="width:100%"></i></div><div class="mile__note">Every step on this ladder is done.</div></div>';
+    const left = L.k === "hours" ? Math.max(0.1, x.next - x.cur) : x.next - x.cur;
+    const leftTxt = L.k === "hours"
+      ? (left < 1 ? Math.ceil(left * 60) + " min" : plural(Math.ceil(left), "hour"))
+      : plural(left, L.unit);
+    return '<div class="mile' + (x.frac >= .8 ? " is-near" : "") + '"><div class="mile__top"><span class="mile__k">' + esc(L.label) + "</span>" +
+      '<span class="mile__v"><b>' + fmt(L, x.cur) + "</b> / " + x.next.toLocaleString("en") + "</span></div>" +
+      '<div class="meter"><i style="width:' + Math.max(2, Math.round(x.frac * 100)) + '%"></i></div>' +
+      '<div class="mile__note">' + esc(leftTxt + " to go") + "</div></div>";
+  }).join("");
+  const n = M.earned.length;
+  const earned = n
+    ? '<div class="earned">' + M.earned.map(e =>
+        "<div><span>" + esc(e.name) + "</span>" +
+        (e.day && e.day >= weekAgo ? '<span class="wchip wchip--fresh">New</span>' : "") +
+        "<time>" + (e.day ? esc(niceDay(e.day)) : "now") + "</time></div>").join("") + "</div>"
+    : '<div class="syncp__none">Your first milestone is three days in a row, or ten words met.</div>';
+  const fresh = (k, lbl) => k ? '<span class="wchip wchip--fresh">' + lbl + "</span> " : "";
+  const rec = [
+    { k: "Longest run", note: M.current >= M.best && M.best > 1 ? "and you are on it now" : "now at " + plural(M.current, "day"),
+      v: fresh(M.current >= M.best && M.best > 1, "Now") + plural(M.best, "day") },
+    { k: "Best day", note: M.bestDay ? niceDay(M.bestDay.k) : "nothing yet",
+      v: M.bestDay ? fresh(M.bestDay.k === t, "Today") + plural(M.bestDay.v, "card") : "—" },
+    { k: "Most time in a day", note: M.bestMs ? niceDay(M.bestMs.k) : "nothing yet",
+      v: M.bestMs ? fresh(M.bestMs.k === t, "Today") + fmtMins(M.bestMs.v) : "—" },
+    { k: "Best week", note: M.bestWeek ? "week of " + niceDayLower(M.bestWeek.k) : "nothing yet",
+      v: M.bestWeek ? fresh(M.bestWeek.k === weekStartKey(t), "This week") + plural(M.bestWeek.v, "card") : "—" },
+    { k: "Best month", note: M.bestMonth ? MONTHS[+M.bestMonth.k.slice(5) - 1] + " " + M.bestMonth.k.slice(0, 4) : "nothing yet",
+      v: M.bestMonth ? fresh(M.bestMonth.k === t.slice(0, 7), "This month") + plural(M.bestMonth.v, "card") : "—" }
+  ];
+  return '<div class="cols" style="margin-bottom:16px">' +
+    '<div class="chart" style="margin-bottom:0">' +
+      '<div class="chart__head"><div><h3>Next milestones</h3>' +
+        "<p>All time, the closest first.</p></div></div>" +
+      '<div class="miles">' + rows + "</div>" +
+      '<div class="fold' + (milesOpen ? " is-open" : "") + '">' +
+        '<button type="button" class="fold__btn" data-miles="1" aria-expanded="' + milesOpen + '" aria-controls="milesEarned">' +
+          '<span class="eyebrow">Reached</span><span class="syncp__count">' + n + "</span>" + ICO_CHEV + "</button>" +
+        '<div class="fold__body" id="milesEarned"' + (milesOpen ? "" : " inert") + "><div>" + earned + "</div></div>" +
+      "</div>" +
+    "</div>" +
+    '<div class="chart" style="margin-bottom:0">' +
+      '<div class="chart__head"><div><h3>Personal records</h3>' +
+        "<p>Your best so far. A record set this week is marked.</p></div></div>" +
+      krows(rec) +
+    "</div>" +
+  "</div>";
+}
+
 const BOXNAMES = ["Untouched", "Box 1", "Box 2", "Box 3", "Box 4", "Box 5"];
 const BOXCOL = ["var(--rule)", "var(--heat-1)", "var(--heat-2)", "var(--heat-3)", "var(--heat-4)", "var(--ok)"];
 
@@ -10878,6 +11180,7 @@ function renderCharts() {
     : "Cards each month";
 
   host.innerHTML =
+    milesBlock() +
     '<div class="chart">' +
       '<div class="chart__head"><div><h3>' + activityTitle + "</h3>" +
         "<p>" + (sc.kind === "day" ? "When the reviews happened." : "Tap a bar to jump the whole page to that " +
@@ -10950,7 +11253,7 @@ function renderCharts() {
                      title: niceDay(k) + " · " + (D ? D.rev : 0) + " cards" });
         }
         return out;
-      })(), { goalLine: g.cards, h: 120, aria: "Cards over the last thirty days" }) +
+      })(), { goalLine: g.cards, h: 120, pick: "day", aria: "Cards over the last thirty days" }) +
     "</div>";
 }
 
@@ -10962,7 +11265,7 @@ function renderProgress() {
 
   /* The header above belongs to every tab. Only the two hosts below swap. */
   const M = $("#progMetrics"), C = $("#progCharts");
-  if (state.ptab === "overview") { renderMetrics(); renderCharts(); return; }
+  if (state.ptab === "overview") { renderMetrics(); renderCharts(); progMotion(); return; }
   if (M) M.innerHTML = "";
   if (!C) return;
   C.innerHTML =
@@ -10971,9 +11274,71 @@ function renderProgress() {
     : state.ptab === "writing" ? renderWritingTab()
     : state.ptab === "year"    ? renderYearTab()
     : "";
+  progMotion();
+}
+
+/* ---------- motion on the Progress page ----------
+   The page is rebuilt from strings, so a ring re-created at its new
+   value has nothing to move from and a new chart simply appears. The
+   page therefore remembers the figures it last showed and, after each
+   build, plays the difference:
+     enter  you arrived: rings fill, numbers count and charts draw from zero
+     swap   you picked a range or a tab: the part below lifts in and draws
+     (none) a quiet rebuild after a sync or a drill: only changed figures move */
+const pmo = { mode: "enter", prev: {} };
+function progMotion() {
+  const mode = pmo.mode;
+  pmo.mode = null;
+  const root = $("#view-progress");
+  if (!root) return;
+  const calm = reducedMotion();
+
+  root.querySelectorAll(".ring__fill[data-rk]").forEach(el => {
+    const k = "r:" + el.dataset.rk, C = +el.dataset.c, p = +el.dataset.p;
+    const from = mode === "enter" ? 0 : (pmo.prev[k] != null ? pmo.prev[k] : p);
+    pmo.prev[k] = p;
+    el.dataset.off = String(C * (1 - p));
+    if (calm || from === p) return;
+    el.style.transition = "none";
+    el.style.strokeDashoffset = C * (1 - from);
+    el.getBoundingClientRect();
+    el.style.transition = "";
+    el.style.strokeDashoffset = C * (1 - p);
+  });
+
+  root.querySelectorAll("[data-cu]").forEach(el => {
+    const k = el.dataset.cuk, to = +el.dataset.cu;
+    const from = mode === "enter" ? 0 : (pmo.prev["n:" + k] != null ? pmo.prev["n:" + k] : to);
+    pmo.prev["n:" + k] = to;
+    if (calm || from === to) return;
+    countTo(el, from, to);
+  });
+
+  if (mode === "enter") renderPTabs();
+  const hosts = ["#progToday", "#progMetrics", "#progCharts"].map(q => $(q)).filter(Boolean);
+  hosts.forEach(h => h.classList.remove("is-grow", "is-lift"));
+  if (!mode) return;
+  hosts.forEach(h => h.offsetWidth);
+  hosts.forEach(h => {
+    if (mode === "enter" || h.id !== "progToday") h.classList.add("is-grow");
+    if (mode === "swap" && h.id !== "progToday") h.classList.add("is-lift");
+  });
+}
+/* a figure counts up (or down) to its new value along the app's curve */
+function countTo(el, from, to) {
+  const t0 = performance.now(), dur = 620;
+  el.textContent = from;
+  const step = now => {
+    if (!el.isConnected) return;
+    const f = Math.min(1, (now - t0) / dur);
+    el.textContent = Math.round(from + (to - from) * easeAt(f));
+    if (f < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 function setPTab(k) {
   if (state.ptab === k) return;
+  pmo.mode = "swap";
   state.ptab = k;
   state.settings.ptab = k;
   writeProgress();
@@ -10986,6 +11351,7 @@ function setPTab(k) {
 }
 
 function setScope(kind, key) {
+  pmo.mode = "swap";
   state.scope = { kind: kind, key: key || state.scope.key || todayKey() };
   if (kind !== "all" && key) {
     const d = keyDate(key);
@@ -11677,7 +12043,20 @@ function extraClick(e) {
   if (t.closest("#btnLogStudy2")) { logStudyDialog(); return true; }
 
   const dz = t.closest("[data-day]");
-  if (dz) { setScope("day", dz.dataset.day); return true; }
+  if (dz) {
+    /* a square in the year opens that day, and the day is read on the Overview */
+    if (dz.closest(".year")) { state.ptab = "overview"; state.settings.ptab = "overview"; writeProgress(); }
+    setScope("day", dz.dataset.day); return true;
+  }
+  const mo = t.closest("[data-miles]");
+  if (mo) {
+    milesOpen = !milesOpen;
+    const f = mo.closest(".fold"), body = f.querySelector(".fold__body");
+    f.classList.toggle("is-open", milesOpen);
+    mo.setAttribute("aria-expanded", String(milesOpen));
+    body.inert = !milesOpen;
+    return true;
+  }
   const wz = t.closest("[data-week]");
   if (wz) { setScope("week", wz.dataset.week); return true; }
   const mz = t.closest("[data-scope-month]");
@@ -11689,12 +12068,15 @@ function extraClick(e) {
     const d = +cz.dataset.cal;
     if (d === 0) { const n = new Date(); state.cal = { y: n.getFullYear(), m: n.getMonth() }; }
     else { const n = new Date(state.cal.y, state.cal.m + d, 1); state.cal = { y: n.getFullYear(), m: n.getMonth() }; }
-    renderCal(); return true;
+    renderCal();
+    const gr = $("#progCal .cal__grid");
+    if (gr) { gr.style.setProperty("--sx", d > 0 ? "18px" : d < 0 ? "-18px" : "0px"); gr.classList.add("is-slide"); }
+    return true;
   }
   const pk = t.closest("[data-pick]");
   if (pk && t.closest(".chart")) {
     const k = pk.dataset.pick;
-    if (k) setScope(state.scope.kind === "year" || state.scope.kind === "all" ? "month" : "day", k);
+    if (k) setScope(pk.dataset.pickkind || (state.scope.kind === "year" || state.scope.kind === "all" ? "month" : "day"), k);
     return true;
   }
   const prac = t.closest("[data-practice]");
@@ -12892,6 +13274,14 @@ function tickClocks() {
   if (lses) lses.textContent = clock.kind ? hms(liveStudyMs()) : "—";
   const lvisit = document.getElementById("liveVisit");
   if (lvisit) lvisit.textContent = hms(appClock.visit());
+  /* the minutes ring on Progress moves while you study, as it promises */
+  const rt = document.getElementById("ringTime");
+  if (rt) {
+    const ms = liveTodayMs(), p = Math.min(1, ms / (goals().mins * 60000)), o = String(+rt.dataset.c * (1 - p));
+    if (rt.dataset.off !== o) { rt.dataset.off = o; rt.dataset.p = p; rt.style.strokeDashoffset = o; pmo.prev["r:time"] = p; }
+    const rv = document.getElementById("ringTimeV");
+    if (rv) rv.textContent = Math.round(ms / 60000);
+  }
 }
 setInterval(tickClocks, 1000);
 
@@ -13105,12 +13495,41 @@ const PTABS = [
   { k: "year",     label: "Year" }
 ];
 
+/* The tab row is built once. After that a tab change only flips
+   aria-selected and sends the one underline across, so it travels from
+   the old tab to the new one instead of blinking between them. */
 function renderPTabs() {
   const host = $("#progTabs");
   if (!host) return;
-  host.innerHTML = '<div class="ptabs" role="tablist">' + PTABS.map(t =>
-    '<button role="tab" data-ptab="' + t.k + '" aria-selected="' + (state.ptab === t.k) + '">' +
-    esc(t.label) + "</button>").join("") + "</div>";
+  let bar = host.querySelector(".ptabs");
+  if (!bar) {
+    host.innerHTML = '<div class="ptabs" role="tablist">' + PTABS.map(t =>
+      '<button role="tab" data-ptab="' + t.k + '" aria-selected="false">' + esc(t.label) + "</button>").join("") +
+      '<i class="ptabs__ind" aria-hidden="true"></i></div>';
+    bar = host.querySelector(".ptabs");
+  }
+  let on = null;
+  bar.querySelectorAll("[data-ptab]").forEach(b => {
+    const sel = b.dataset.ptab === state.ptab;
+    if (sel) on = b;
+    if (b.getAttribute("aria-selected") !== String(sel)) b.setAttribute("aria-selected", String(sel));
+  });
+  placePTab(bar, on);
+}
+function placePTab(bar, on) {
+  const ind = bar.querySelector(".ptabs__ind");
+  if (!ind || !on || !on.offsetWidth) return;
+  const w = on.offsetWidth - 20, x = on.offsetLeft + 10;
+  const first = !ind.dataset.x;
+  if (first) ind.style.transition = "none";
+  ind.style.transform = "translateX(" + x + "px) scaleX(" + (w / 100) + ")";
+  ind.dataset.x = x;
+  if (first) { ind.getBoundingClientRect(); ind.style.transition = ""; }
+  /* on a phone the row scrolls: keep the chosen tab in view */
+  const l = on.offsetLeft, r = l + on.offsetWidth;
+  if (l < bar.scrollLeft || r > bar.scrollLeft + bar.clientWidth) {
+    bar.scrollTo({ left: Math.max(0, l - 24), behavior: reducedMotion() ? "auto" : "smooth" });
+  }
 }
 
 /* ---------- TIME ---------- */
@@ -13126,7 +13545,7 @@ function renderTimeTab() {
     /* an hour-by-hour picture of a single day comes from the sessions */
     const hrs = new Array(24).fill(0);
     state.events.forEach(e => {
-      if (!e || !e.ms || dkey(e.t) !== sc.key) return;
+      if (!e || !e.ms || S.voided.has(e.id) || dkey(e.t) !== sc.key) return;
       if (e.k !== "s" && e.k !== "v" && e.k !== "m") return;
       hrs[new Date(e.t).getHours()] += e.ms;
     });
@@ -13159,7 +13578,7 @@ function renderTimeTab() {
   /* the sessions themselves, newest first */
   const sess = [];
   state.events.forEach(e => {
-    if (!e || !e.t) return;
+    if (!e || !e.t || S.voided.has(e.id)) return;
     const k = dkey(e.t);
     if (k < r.from || k > r.to) return;
     if (e.k === "s" || e.k === "v" || e.k === "m") sess.push(e);
@@ -13388,7 +13807,7 @@ function renderWordsTab() {
         "<p>Distinct words you have reviewed at least once, adding up. It never goes down.</p></div>" +
         '<div class="section-head__actions"><span class="chip">' + S.firstSeen.size + " words</span></div></div>" +
       (pts.length > 1
-        ? lineChart(pts.map(p => ({ k: p.k, label: p.label, v: p.v / gMax * 100 })), { h: 132 }).replace(/class="line"/, 'class="line2"').replace(/class="area"/, 'class="area2"')
+        ? lineChart(pts.map(p => ({ k: p.k, label: p.label, v: p.v / gMax * 100 })), { h: 132, top: gMax, fmt: v => plural(Math.round(v / 100 * gMax), "word") }).replace(/class="line"/, 'class="line2"').replace(/class="area"/, 'class="area2"')
         : '<div class="chart__empty">Review on two different days and this curve appears.</div>') +
       (pts.length > 1 ? '<div class="chart__note">Top of the axis is <b>' + gMax + " words</b>. The steeper the line, the faster new vocabulary is coming in.</div>" : "") +
     "</div>" +
