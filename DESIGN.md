@@ -105,6 +105,7 @@ The primary button text is `#fff` in light theme and `#0B0E10` in dark.
 | Empty state | `.empty` / `.pickdeck` | serif headline, 13–14px explanation, dashed rule border on `--surface-2` |
 | Meter | `.meter` > `i` | 3px track, `--signal` fill, `--ok` when full |
 | Page header | `.page-head` | title, subtitle max 52ch, actions right, rule underneath |
+| Lesson header | `.masthead` + `.reader__bar` | eyebrow (level · topic) and mono `known/total` on one rule; serif title; one line of subtitle (German, then English in `--ink-3`); actions: one primary, one secondary, then a 38px dots button (`.masthead__more`) opening an `openMenu` for rarer actions. The sticky reader bar holds only the English `.seg` (eyebrow label) and a 36px `Aa` button |
 
 **Icons:** inline SVG, 24×24 viewBox, `fill="none" stroke="currentColor"`,
 stroke-width 1.7–1.8 for normal icons (2 for small chevrons and marks), round caps and joins. Reuse the ones in `MI` and

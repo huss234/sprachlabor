@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.5 · neural German, cached on device -->
+<!-- Sprachlabor — v3.6 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -511,8 +511,12 @@ ul,ol{margin:0;padding:0;list-style:none}
   font-family:var(--serif);font-size:clamp(34px,5.2vw,52px);font-weight:400;
   letter-spacing:-.026em;line-height:1.05;margin-bottom:8px;
 }
-.masthead__en{font-size:15px;color:var(--ink-2);font-style:italic;margin-bottom:16px}
+.masthead__stat{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.03em;white-space:nowrap;flex:none}
+.masthead__en{font-size:15px;color:var(--ink-2);margin-bottom:20px;display:flex;flex-wrap:wrap;column-gap:10px}
+.masthead__en span{color:var(--ink-3)}
 .masthead__meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.masthead__more{width:38px;padding:0;justify-content:center}
+.masthead__more svg{width:16px;height:16px}
 
 /* ---------- reader ---------- */
 .reader{max-width:var(--measure);margin-bottom:14px}
@@ -522,6 +526,8 @@ ul,ol{margin:0;padding:0;list-style:none}
   position:sticky;top:0;z-index:20;background:var(--paper);
 }
 .reader__bar .eyebrow{flex:none}
+.reader__tr{display:flex;align-items:center;gap:12px;min-width:0}
+.reader__aa{width:36px;height:36px;padding:0;justify-content:center}
 .sent{display:block;margin-bottom:2px;padding:2px 0;border-radius:3px;transition:background .15s var(--ease)}
 .sent:hover,.sent.is-said{background:var(--surface-2)}
 .de-text{
@@ -3801,9 +3807,9 @@ button.wrow:hover{background:var(--signal-soft)}
               <h3>Translation shown by default</h3>
               <p>What the reader shows when you open a lesson. You can still switch it inside any lesson — the last choice you make there becomes the new default.</p>
               <div class="seg seg--full" id="trSeg" role="group" aria-label="Default translation mode">
-                <button data-tr="off" aria-pressed="true">Hide English</button>
-                <button data-tr="inline" aria-pressed="false">Line by line</button>
-                <button data-tr="full" aria-pressed="false">Full text</button>
+                <button data-tr="off" aria-pressed="true">Hide</button>
+                <button data-tr="inline" aria-pressed="false">By line</button>
+                <button data-tr="full" aria-pressed="false">Full</button>
               </div>
             </div>
             <div id="readStudy"></div>
@@ -6803,43 +6809,42 @@ function renderLesson(id) {
       '<div class="masthead__rule">' +
         '<span class="eyebrow">' + esc(lesson.level) + (lesson.topic ? " · " + esc(lesson.topic) : "") + "</span>" +
         '<span class="line"></span>' +
-        '<span class="eyebrow">' + cards.length + " cards · " + known + " known · " + hard + " hard</span>" +
-      "</div>" +
-      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:2px">' +
-        '<span class="chip--kind' + (isDeck ? " is-deck" : "") + '">' + (isDeck ? "Deck file" : "Paragraph file") + "</span>" +
-        '<span class="eyebrow">' + esc(pathLabel(lesson.folder)) + "</span>" +
+        '<span class="masthead__stat">' + known + "/" + cards.length + " known</span>" +
       "</div>" +
       "<h1>" + esc(fileName(lesson)) + "</h1>" +
-      (lesson.title && lesson.title !== fileName(lesson) ? '<div class="masthead__en">' + esc(lesson.title) + "</div>" : "") +
-      (lesson.titleEn ? '<div class="masthead__en">' + esc(lesson.titleEn) + "</div>" : "") +
+      /* one quiet line under the name: the German title, then the English */
+      ((lesson.title && lesson.title !== fileName(lesson)) || lesson.titleEn
+        ? '<div class="masthead__en">' +
+            (lesson.title && lesson.title !== fileName(lesson) ? esc(lesson.title) : "") +
+            (lesson.titleEn ? "<span>" + esc(lesson.titleEn) + "</span>" : "") +
+          "</div>" : "") +
+      /* Study is the one action; Spell is the other way in. The rarer
+         ones (only the hard cards, the Cards view, export) sit behind
+         the dots so the row stays one line on a phone. */
       '<div class="masthead__meta">' +
         '<button class="btn btn--primary" data-drill="1">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l13 8-13 8z"/></svg>' +
-          "Study the " + cards.length + " cards</button>" +
-        (hard ? '<button class="btn" data-reviewfile="' + esc(lesson.id) + '" data-only="hard">Only the ' + hard + " hard</button>" : "") +
+          "Study " + cards.length + " cards</button>" +
         '<button class="btn" data-spfile="' + esc(lesson.id) + '">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 6.5l3 3"/></svg>' +
-          "Spell them</button>" +
-        '<button class="btn" data-goto="cards/l:' + esc(lesson.id) + '">Browse in Cards</button>' +
-        '<button class="btn" data-export="' + esc(lesson.id) + '">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v11M8 11l4 4 4-4M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>' +
-          "Export</button>" +
+          "Spell</button>" +
+        '<button class="btn masthead__more" data-lhmenu="' + esc(lesson.id) + '" aria-expanded="false" aria-label="More for this file">' + ICO_DOTS + "</button>" +
       "</div>" +
     "</header>" +
 
     (isDeck ? "" :
     '<div class="reader">' +
       '<div class="reader__bar">' +
-        '<span class="eyebrow">Deutsch</span>' +
-        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
-          '<div class="seg" data-tr-mode>' +
-            '<button data-tr="off"    aria-pressed="' + (mode === "off") + '">Hide English</button>' +
-            '<button data-tr="inline" aria-pressed="' + (mode === "inline") + '">Line by line</button>' +
-            '<button data-tr="full"   aria-pressed="' + (mode === "full") + '">Full text</button>' +
+        '<div class="reader__tr">' +
+          '<span class="eyebrow">English</span>' +
+          '<div class="seg" data-tr-mode role="group" aria-label="English translation">' +
+            '<button data-tr="off"    aria-pressed="' + (mode === "off") + '">Hide</button>' +
+            '<button data-tr="inline" aria-pressed="' + (mode === "inline") + '">By line</button>' +
+            '<button data-tr="full"   aria-pressed="' + (mode === "full") + '">Full</button>' +
           "</div>" +
-          '<button class="btn btn--sm" data-readpop="1" aria-expanded="false" title="Text size and readability">' +
-            ICO_AA + "Size</button>" +
         "</div>" +
+        '<button class="btn reader__aa" data-readpop="1" aria-expanded="false" title="Text size and readability" aria-label="Text size">' +
+          ICO_AA + "</button>" +
       "</div>" +
       '<div class="de-text" id="readerText">' + reader + "</div>" +
     "</div>") +
@@ -9344,7 +9349,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.5";
+const APP_VERSION = "3.6";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -11342,6 +11347,24 @@ function folderMenu(anchor, id) {
   ]);
 }
 
+/* the rarer actions of an open lesson, behind the dots next to Study */
+function lessonHeadMenu(anchor, id) {
+  const l = state.lessons.find(x => x.id === id);
+  if (!l) return;
+  const hard = l.vocabulary.filter(v => statusOf(l.id, v) === "hard").length;
+  const items = [];
+  if (hard) items.push({ id: "hard", label: "Study the hard ones", icon: ICO_DRILL, meta: String(hard), run: () => startDrill(l, "hard") });
+  items.push(
+    { id: "cards", label: "Browse in Cards", icon: MI.open, run: () => go("cards", "l:" + id) },
+    "-",
+    { id: "ex", label: "Export file", icon: MI.down, run: () => {
+        download(lessonFilename(l), JSON.stringify(cleanLesson(l), null, 2));
+        toast("Saved " + lessonFilename(l));
+      } }
+  );
+  openMenu(anchor, items);
+}
+
 function lessonMenu(anchor, id) {
   const l = state.lessons.find(x => x.id === id);
   if (!l) return;
@@ -11565,6 +11588,9 @@ function extraClick(e) {
   /* --- the app bar: the dots open and close their own menu --- */
   const amb = t.closest("#appMenuBtn");
   if (amb) { e.stopPropagation(); if (menuNode && menuFrom === amb) closeMenu(); else appMenu(amb); return true; }
+  /* the dots beside Study on a lesson */
+  const lhm = t.closest("[data-lhmenu]");
+  if (lhm) { e.stopPropagation(); if (menuNode && menuFrom === lhm) closeMenu(); else lessonHeadMenu(lhm, lhm.dataset.lhmenu); return true; }
   /* and so does the details segment of the sync control */
   const smo = t.closest("#syncMore");
   if (smo) {
