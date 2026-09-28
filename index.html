@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.8 · neural German, cached on device -->
+<!-- Sprachlabor — v3.9 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -1413,39 +1413,247 @@ pre.spec b{color:var(--signal);font-weight:500}
 .menu [aria-checked="true"] .menu__sw::after{transform:translateX(13px)}
 
 /* ============================================================
-   HOME — today in one sentence, then the way back into the work.
-   Built from the Progress and Library parts; only the glue is new.
+   HOME — a dashboard. The instrument at the top is the one place
+   the app goes dark: graphite, graph paper, a dial with sixty ticks
+   and one yellow needle colour, the way a Braun panel reads. Under
+   it the page returns to paper: figures, the file you had open, the
+   cards by status, and a shelf you can swipe.
    ============================================================ */
-.home-head .eyebrow{display:block;margin-bottom:8px}
-.home-head h1{font-family:var(--serif);font-weight:500;letter-spacing:-.012em}
-.hstats{margin-bottom:16px}
-.hstats b i{font-style:normal}
-.hstats b small{font-size:12px;font-weight:500;color:var(--ink-3);letter-spacing:0;margin-left:4px}
-.hstats .meter{display:block;flex:none;margin-top:11px}
-.hitem{
-  background:var(--surface-2);border:1px solid var(--rule-2);border-radius:var(--r-md);padding:14px 16px;
+.hhome{--k:0}
+.hhome > *{margin-bottom:18px}
+
+/* --- the instrument --- */
+.hhero{
+  position:relative;overflow:hidden;isolation:isolate;
+  background:var(--ink);color:var(--paper);border-radius:var(--r-lg);
+  padding:20px 24px 18px;
+}
+:root[data-theme="dark"] .hhero{background:var(--surface-2);color:var(--ink);border:1px solid var(--rule)}
+/* graph paper, fading out from behind the dial */
+.hhero::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(to right,color-mix(in srgb,currentColor 7%,transparent) 1px,transparent 1px),
+    linear-gradient(to bottom,color-mix(in srgb,currentColor 7%,transparent) 1px,transparent 1px);
+  background-size:22px 22px;background-position:-1px -1px;
+  -webkit-mask-image:radial-gradient(120% 90% at 16% 42%,#000 0%,transparent 72%);
+          mask-image:radial-gradient(120% 90% at 16% 42%,#000 0%,transparent 72%);
+}
+.hhero__top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.hhero__hi{font-family:var(--serif);font-size:22px;font-weight:500;letter-spacing:-.01em;line-height:1.1}
+.hhero__date{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;opacity:.55;flex:none}
+.hhero__main{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,.8fr);gap:30px;align-items:center;margin-top:16px}
+/* the readout: what is left of today and what the run is heading for */
+.hfacts{align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding-left:26px;border-left:1px solid color-mix(in srgb,currentColor 14%,transparent)}
+.hfacts div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid color-mix(in srgb,currentColor 9%,transparent)}
+.hfacts div:last-child{border-bottom:none}
+.hfacts dt{font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+.hfacts dd{margin:0;font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.hfacts dd small{font-size:10.5px;font-weight:500;opacity:.6;margin-left:3px}
+.hfacts dd.is-y{color:var(--stress)}
+.hhero__line{font-size:13px;line-height:1.5;opacity:.72;margin-top:16px;max-width:60ch}
+.hhero__foot{margin-top:16px;padding-top:14px;border-top:1px solid color-mix(in srgb,currentColor 14%,transparent)}
+.hhero__lab{display:flex;justify-content:space-between;gap:10px;margin-bottom:9px;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.hhero__lab span{opacity:.55}
+.hhero__lab b{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.02em;text-transform:none;opacity:.8}
+
+/* the dial: sixty ticks light up to today's cards; two arcs, cards and minutes */
+.hdial{position:relative;width:176px;height:176px;flex:none}
+.hdial svg{width:100%;height:100%;overflow:visible}
+.hdial__t{stroke:currentColor;stroke-width:1.5;stroke-linecap:round;opacity:.2;transition:opacity .22s var(--ease) calc(var(--i) * 13ms)}
+.hdial__t.is-long{stroke-width:2.2}
+.hdial__t.on{opacity:1}
+.harc{fill:none;stroke:currentColor;stroke-linecap:round;stroke-dasharray:1 1;transition:stroke-dashoffset 1.1s var(--ease) .12s}
+.harc.is-zero{opacity:0}
+.htrack{fill:none;stroke:currentColor;opacity:.13}
+.hdial .harc--cards{stroke:currentColor}
+.harc--mins{stroke:var(--stress)}
+.hdial__mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.hdial__mid b{font-family:var(--mono);font-size:42px;font-weight:600;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.hdial__mid span{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:6px}
+.hdial__mid em{font-style:normal;font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--stress);margin-top:7px}
+:root:not([data-theme="dark"]) .hdial__mid em{color:var(--stress)}
+.hdial__done{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:18px;height:18px;border-radius:100px;background:var(--stress);color:var(--stress-ink);display:grid;place-items:center}
+.hdial__done svg{width:11px;height:11px}
+
+.hside{min-width:0}
+.hstreak{display:flex;align-items:flex-end;gap:14px}
+.hstreak > b{font-family:var(--mono);font-size:clamp(48px,8vw,68px);font-weight:600;letter-spacing:-.06em;line-height:.82;font-variant-numeric:tabular-nums}
+.hstreak span{display:block;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.hstreak small{display:block;font-size:12px;opacity:.72;margin-top:5px;line-height:1.35}
+.hstreak.is-hot > b{color:var(--stress)}
+
+/* the week, as seven gauges */
+.hweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;margin-top:20px;max-width:360px}
+.hweek__d{display:flex;flex-direction:column;align-items:center;gap:6px}
+.hweek__bar{position:relative;width:100%;height:48px;border-radius:4px;overflow:hidden;background:color-mix(in srgb,currentColor 10%,transparent)}
+.hweek__bar i{position:absolute;left:0;right:0;bottom:0;height:100%;border-radius:4px;background:currentColor;opacity:.85;transform-origin:50% 100%;transition:transform .6s var(--ease) calc(.25s + var(--i) * 55ms)}
+.hweek__d.is-met .hweek__bar i{background:var(--stress);opacity:1}
+.hweek__d.is-rest .hweek__bar{background:repeating-linear-gradient(135deg,color-mix(in srgb,currentColor 16%,transparent) 0 2px,transparent 2px 5px)}
+.hweek__d b{font-family:var(--mono);font-size:10px;font-weight:600;opacity:.5}
+.hweek__d.is-today b{opacity:1;color:var(--stress)}
+.hweek__d.is-today .hweek__bar{box-shadow:inset 0 0 0 1px color-mix(in srgb,currentColor 45%,transparent)}
+.hweek__d.is-future{opacity:.45}
+
+/* thirty days as a spectrum: height is the work, strength is the heat level */
+.hmonth{display:flex;align-items:flex-end;gap:3px;height:38px}
+.hmonth i{flex:1;min-width:0;height:100%;border-radius:2px;background:currentColor;transform-origin:50% 100%;transition:transform .5s var(--ease) calc(var(--i) * 16ms)}
+.hmonth i.l0{opacity:.14}
+.hmonth i.l1{opacity:.38}
+.hmonth i.l2{opacity:.56}
+.hmonth i.l3{opacity:.76}
+.hmonth i.l4{opacity:1}
+.hmonth i.is-today{background:var(--stress);opacity:1}
+
+/* --- figures --- */
+.hkpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.hkpi{
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0;text-align:left;
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);padding:15px 16px 14px;
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease),border-color .16s var(--ease);
+}
+.hkpi b{font-family:var(--mono);font-size:27px;font-weight:600;letter-spacing:-.04em;line-height:1.05;margin-top:6px;font-variant-numeric:tabular-nums}
+.hkpi b i{font-style:normal}
+.hkpi b small{font-size:12px;font-weight:500;color:var(--ink-3);letter-spacing:0;margin-left:4px}
+.hkpi em{font-style:normal;font-size:12px;color:var(--ink-2);line-height:1.35}
+.hkpi__ring{position:absolute;top:13px;right:13px;width:34px;height:34px;color:var(--ok)}
+.hkpi__ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hmix{display:flex;gap:2px;width:100%;height:6px;margin-top:4px}
+.hmix i{min-width:3px;border-radius:2px;transform-origin:0 50%}
+.hdelta{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink-3)}
+.hdelta svg{width:11px;height:11px}
+.hdelta.is-up{color:var(--ok)}
+.hdelta.is-down{color:var(--die)}
+
+/* --- the two columns --- */
+.hgrid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:16px;align-items:start}
+.hsec{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:11px}
+.hsec h2{font-size:19px;font-weight:600;letter-spacing:-.018em}
+.hlink{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--signal);padding:4px 2px;transition:transform .1s var(--ease)}
+.hlink svg{width:13px;height:13px;transition:transform .16s var(--ease)}
+.hlink:active{transform:scale(.97)}
+.hpick{display:flex;flex-direction:column;gap:12px}
+
+.hsess{
+  display:flex;gap:16px;align-items:center;background:var(--surface);
+  border:1px solid var(--rule);border-left:3px solid var(--signal);border-radius:var(--r-lg);padding:16px 18px;
   transition:opacity .16s cubic-bezier(.4,0,1,1),transform .16s cubic-bezier(.4,0,1,1);
 }
-.hitem + .hitem{margin-top:10px}
-.hitem.is-leaving{opacity:0;transform:translateY(4px) scale(.985)}
-.hitem__top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-.hitem__when{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);flex:none}
-.hitem__name{font-size:15px;font-weight:600;letter-spacing:-.01em;margin-top:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hitem > .hitem__name:first-child{margin-top:0}
-.hitem__note{font-size:13px;color:var(--ink-2);line-height:1.5;margin-top:6px}
-.hitem__meta{display:flex;align-items:center;gap:10px;margin-top:11px}
-.hitem__meta > span:last-child{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);flex:none}
-.hitem__acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.hcards .mixbar{height:10px;margin-bottom:14px}
-.hcards .pickup__p,.hweak .pickup__p{width:auto;min-width:32px}
-.hcards .pickup button:disabled{opacity:.45;cursor:default;transform:none;background:var(--surface)}
-.hcards .pickup button:disabled .pickup__go{color:var(--ink-3)}
-.hdot{width:9px;height:9px;border-radius:100px;flex:none}
-.hcards__foot{display:flex;justify-content:flex-end;margin-top:12px}
-.hweak{margin-bottom:26px}
+.hsess.is-leaving{opacity:0;transform:translateY(4px) scale(.985)}
+.hsess__ring{position:relative;width:60px;height:60px;flex:none;color:var(--signal)}
+.hsess__ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hsess__ring b{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink)}
+.hsess__body{min-width:0;flex:1}
+.hsess h3{font-size:16px;font-weight:600;letter-spacing:-.01em;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hsess p{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.hsess__acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+
+.hread{
+  position:relative;display:block;cursor:pointer;overflow:hidden;
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);padding:18px 20px 16px;
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease),border-color .16s var(--ease);
+}
+.hread__top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hread h3{font-size:22px;font-weight:600;letter-spacing:-.022em;line-height:1.2;margin-top:10px}
+.hread__de{
+  font-family:var(--serif);font-size:16.5px;line-height:1.55;color:var(--ink-2);margin-top:8px;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.hread__de::before{content:"\201E"}
+.hread__de::after{content:"\201C"}
+.hread__foot{display:flex;align-items:center;gap:12px;margin-top:16px}
+.hread__foot .meter{flex:1}
+.hread__pct{font-family:var(--mono);font-size:11px;color:var(--ink-3);flex:none}
+.hread__foot .btn{flex:none}
+.hnone{background:var(--surface-2);border:1.5px dashed var(--rule);border-radius:var(--r-lg);padding:22px 20px;text-align:center}
+.hnone h3{font-family:var(--serif);font-size:20px;font-weight:400}
+.hnone p{font-size:13px;color:var(--ink-2);margin:6px auto 14px;max-width:40ch;line-height:1.5}
+
+.hcards{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);padding:16px 16px 14px}
+.hbar{display:flex;gap:3px;height:12px;margin-bottom:12px}
+.hbar i{min-width:4px;border-radius:3px;transform-origin:0 50%}
+.htiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.htile{
+  display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;text-align:left;
+  padding:11px 12px 10px;background:var(--surface-2);border:1px solid var(--rule-2);border-top:3px solid var(--c);border-radius:var(--r-md);
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease),border-color .16s var(--ease),background .16s var(--ease);
+}
+.htile b{font-family:var(--mono);font-size:24px;font-weight:600;letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums}
+.htile span{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.htile em{display:inline-flex;align-items:center;gap:4px;font-style:normal;font-size:11.5px;font-weight:600;color:var(--ink-3);margin-top:7px;transition:color .14s var(--ease)}
+.htile em svg{width:10px;height:10px}
+.htile:disabled{opacity:.45;cursor:default}
+.hcards__weak{margin-top:16px}
+.hcards__weak .eyebrow{display:block;margin-bottom:8px}
+.hcards .pickup__p{width:auto;min-width:32px}
+
+/* recently opened: a shelf you swipe */
+.hshelf{
+  display:grid;grid-auto-flow:column;grid-auto-columns:minmax(210px,1fr);gap:12px;
+  overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;
+  padding:4px 2px 6px;margin:-4px -2px 0;
+}
+.hshelf::-webkit-scrollbar{display:none}
+.hbook{
+  scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;min-width:0;min-height:138px;text-align:left;
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px;
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease),border-color .16s var(--ease);
+}
+.hbook__top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hbook__ring{position:relative;width:34px;height:34px;flex:none;color:var(--signal)}
+.hbook__ring.is-full{color:var(--ok)}
+.hbook__ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hbook__ring small{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:9px;font-weight:600;color:var(--ink-2)}
+.hbook > b{font-family:var(--serif);font-size:18.5px;font-weight:500;letter-spacing:-.01em;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hbook > small{margin-top:auto;font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+
+/* every tile answers: a lift under the pointer, a press under the finger */
+@media (hover:hover){
+  .hkpi:hover,.hread:hover,.hbook:hover,.htile:not(:disabled):hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--ink-3)}
+  .htile:not(:disabled):hover{border-top-color:var(--c);background:var(--surface)}
+  .htile:not(:disabled):hover em{color:var(--signal)}
+  .hlink:hover svg{transform:translateX(3px)}
+}
+.hkpi:active,.hread:active,.hbook:active,.htile:not(:disabled):active{transform:scale(.97);transition-duration:.1s}
+.hread:has(.btn:active){transform:none}
+
+/* arriving: blocks rise in turn (backwards fill only, so nothing stays
+   transformed), the dial and bars draw from zero, figures count up */
+.hhome.is-enter > *{animation:lift .34s var(--ease) backwards;animation-delay:calc(var(--k) * 70ms)}
+.hhome.is-enter .hkpi{animation:lift .34s var(--ease) backwards;animation-delay:calc(70ms + var(--i) * 45ms)}
+.hhome.is-enter .hbook{animation:lift .34s var(--ease) backwards;animation-delay:calc(210ms + var(--i) * 45ms)}
+.hhome.is-enter .hbar i,.hhome.is-enter .hmix i{animation:growx .6s var(--ease) backwards;animation-delay:calc(.2s + var(--i) * 90ms)}
+.hhome.is-arriving .hdial__t.on{opacity:.2}
+.hhome.is-arriving .harc{stroke-dashoffset:1 !important}
+.hhome.is-arriving .hweek__bar i,.hhome.is-arriving .hmonth i{transform:scaleY(0) !important}
+
+@media (max-width:860px){
+  .hhero__main{grid-template-columns:auto minmax(0,1fr)}
+  .hfacts{display:none}
+  .hkpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hgrid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:520px){
+  .hhero{padding:18px 18px 16px}
+  .hhero__main{gap:18px}
+  .hdial{width:136px;height:136px}
+  .hdial__mid b{font-size:34px}
+  .hweek{gap:5px;margin-top:16px}
+  .hweek__bar{height:40px}
+  .hshelf{grid-auto-columns:72%}
+  .hkpis{gap:10px}
+  .hkpi{padding:13px 14px 12px}
+  .hkpi b{font-size:23px}
+}
+@media (max-width:380px){
+  .hhero__main{grid-template-columns:minmax(0,1fr);justify-items:center}
+  .hside{width:100%}
+}
 @media (prefers-reduced-motion:reduce){
-  .hitem.is-leaving{transform:none}
-  .rcard:active{transform:none}
+  .hhome.is-enter > *,.hhome.is-enter .hkpi,.hhome.is-enter .hbook{animation-name:fade}
+  .hhome.is-enter .hbar i,.hhome.is-enter .hmix i{animation:none}
+  .hsess.is-leaving{transform:none}
+  .hkpi:active,.hread:active,.hbook:active,.htile:active,.hlink:active,.rcard:active{transform:none}
 }
 
 /* ============================================================
@@ -8193,7 +8401,7 @@ document.addEventListener("click", e => {
   if (t.closest("[data-hresume]")) { resumePending(); return; }
   if (t.closest("[data-himport]")) { $("#filePick").click(); return; }
   const hdrop = t.closest("[data-hdrop]");
-  if (hdrop) { dropPending(hdrop.closest(".hitem")); return; }
+  if (hdrop) { dropPending(hdrop.closest(".hsess")); return; }
   const hst = t.closest("[data-hst]");
   if (hst) {
     const want = hst.dataset.hst;
@@ -9571,7 +9779,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.8";
+const APP_VERSION = "3.9";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -11678,134 +11886,247 @@ function homeCards() {
   }));
   return { c: c, list: list };
 }
-function homeStat(n, of, label, p) {
-  return "<div><b><i data-hcu=\"" + n + "\">" + n + "</i>" + (of != null ? "<small>/ " + of + "</small>" : "") + "</b>" +
-    "<span>" + label + "</span>" +
-    (p != null ? '<span class="meter"><i class="' + (p >= 1 ? "is-full" : "") + '" style="width:' + Math.round(Math.min(1, p) * 100) + '%"></i></span>' : "") +
-    "</div>";
+/* an arc of a ring, drawn with pathLength 1 so the fraction is the offset */
+function hArc(r, w, p, cls) {
+  p = Math.max(0, Math.min(1, p || 0));
+  return '<circle class="htrack" cx="50" cy="50" r="' + r + '" stroke-width="' + w + '"/>' +
+    '<circle class="harc ' + (cls || "") + (p ? "" : " is-zero") + '" cx="50" cy="50" r="' + r + '" stroke-width="' + w +
+    '" pathLength="1" style="stroke-dashoffset:' + (1 - p).toFixed(4) + '"/>';
 }
+function hRing(p, cls, w) {
+  return '<svg viewBox="0 0 100 100">' + hArc(50 - (w || 10) / 2 - 1, w || 10, p, cls) + "</svg>";
+}
+/* sums over n days from a key; today counts the session you are in */
+function homeSpan(from, n) {
+  const S = stats(), t = todayKey(), o = { rev: 0, ok: 0, ms: 0 };
+  for (let i = 0; i < n; i++) {
+    const k = shiftDay(from, i), D = S.days.get(k);
+    if (D) { o.rev += D.rev || 0; o.ok += D.ok || 0; o.ms += D.ms || 0; }
+    if (k === t) o.ms += liveStudyMs();
+  }
+  return o;
+}
+const ICO_ARR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const ICO_UP  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+const ICO_DN  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+
 function renderHome(enter) {
   const host = $("#homeBody");
   if (!host) return;
-  const D = dayStat(todayKey()), g = goals(), st = streakInfo();
+  const S = stats(), t = todayKey(), D = dayStat(t), g = goals(), st = streakInfo(), now = new Date();
   const liveMs = liveTodayMs(), mins = Math.round(liveMs / 60000);
-  const met = D.rev >= g.cards || liveMs >= g.mins * 60000;
+  const pc = Math.min(1, D.rev / g.cards), pm = Math.min(1, liveMs / (g.mins * 60000));
+  const met = pc >= 1 || pm >= 1;
   const cardsLeft = Math.max(0, g.cards - D.rev);
   const minsLeft = Math.max(1, Math.ceil((g.mins * 60000 - liveMs) / 60000));
-  const P = pendingRun(), last = recentLessons(1)[0] || null, weak = weakestList(3), H = homeCards(), now = new Date();
+  const P = pendingRun(), last = recentLessons(1)[0] || null, weak = weakestList(3), H = homeCards();
   const kind = P && P.k === "sp" ? "spelling" : "review";
-  const nextRun = LADDERS[0].steps.find(n => n > st.current) || st.current || 1;
+  const nextRun = LADDERS[0].steps.find(n => n > st.current);
 
-  /* the one sentence about today, and the one button that acts on it */
   const line = met
-    ? "Today’s goal is met" + (st.current > 1 ? ", and your streak stands at " + plural(st.current, "day") : "") + ". Anything more is extra."
+    ? "Today’s goal is met. Anything more is extra."
     : st.today ? plural(cardsLeft, "card") + " or " + minsLeft + " min to go. Today already counts toward your streak."
     : st.rest ? "Today is a rest day. Your streak is held, and nothing is lost by resting."
     : st.current ? "Your " + st.current + "-day streak is waiting for today. One card keeps it going."
     : "One card starts a streak. " + plural(g.cards, "card") + " or " + g.mins + " min meets the goal.";
-  const cta = P
-    ? '<button class="btn btn--primary" data-hresume="1">' + ICO_DRILL + "Resume " + kind + "</button>"
-    : !state.lessons.length
-      ? '<button class="btn btn--primary" data-himport="1">' + MI.up + "Import lessons</button>"
-      : weak[0]
-        ? '<button class="btn btn--primary" data-practice="' + esc(weak[0].l.id) + '" title="' + esc(weak[0].l.title) + '">' + ICO_DRILL +
-            (met ? "Keep going" : st.today ? "Continue" : "Start a review") + "</button>"
-        : last ? '<button class="btn btn--primary" data-open="' + esc(last.id) + '">' + MI.open + "Read on</button>" : "";
 
+  /* the dial: sixty ticks, lit up to the share of today's cards */
+  const lit = Math.round(pc * 60);
+  let ticks = "";
+  for (let i = 0; i < 60; i++) {
+    const a = i / 60 * Math.PI * 2 - Math.PI / 2, long = i % 5 === 0;
+    const r1 = 98, r2 = long ? 90 : 93;
+    ticks += '<line class="hdial__t' + (long ? " is-long" : "") + (i < lit ? " on" : "") + '" style="--i:' + i + '" x1="' + (100 + r1 * Math.cos(a)).toFixed(2) +
+      '" y1="' + (100 + r1 * Math.sin(a)).toFixed(2) + '" x2="' + (100 + r2 * Math.cos(a)).toFixed(2) + '" y2="' + (100 + r2 * Math.sin(a)).toFixed(2) + '"/>';
+  }
+  const dial = '<div class="hdial" role="img" aria-label="' + esc(D.rev + " of " + g.cards + " cards and " + mins + " of " + g.mins + " minutes today") + '">' +
+    '<svg viewBox="0 0 200 200">' + ticks +
+      '<g transform="translate(100 100) rotate(-90) scale(1.6) translate(-50 -50)">' + hArc(42, 4.6, pc, "harc--cards") + hArc(34, 2.6, pm, "harc--mins") + "</g>" +
+    "</svg>" +
+    (met ? '<span class="hdial__done" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' : "") +
+    '<div class="hdial__mid"><b data-hcu="' + D.rev + '">' + D.rev + "</b><span>of " + g.cards + " cards</span><em>" + mins + " / " + g.mins + " min</em></div>" +
+  "</div>";
+
+  /* the week as seven gauges */
+  const ws = weekStart(), wk0 = weekStartKey(t);
+  let week = "", daysSoFar = 0;
+  for (let i = 0; i < 7; i++) {
+    const k = shiftDay(wk0, i), Dd = S.days.get(k);
+    const h = k === t ? Math.max(pc, pm) : Math.min(1, dayProgress(Dd));
+    if (k <= t) daysSoFar++;
+    const cls = ["hweek__d"];
+    if (k === t ? met : goalMet(Dd)) cls.push("is-met");
+    if (Dd && Dd.rest && !isActive(Dd)) cls.push("is-rest");
+    if (k === t) cls.push("is-today");
+    if (k > t) cls.push("is-future");
+    week += '<div class="' + cls.join(" ") + '" title="' + esc(niceDay(k) + " · " + (Dd ? plural(Dd.rev, "card") : "nothing yet")) + '">' +
+      '<span class="hweek__bar"><i style="--i:' + i + ";transform:scaleY(" + (h ? Math.max(.06, h) : 0).toFixed(3) + ')"></i></span>' +
+      "<b>" + DOW1[(ws + i) % 7] + "</b></div>";
+  }
+
+  /* thirty days, as a spectrum */
+  const days30 = [];
+  for (let i = 29; i >= 0; i--) { const k = shiftDay(t, -i); days30.push({ k: k, D: S.days.get(k) }); }
+  const top = Math.max(1, ...days30.map(x => x.D ? work(x.D) : 0));
+  const active30 = days30.filter(x => isActive(x.D)).length;
+  const month = days30.map((x, i) => {
+    const w = x.D ? work(x.D) : 0;
+    return '<i class="l' + heatLevel(x.D) + (x.k === t && isActive(x.D) ? " is-today" : "") + '" style="--i:' + i + ";transform:scaleY(" +
+      (w ? Math.max(.1, w / top) : .06).toFixed(3) + ')" title="' + esc(niceDay(x.k) + " · " + (x.D ? plural(x.D.rev, "card") : "nothing")) + '"></i>';
+  }).join("");
+
+  const hero =
+    '<section class="hhero" style="--k:0" aria-label="Today">' +
+      '<div class="hhero__top"><span class="hhero__hi" lang="de">' + homeHello() + ".</span>" +
+        '<span class="hhero__date">' + DOW3[now.getDay()] + " · " + now.getDate() + " " + MON3[now.getMonth()] + "</span></div>" +
+      '<div class="hhero__main">' + dial +
+        '<div class="hside">' +
+          '<div class="hstreak' + (st.current >= 3 ? " is-hot" : "") + '"><b data-hcu="' + st.current + '">' + st.current + "</b>" +
+            "<div><span>Day streak</span><small>" +
+              (st.best ? "Best " + plural(st.best, "day") : "Your first run starts here") +
+              (nextRun && st.current ? "<br>" + plural(nextRun - st.current, "day") + " to " + nextRun : "") +
+            "</small></div></div>" +
+          '<div class="hweek">' + week + "</div>" +
+        "</div>" +
+        '<dl class="hfacts">' +
+          "<div><dt>Cards to goal</dt><dd" + (cardsLeft ? "" : ' class="is-y"') + ">" + (cardsLeft || "Met") + "</dd></div>" +
+          "<div><dt>Minutes to goal</dt><dd" + (pm >= 1 ? ' class="is-y"' : "") + ">" + (pm >= 1 ? "Met" : minsLeft + "<small>min</small>") + "</dd></div>" +
+          "<div><dt>Longest run</dt><dd>" + st.best + "<small>" + (st.best === 1 ? "day" : "days") + "</small></dd></div>" +
+          "<div><dt>Next milestone</dt><dd>" + (nextRun ? nextRun + "<small>days</small>" : "—") + "</dd></div>" +
+        "</dl>" +
+      "</div>" +
+      '<p class="hhero__line">' + esc(line) + "</p>" +
+      '<div class="hhero__foot"><div class="hhero__lab"><span>Last 30 days</span><b>' + active30 + " of 30 days</b></div>" +
+        '<div class="hmonth">' + month + "</div></div>" +
+    "</section>";
+
+  /* four figures, each a way into Progress */
+  const wk = homeSpan(wk0, daysSoFar), lw = homeSpan(shiftDay(wk0, -7), daysSoFar);
+  const diff = wk.rev - lw.rev;
+  const acc = wk.rev ? Math.round(wk.ok / wk.rev * 100) : 0;
+  const HM = HOME_ST.map((x, i) => H.c[x[0]] ? '<i style="--i:' + i + ";flex:" + H.c[x[0]] + ";background:" + x[2] + '"></i>' : "").join("");
+  const kpis =
+    '<div class="hkpis" style="--k:1">' +
+      '<button class="hkpi" style="--i:0" data-nav="progress"><span class="eyebrow">Words known</span>' +
+        '<b><i data-hcu="' + H.c.known + '">' + H.c.known + "</i><small>/ " + H.c.all + "</small></b>" +
+        '<span class="hmix">' + (HM || '<i style="flex:1;background:var(--rule)"></i>') + "</span></button>" +
+      '<button class="hkpi" style="--i:1" data-nav="progress"><span class="eyebrow">This week</span>' +
+        '<b><i data-hcu="' + wk.rev + '">' + wk.rev + "</i><small>cards</small></b>" +
+        '<span class="hdelta' + (diff > 0 ? " is-up" : diff < 0 ? " is-down" : "") + '">' +
+          (diff > 0 ? ICO_UP : diff < 0 ? ICO_DN : "") + (diff ? Math.abs(diff) + " vs last week" : "Level with last week") + "</span></button>" +
+      '<button class="hkpi" style="--i:2" data-nav="progress"><span class="eyebrow">Accuracy</span>' +
+        '<b><i data-hcu="' + acc + '">' + acc + "</i><small>%</small></b>" +
+        "<em>" + (wk.rev ? "right this week" : "No reviews this week") + "</em>" +
+        '<span class="hkpi__ring">' + hRing(acc / 100, "", 12) + "</span></button>" +
+      '<button class="hkpi" style="--i:3" data-nav="progress"><span class="eyebrow">Time this week</span>' +
+        '<b><i data-hcu="' + Math.round(wk.ms / 60000) + '">' + Math.round(wk.ms / 60000) + "</i><small>min</small></b>" +
+        "<em>About " + Math.round(wk.ms / 60000 / Math.max(1, daysSoFar)) + " min a day</em></button>" +
+    "</div>";
+
+  /* pick up: the run you left, then the file you had open */
   let pick = "";
   if (P) {
-    const done = Math.max(0, (P.n || 0) - P.left.length);
-    pick += '<div class="hitem">' +
-      '<div class="hitem__top"><span class="eyebrow">Unfinished ' + kind + '</span><span class="hitem__when">' + esc(timeAgo(P.at)) + "</span></div>" +
-      '<div class="hitem__name">' + esc(P.t || "Review") + "</div>" +
-      '<div class="hitem__meta"><span class="meter"><i style="width:' + Math.round(done / Math.max(1, P.n) * 100) + '%"></i></span>' +
-        "<span>" + plural(P.left.length, "card") + " left</span></div>" +
-      '<div class="hitem__acts"><button class="btn btn--sm" data-hresume="1">' + ICO_DRILL + "Resume</button>" +
-        '<button class="btn btn--sm btn--ghost" data-hdrop="1">Let it go</button></div></div>';
+    const done = Math.max(0, (P.n || 0) - P.left.length), pp = done / Math.max(1, P.n);
+    pick += '<article class="hsess" data-k="sess">' +
+      '<div class="hsess__ring">' + hRing(pp, "", 9) + "<b>" + Math.round(pp * 100) + "%</b></div>" +
+      '<div class="hsess__body"><span class="eyebrow">Unfinished ' + kind + " · " + esc(timeAgo(P.at)) + "</span>" +
+        "<h3>" + esc(P.t || "Review") + "</h3><p>" + plural(P.left.length, "card") + " still to go, out of " + P.n + ".</p>" +
+        '<div class="hsess__acts"><button class="btn btn--primary btn--sm" data-hresume="1">' + ICO_DRILL + "Resume</button>" +
+          '<button class="btn btn--ghost btn--sm" data-hdrop="1">Let it go</button></div></div>' +
+    "</article>";
   }
   if (last) {
-    const pct = lessonScore(last), n = last.vocabulary.length;
-    pick += '<div class="hitem">' +
-      '<div class="hitem__top"><span class="eyebrow">Last opened</span><span class="hitem__when">' + esc(last.level) + "</span></div>" +
-      '<div class="hitem__name">' + esc(fileName(last)) + "</div>" +
-      '<div class="hitem__meta"><span class="meter"><i class="' + (pct === 100 ? "is-full" : "") + '" style="width:' + pct + '%"></i></span>' +
-        "<span>" + pct + "% known</span></div>" +
-      '<div class="hitem__acts"><button class="btn btn--sm" data-open="' + esc(last.id) + '">' + MI.open + "Open</button>" +
-        (n ? '<button class="btn btn--sm btn--ghost" data-reviewfile="' + esc(last.id) + '">Study ' + plural(n, "card") + "</button>" : "") +
-      "</div></div>";
+    const pct = lessonScore(last), n = last.vocabulary.length, isDeck = last.kind === "deck";
+    const ex = isDeck ? last.vocabulary.slice(0, 10).map(v => v.word).join(" · ") : String(last.paragraph.de || "").slice(0, 220);
+    pick += '<article class="hread" data-k="read" data-open="' + esc(last.id) + '" role="button" tabindex="0" aria-label="Open ' + esc(fileName(last)) + '">' +
+      '<div class="hread__top"><span class="eyebrow">Last opened · ' + (isDeck ? "Deck" : "Paragraph") + "</span>" +
+        '<span class="chip chip--level">' + esc(last.level) + "</span></div>" +
+      "<h3>" + esc(fileName(last)) + "</h3>" +
+      (ex ? '<p class="hread__de" lang="de">' + esc(ex) + "</p>" : "") +
+      '<div class="hread__foot"><span class="meter"><i class="' + (pct === 100 ? "is-full" : "") + '" style="width:' + pct + '%"></i></span>' +
+        '<span class="hread__pct">' + pct + "% known</span>" +
+        (n ? '<button class="btn btn--sm' + (P ? "" : " btn--primary") + '" data-reviewfile="' + esc(last.id) + '">' + ICO_DRILL + "Study " + n + "</button>" : "") +
+      "</div></article>";
   }
   if (!pick) {
-    pick = '<div class="hitem"><div class="hitem__name">Nothing open yet</div>' +
-      '<p class="hitem__note">Open a file in the Library and it waits for you here.</p>' +
-      '<div class="hitem__acts"><button class="btn btn--sm" data-nav="library">Go to the Library</button></div></div>';
+    pick = '<div class="hnone"><h3>Nothing open yet</h3><p>Open a file in the Library and it waits for you here, with its cards one tap away.</p>' +
+      '<button class="btn btn--sm" data-nav="library">Go to the Library</button></div>';
   }
 
-  const cards = H.c.all
-    ? '<div class="mixbar">' + HOME_ST.map(x => H.c[x[0]] ? '<div style="flex:' + H.c[x[0]] + ";background:" + x[2] + '"></div>' : "").join("") + "</div>" +
-      '<div class="pickup">' + HOME_ST.map(x =>
-        '<button data-hst="' + x[0] + '"' + (H.c[x[0]] ? "" : " disabled") + ' title="Review every ' + x[1].toLowerCase() + ' card">' +
-          '<i class="hdot" style="background:' + x[2] + '"></i>' +
-          '<span class="pickup__t">' + x[1] + "</span>" +
-          '<span class="pickup__p">' + H.c[x[0]] + "</span>" +
-          '<span class="pickup__go">' + ICO_DRILL + "</span>" +
-        "</button>").join("") + "</div>" +
-      '<div class="hcards__foot"><button class="btn btn--sm btn--ghost" data-nav="practice">Open the card desk</button></div>'
-    : '<p class="hitem__note">Cards arrive with every file you import.</p>';
+  const cards =
+    '<div class="hcards">' +
+      (H.c.all
+        ? '<div class="hbar">' + HM + "</div>" +
+          '<div class="htiles">' + HOME_ST.map(x =>
+            '<button class="htile" style="--c:' + x[2] + '" data-hst="' + x[0] + '"' + (H.c[x[0]] ? "" : " disabled") + ">" +
+              '<b data-hcu="' + H.c[x[0]] + '">' + H.c[x[0]] + "</b><span>" + x[1] + "</span>" +
+              "<em>Review " + ICO_ARR + "</em></button>").join("") + "</div>"
+        : '<p style="font-size:13px;color:var(--ink-2)">Cards arrive with every file you import.</p>') +
+      (weak.length
+        ? '<div class="hcards__weak"><span class="eyebrow">Needs work</span><div class="pickup">' + weak.map(x =>
+            '<button data-practice="' + esc(x.l.id) + '">' +
+              '<span class="pickup__t">' + esc(fileName(x.l)) + "</span>" +
+              '<span class="pickup__m"><i style="width:' + x.pct + '%"></i></span>' +
+              '<span class="pickup__p">' + x.pct + "%</span>" +
+              '<span class="pickup__go">' + ICO_DRILL + "</span>" +
+            "</button>").join("") + "</div></div>"
+        : "") +
+    "</div>";
 
-  const rec = recentLessons(5).slice(1);
-  const body = !state.lessons.length
-    ? '<div class="empty"><h3>Nothing to study yet</h3>' +
-        "<p>Import a paragraph file or a deck file and this page fills in: today’s goal, the file you had open and the cards that need you most.</p>" +
-        '<div class="empty__acts"><button class="btn" data-goto="settings/data">How files are made</button></div></div>'
-    : '<div class="cols">' +
-        '<div class="panel hpick"><h3>Pick up</h3><p>Where you left off, one tap from carrying on.</p>' + pick + "</div>" +
-        '<div class="panel hcards"><h3>Your cards</h3><p>' + plural(H.c.all, "card") + " across " + plural(state.lessons.length, "file") +
-          ". Tap a row to review those cards.</p>" + cards + "</div>" +
-      "</div>" +
-      (rec.length ? shelfLabel("Recently opened", rec.length) + '<div class="recent">' + rec.map(recentCard).join("") + "</div>" : "") +
-      (weak.length ? shelfLabel("Weakest files") +
-        '<div class="pickup hweak">' + weak.map(x =>
-          '<button data-practice="' + esc(x.l.id) + '">' +
-            '<span class="pickup__t">' + esc(fileName(x.l)) + "</span>" +
-            '<span class="pickup__m"><i style="width:' + x.pct + '%"></i></span>' +
-            '<span class="pickup__p">' + x.pct + "%</span>" +
-            '<span class="pickup__go">' + ICO_DRILL + "</span>" +
-          "</button>").join("") + "</div>" : "");
+  const rec = recentLessons(8).slice(1);
+  const shelf = rec.length
+    ? '<section style="--k:3"><div class="hsec"><h2>Recently opened</h2><button class="hlink" data-nav="library">All files' + ICO_ARR + "</button></div>" +
+        '<div class="hshelf">' + rec.map((l, i) => {
+          const pct = lessonScore(l);
+          return '<button class="hbook" style="--i:' + i + '" data-open="' + esc(l.id) + '">' +
+            '<span class="hbook__top"><span class="chip chip--level">' + esc(l.level) + "</span>" +
+              '<span class="hbook__ring' + (pct === 100 ? " is-full" : "") + '">' + hRing(pct / 100, "", 11) + "<small>" + pct + "</small></span></span>" +
+            "<b>" + esc(fileName(l)) + "</b>" +
+            "<small>" + (l.kind === "deck" ? "Deck" : "Paragraph") + " · " + plural(l.vocabulary.length, "card") + "</small></button>";
+        }).join("") + "</div></section>"
+    : "";
 
   host.innerHTML =
-    '<header class="page-head home-head">' +
-      '<div><span class="eyebrow">' + DOW3[now.getDay()] + " · " + now.getDate() + " " + MONTHS[now.getMonth()] + "</span>" +
-        "<h1 lang=\"de\">" + homeHello() + ".</h1><p>" + esc(line) + "</p></div>" +
-      (cta ? '<div class="page-head__actions">' + cta + "</div>" : "") +
-    "</header>" +
-    '<div class="stats hstats">' +
-      homeStat(st.current, null, "Day streak", st.current / nextRun) +
-      homeStat(D.rev, g.cards, "Cards today", D.rev / g.cards) +
-      homeStat(mins, g.mins, "Minutes today", liveMs / (g.mins * 60000)) +
-      homeStat(H.c.known, H.c.all, "Words known", H.c.all ? H.c.known / H.c.all : 0) +
-    "</div>" + body;
+    '<div class="hhome">' + hero + kpis +
+      (state.lessons.length
+        ? '<div class="hgrid" style="--k:2">' +
+            '<section><div class="hsec"><h2>Pick up</h2></div><div class="hpick">' + pick + "</div></section>" +
+            '<section><div class="hsec"><h2>Your cards</h2><button class="hlink" data-nav="practice">Card desk' + ICO_ARR + "</button></div>" + cards + "</section>" +
+          "</div>" + shelf
+        : '<div class="empty" style="--k:2"><h3>Nothing to study yet</h3>' +
+            "<p>Import a paragraph file or a deck file and this page fills in: the file you had open, your cards by status, and the ones that need you most.</p>" +
+            '<div class="empty__acts"><button class="btn btn--primary" data-himport="1">' + MI.up + "Import lessons</button>" +
+            '<button class="btn" data-goto="settings/data">How files are made</button></div></div>') +
+    "</div>";
 
-  /* arriving draws the page: blocks rise in turn, meters run out, figures count up */
-  host.classList.remove("is-lift", "is-grow");
   if (!enter) return;
-  host.offsetWidth;
-  host.classList.add("is-lift", "is-grow");
-  if (!reducedMotion()) host.querySelectorAll("[data-hcu]").forEach(n => { if (+n.dataset.hcu) countTo(n, 0, +n.dataset.hcu); });
+  /* arriving: the dial, the week and the thirty days start from zero and draw
+     to their values; the blocks rise in turn; the figures count up */
+  const root = host.firstElementChild;
+  root.classList.add("is-enter", "is-grow");
+  if (reducedMotion()) return;
+  root.classList.add("is-arriving");
+  root.offsetWidth;
+  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("is-arriving")));
+  root.querySelectorAll("[data-hcu]").forEach(n => { if (+n.dataset.hcu) countTo(n, 0, +n.dataset.hcu); });
 }
-/* "Let it go": the block fades out, then what sat under it glides up into its place */
+/* "Let it go": the run fades out, then whatever sat under it glides into its place */
 function dropPending(item) {
   state.settings.pending = null;
   writeProgress();
   toast("Let go. Every card keeps the rating you gave it.");
   if (!item || reducedMotion()) { renderHome(); return; }
-  const next = item.nextElementSibling, y0 = next ? next.getBoundingClientRect().top : 0;
+  const was = {};
+  $$("#homeBody [data-k]").forEach(n => { const r = n.getBoundingClientRect(); was[n.dataset.k] = r.top; });
   item.classList.add("is-leaving");
   setTimeout(() => {
     renderHome();
-    const now = next && $("#homeBody .hpick .hitem");
-    if (!now || !("animate" in now)) return;
-    const dy = y0 - now.getBoundingClientRect().top;
-    if (dy) now.animate([{ transform: "translateY(" + dy + "px)" }, { transform: "none" }], { duration: 260, easing: "cubic-bezier(.2,.7,.3,1)" });
+    $$("#homeBody [data-k]").forEach(n => {
+      const y0 = was[n.dataset.k];
+      if (y0 == null || !("animate" in n)) return;
+      const dy = y0 - n.getBoundingClientRect().top;
+      if (Math.abs(dy) > 1) n.animate([{ transform: "translateY(" + dy + "px)" }, { transform: "none" }], { duration: 280, easing: "cubic-bezier(.2,.7,.3,1)" });
+    });
   }, 170);
 }
 
