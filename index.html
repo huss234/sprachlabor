@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.4 · neural German, cached on device -->
+<!-- Sprachlabor — v3.5 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -152,17 +152,52 @@ ul,ol{margin:0;padding:0;list-style:none}
   margin-bottom:14px;flex:none;
 }
 .rail__btn{
-  width:52px;padding:9px 0 7px;border-radius:10px;
+  position:relative;width:60px;padding:9px 0 7px;border-radius:10px;
   display:flex;flex-direction:column;align-items:center;gap:5px;
-  color:var(--ink-3);transition:color .1s var(--ease),background .1s var(--ease);
+  color:var(--ink-3);transition:color .16s var(--ease),background .14s var(--ease);
   touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
-.rail__btn:hover{color:var(--ink);background:var(--surface-2)}
-/* The tab answers the finger before the router does. */
-.rail__btn:active{background:var(--signal-soft);color:var(--signal)}
-.rail__btn[aria-current="true"]{color:var(--signal);background:var(--signal-soft)}
+@media (hover:hover){
+  .rail__btn:not([aria-current="true"]):hover{color:var(--ink);background:var(--surface-2)}
+}
+.rail__btn[aria-current="true"]{color:var(--signal)}
 .rail__btn svg{width:19px;height:19px}
 .rail__btn span{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+/* The tab answers the finger before the router does: the icon gives
+   under the press, then the plate travels to it. */
+.rail__ico{transition:transform .1s var(--ease)}
+.rail__btn:active .rail__ico{transform:scale(.94)}
+.rail__btn:active{color:var(--signal)}
+
+/* The plate behind the current tab. One element covers the whole rail
+   and is clipped down to the tab, so moving it never touches layout and
+   its corners never stretch. railPlate() moves it edge by edge: the
+   edge facing the new tab leaves first, the far edge follows. */
+.rail__ind{
+  position:absolute;inset:0;background:var(--signal-soft);pointer-events:none;
+  clip-path:inset(0 100% 100% 0 round 10px);opacity:0;transition:opacity .16s var(--ease);
+}
+.rail__ind.is-on{opacity:1}
+
+/* Every tab icon has a resting shape and a current shape. The two share
+   one path structure, so the browser draws the way between them.
+   Arriving runs on --ease, a little after the plate sets off; going back
+   to rest is shorter. */
+.rail .mo{transition:d .26s var(--ease),transform .26s var(--ease)}
+.rail__btn[aria-current="true"] .mo{transition:d .42s var(--ease) .06s,transform .42s var(--ease) .06s}
+/* Library: the middle volume is drawn out of the row, the leaning one stands up */
+.rail__btn[aria-current="true"] .mo--lib2{d:path("M11 2h4v16h-4z")}
+.rail__btn[aria-current="true"] .mo--lib3{d:path("M19.2 4l0 16")}
+/* Lesson: the lines of text trade lengths, the way the eye runs along them */
+.rail__btn[aria-current="true"] .mo--read{d:path("M7.5 9h9M7.5 12h5")}
+/* Practice: the front card turns off the stack and a tick writes itself on it */
+.rail .mo--front{transform-box:fill-box;transform-origin:0 100%}
+.rail__btn[aria-current="true"] .mo--front{transform:rotate(-6deg)}
+.rail__btn[aria-current="true"] .mo--back{d:path("M8 3.5h10.5a2 2 0 0 1 2 2V15")}
+.rail .mo--pen{stroke-dasharray:1 2;stroke-dashoffset:1;transition:stroke-dashoffset .18s cubic-bezier(.4,0,1,1)}
+.rail__btn[aria-current="true"] .mo--pen{stroke-dashoffset:0;transition:stroke-dashoffset .5s var(--ease) .16s}
+/* Progress: uneven bars settle into a rising run */
+.rail__btn[aria-current="true"] .mo--bars{d:path("M4 20V15M9.3 20V11.5M14.7 20V8M20 20V4.5")}
 .rail__spacer{flex:1}
 .rail__word{
   writing-mode:vertical-rl;transform:rotate(180deg);
@@ -354,6 +389,23 @@ ul,ol{margin:0;padding:0;list-style:none}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .seg--ico button{width:38px;padding:0;display:grid;place-items:center}
 .seg--ico svg{width:16px;height:16px}
+/* Practice switch: a .seg whose selected fill is one thumb that slides.
+   Cards and Spelling are two screens behind one tab; each carries the
+   switch, and practab() carries the thumb across from the other side. */
+.practab{
+  position:relative;display:inline-grid;grid-template-columns:1fr 1fr;margin-bottom:22px;
+  border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);overflow:hidden;
+}
+.practab__thumb{position:absolute;top:0;bottom:0;left:0;width:50%;background:var(--ink);pointer-events:none}
+#view-spell .practab__thumb{transform:translateX(100%)}
+.practab button{
+  position:relative;height:36px;padding:0 20px;font-size:12px;font-weight:600;color:var(--ink-2);
+  transition:color .16s var(--ease),background .14s var(--ease),transform .1s var(--ease);
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+.practab button[aria-pressed="true"]{color:var(--paper)}
+@media (hover:hover){.practab button[aria-pressed="false"]:hover{background:var(--surface-2);color:var(--ink)}}
+.practab button:active{transform:scale(.97)}
 
 .meter{flex:1;height:3px;background:var(--rule);border-radius:100px;overflow:hidden}
 .meter i{display:block;height:100%;background:var(--signal);border-radius:100px;transition:width .5s var(--ease)}
@@ -1097,6 +1149,8 @@ pre.spec b{color:var(--signal);font-weight:500}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  /* the tab bar keeps its fades; the plate and the icons change in place */
+  .rail__ind{transition:opacity .16s var(--ease) !important}
 }
 @media print{
   .rail,.reader__bar,.section-head__actions,.page-head__actions,.fcard__hint{display:none !important}
@@ -1142,6 +1196,11 @@ pre.spec b{color:var(--signal);font-weight:500}
 .rail__badge.is-bad{background:var(--die)}
 .rail__badge.is-busy{background:var(--warn);animation:pulse 1s var(--ease) infinite}
 .rail__badge.is-wait{background:var(--warn)}
+/* the badge rides on the Library tab, next to the sync control it reports
+   on; it stays quiet until GitHub is connected, and its ring takes the
+   colour of whatever is behind it */
+.rail__badge:not([class*="is-"]){opacity:0}
+.rail__btn[aria-current="true"] .rail__badge{border-color:var(--signal-soft);transition:background .2s var(--ease),border-color .16s var(--ease)}
 .rail__sep{width:32px;height:1px;background:var(--rule);margin:8px 0}
 
 /* ============================================================
@@ -3457,32 +3516,25 @@ button.wrow:hover{background:var(--signal-soft)}
 <body>
 <nav class="rail" aria-label="Main">
   <div class="rail__mark" aria-hidden="true">S</div>
+  <i class="rail__ind" id="railInd" aria-hidden="true"></i>
   <button class="rail__btn" data-nav="library" aria-current="true">
-    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h5v16H4zM11 4h4v16h-4zM17.5 4.6l3.2 15.1"/></svg></span>
+    <span class="rail__ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h5v16H4z"/><path class="mo mo--lib2" d="M11 4h4v16h-4z"/><path class="mo mo--lib3" d="M17.5 4.6l3.2 15.1"/></svg>
+      <i class="rail__badge" id="railSync" aria-hidden="true"></i>
+    </span>
     <span>Library</span>
   </button>
   <button class="rail__btn" data-nav="lesson">
-    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H4zM8 19.5h8M12 15.5v4"/><path d="M7.5 9h5M7.5 12h9"/></svg></span>
+    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H4zM8 19.5h8M12 15.5v4"/><path class="mo mo--read" d="M7.5 9h5M7.5 12h9"/></svg></span>
     <span>Lesson</span>
   </button>
-  <button class="rail__btn" data-nav="cards">
-    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="14" height="12" rx="1.6"/><path d="M7 4.5h11a2 2 0 0 1 2 2V16"/></svg></span>
-    <span>Cards</span>
-  </button>
-  <button class="rail__btn" data-nav="spell">
-    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 6.5l3 3"/></svg></span>
-    <span>Spelling</span>
+  <button class="rail__btn" data-nav="practice">
+    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path class="mo mo--back" d="M7 4.5h11a2 2 0 0 1 2 2V16"/><g class="mo mo--front"><rect x="3" y="7" width="14" height="12" rx="1.6"/><path class="mo--pen" d="M7 13.3l2.3 2.2 4.2-4.6" pathLength="1"/></g></svg></span>
+    <span>Practice</span>
   </button>
   <button class="rail__btn" data-nav="progress">
-    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M9.3 20V4M14.7 20v-7M20 20V7"/></svg></span>
+    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path class="mo mo--bars" d="M4 20V10M9.3 20V4M14.7 20V13M20 20V7"/></svg></span>
     <span>Progress</span>
-  </button>
-  <button class="rail__btn" data-nav="settings">
-    <span class="rail__ico">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M19.4 14.6a1.5 1.5 0 0 0 .3 1.7l.1.1a1.8 1.8 0 1 1-2.6 2.6l-.1-.1a1.5 1.5 0 0 0-1.7-.3 1.5 1.5 0 0 0-.9 1.4v.2a1.8 1.8 0 1 1-3.6 0V20a1.5 1.5 0 0 0-1-1.4 1.5 1.5 0 0 0-1.7.3l-.1.1a1.8 1.8 0 1 1-2.6-2.6l.1-.1a1.5 1.5 0 0 0 .3-1.7 1.5 1.5 0 0 0-1.4-.9H4a1.8 1.8 0 1 1 0-3.6h.2a1.5 1.5 0 0 0 1.3-1 1.5 1.5 0 0 0-.3-1.7l-.1-.1a1.8 1.8 0 1 1 2.6-2.6l.1.1a1.5 1.5 0 0 0 1.7.3H9.7a1.5 1.5 0 0 0 .9-1.4V4a1.8 1.8 0 1 1 3.6 0v.2a1.5 1.5 0 0 0 .9 1.4 1.5 1.5 0 0 0 1.7-.3l.1-.1a1.8 1.8 0 1 1 2.6 2.6l-.1.1a1.5 1.5 0 0 0-.3 1.7v.1a1.5 1.5 0 0 0 1.4.9h.2a1.8 1.8 0 1 1 0 3.6H20a1.5 1.5 0 0 0-1.4.9z"/></svg>
-      <i class="rail__badge" id="railSync" aria-hidden="true"></i>
-    </span>
-    <span>Settings</span>
   </button>
   <div class="rail__spacer"></div>
   <div class="rail__sep" aria-hidden="true"></div>
@@ -3574,6 +3626,11 @@ button.wrow:hover{background:var(--signal-soft)}
   <!-- ══════════════════ CARDS ══════════════════ -->
   <section class="view" id="view-cards">
     <div class="wrap">
+      <div class="practab" role="group" aria-label="Practice">
+        <i class="practab__thumb" aria-hidden="true"></i>
+        <button data-practab="cards" aria-pressed="true">Cards</button>
+        <button data-practab="spell" aria-pressed="false">Spelling</button>
+      </div>
       <header class="page-head">
         <div>
           <div class="eyebrow" style="margin-bottom:8px">Every card in the app</div>
@@ -3610,6 +3667,11 @@ button.wrow:hover{background:var(--signal-soft)}
   <!-- ═════════════════ SPELLING ═════════════════ -->
   <section class="view" id="view-spell">
     <div class="wrap">
+      <div class="practab" role="group" aria-label="Practice">
+        <i class="practab__thumb" aria-hidden="true"></i>
+        <button data-practab="cards" aria-pressed="false">Cards</button>
+        <button data-practab="spell" aria-pressed="true">Spelling</button>
+      </div>
       <header class="page-head">
         <div>
           <div class="eyebrow" style="margin-bottom:8px">Schreibprobe · write it from memory</div>
@@ -5285,7 +5347,14 @@ function setSect(s) { s = SET_ALIAS[s] || s; return SET_SECTIONS.includes(s) ? s
    so the back button can step back in history instead of stacking a copy */
 let setNavTap = false;
 
+/* Cards and Spelling share the Practice tab, which opens whichever of
+   the two was used last on this device */
+function practiceView() { return state.settings.practice === "spell" ? "spell" : "cards"; }
+/* the tab that stands for a screen; Settings has none, it lives in the menu */
+function tabOf(view) { return view === "cards" || view === "spell" ? "practice" : view; }
+
 function go(view, id) {
+  if (view === "practice") view = practiceView();
   const hash = id && (view === "lesson" || view === "library" || view === "settings" || view === "cards")
     ? "#/" + view + "/" + encodeURIComponent(id) : "#/" + view;
   /* pushState instead of location.hash: assigning the hash defers the
@@ -5326,6 +5395,8 @@ function applyRoute() {
   }
   setNavTap = false;
   if (view === "cards" && id) state.cards.scope = id;
+  if (view === "practice") view = practiceView();
+  if (view === "cards" || view === "spell") state.settings.practice = view;
   if (!["library", "lesson", "cards", "spell", "progress", "settings"].includes(view)) view = "library";
 
   /* Two screens are studying rather than browsing: a passage, and the card
@@ -5333,7 +5404,7 @@ function applyRoute() {
      it; arriving at the same one again is left alone, because a route that
      restarted the clock would throw away every stretch under twelve
      seconds and there are a lot of those. */
-  const sameView = state.view === view;
+  const sameView = state.view === view, prevView = state.view;
   state.view = view;
 
   /* 1 — the chrome, first and cheaply. The tab highlights and the panel
@@ -5345,10 +5416,14 @@ function applyRoute() {
     if (active) active.classList.remove("is-active");
     if (node) node.classList.add("is-active");
   }
+  let tab = null;
   $$(".rail__btn[data-nav]").forEach(b => {
-    const on = b.dataset.nav === view;
+    const on = b.dataset.nav === tabOf(view);
+    if (on) tab = b;
     if ((b.getAttribute("aria-current") === "true") !== on) b.setAttribute("aria-current", String(on));
   });
+  railPlate(tab);
+  if (tabOf(prevView) === "practice" && tabOf(view) === "practice" && !sameView) practab(node, prevView);
   closeMenu();
 
   /* 2 — the body, only if it is actually out of date. */
@@ -5378,6 +5453,90 @@ function applyRoute() {
   }
   paintHud();
   if (!sameView) window.scrollTo(0, 0);
+}
+
+/* ---------- the tab bar's plate ----------
+   The plate is clipped to the current tab and travels by its edges: the
+   edge facing the new tab sets off first, the far one a beat later, so
+   the plate reaches out, then gathers itself in. Both edges run the app's
+   one curve, so nothing overshoots. The whole path is sampled into
+   keyframes, which lets the browser run it instead of a frame loop. */
+const plate = { at: null, from: null, to: null, fwd: true, anim: null };
+const PLATE_MS = 420, PLATE_LAG = .18;
+const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* cubic-bezier(.2,.7,.3,1), the --ease curve, solved for y at x */
+function easeAt(x) {
+  if (x <= 0) return 0;
+  if (x >= 1) return 1;
+  let t = x;
+  for (let i = 0; i < 8; i++) {
+    const cx = 3 * t * (1 - t) * (1 - t) * .2 + 3 * t * t * (1 - t) * .3 + t * t * t - x;
+    const dx = 3 * (1 - t) * (1 - t) * .2 + 6 * t * (1 - t) * (.3 - .2) + 3 * t * t * (1 - .3);
+    if (Math.abs(cx) < 1e-5 || !dx) break;
+    t = Math.min(1, Math.max(0, t - cx / dx));
+  }
+  return 3 * t * (1 - t) * (1 - t) * .7 + 3 * t * t * (1 - t) + t * t * t;
+}
+function plateBox(b) { return { l: b.offsetLeft, t: b.offsetTop, r: b.offsetLeft + b.offsetWidth, b: b.offsetTop + b.offsetHeight }; }
+function plateAt(p) {
+  const A = plate.from, B = plate.to;
+  const lead = easeAt(p / (1 - PLATE_LAG)), trail = easeAt((p - PLATE_LAG) / (1 - PLATE_LAG));
+  const near = plate.fwd ? trail : lead, far = plate.fwd ? lead : trail;
+  return { l: A.l + (B.l - A.l) * near, t: A.t + (B.t - A.t) * near,
+           r: A.r + (B.r - A.r) * far,  b: A.b + (B.b - A.b) * far };
+}
+function plateClip(x, rail) {
+  const f = n => Math.round(n * 10) / 10 + "px";
+  return "inset(" + f(x.t) + " " + f(rail.clientWidth - x.r) + " " + f(rail.clientHeight - x.b) + " " + f(x.l) + " round 10px)";
+}
+function railPlate(btn, still) {
+  const ind = $("#railInd");
+  if (!ind) return;
+  const rail = ind.parentNode;
+  if (!btn) { ind.classList.remove("is-on"); plate.at = null; return; }
+  if (!btn.offsetWidth) return;              // rail hidden; the observer places it later
+  let from = null;
+  if (plate.anim) {
+    /* a tap mid-travel sets off from wherever the plate is now */
+    if (plate.anim.playState === "running") from = plateAt(Math.min(1, plate.anim.currentTime / PLATE_MS));
+    plate.anim.cancel(); plate.anim = null;
+  }
+  const to = plateBox(btn);
+  if (!from && plate.at && plate.at !== btn && plate.at.offsetWidth) from = plateBox(plate.at);
+  const moving = !still && from && ind.classList.contains("is-on") && !reducedMotion() && "animate" in ind;
+  plate.at = btn;
+  ind.style.clipPath = plateClip(to, rail);
+  ind.classList.add("is-on");
+  if (!moving) return;
+  plate.from = from; plate.to = to;
+  plate.fwd = (to.l + to.t) >= (from.l + from.t);
+  const frames = [];
+  for (let k = 0; k <= 24; k++) frames.push({ clipPath: plateClip(plateAt(k / 24), rail) });
+  plate.anim = ind.animate(frames, { duration: PLATE_MS, easing: "linear" });
+  plate.anim.onfinish = () => { plate.anim = null; };
+}
+/* the rail moves from the side to the bottom at 860px, and hides in
+   print and full screen: put the plate back on its tab, without travel */
+if ("ResizeObserver" in window) {
+  const rail = document.querySelector(".rail");
+  if (rail) new ResizeObserver(() => { if (plate.at) railPlate(plate.at, true); }).observe(rail);
+}
+
+/* the Practice switch: the screen that just opened shows its own switch,
+   so its thumb and labels start where the old screen's were and slide over */
+function practab(node, from) {
+  const sw = node && node.querySelector(".practab");
+  if (!sw || reducedMotion() || !("animate" in sw)) return;
+  const thumb = sw.querySelector(".practab__thumb");
+  const [a, b] = sw.querySelectorAll("button");
+  const toRight = from === "cards";
+  const opt = { duration: 300, easing: "cubic-bezier(.2,.7,.3,1)" };
+  thumb.animate([{ transform: toRight ? "translateX(0)" : "translateX(100%)" },
+                 { transform: toRight ? "translateX(100%)" : "translateX(0)" }], opt);
+  const on = getComputedStyle(toRight ? b : a).color, off = getComputedStyle(toRight ? a : b).color;
+  const cOpt = { duration: 220, easing: "cubic-bezier(.2,.7,.3,1)" };
+  (toRight ? b : a).animate([{ color: off }, { color: on }], cOpt);
+  (toRight ? a : b).animate([{ color: on }, { color: off }], cOpt);
 }
 
 /* ---------- recently opened ---------- */
@@ -7720,6 +7879,8 @@ document.addEventListener("click", e => {
      frame as the tap, for nothing. */
   const railBtn = t.closest(".rail__btn[data-nav]");
   if (railBtn) { go(railBtn.dataset.nav); return; }
+  const ptab = t.closest("[data-practab]");
+  if (ptab) { if (ptab.getAttribute("aria-pressed") !== "true") go(ptab.dataset.practab); return; }
 
   /* folders, calendar, statistics and settings controls get first refusal */
   if (extraClick(e)) return;
@@ -8363,7 +8524,7 @@ function mergeProgRec(cur, inc) {
 /* The settings that belong to this device and travel only to its own
    file on GitHub: what it looks like, how it reads, which voice. Where
    you last were in the app is not a setting, and neither is the token. */
-const DEV_SKIP = ["github", "deviceId", "lastSync", "cwd", "settingsSection", "ptab", "recent", "expanded"];
+const DEV_SKIP = ["github", "deviceId", "lastSync", "cwd", "settingsSection", "practice", "ptab", "recent", "expanded"];
 function devSettings() {
   const o = {};
   Object.keys(state.settings).forEach(k => { if (DEV_SKIP.indexOf(k) < 0) o[k] = state.settings[k]; });
@@ -9183,7 +9344,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.4";
+const APP_VERSION = "3.5";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");

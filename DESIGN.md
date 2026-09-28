@@ -76,6 +76,7 @@ The primary button text is `#fff` in light theme and `#0B0E10` in dark.
 - Name the exact properties in `transition`, never `all`. Animate `transform` and `opacity`. Remove things only after their exit animation ends.
 - Every new animation needs a `@media (prefers-reduced-motion:reduce)` rule that keeps the fades and drops the movement.
 - No springs, bounces, overshoot or ripples.
+- Icon shape changes: give the two shapes the same path commands and switch `d:` in CSS, or turn a `<g>` with `transform-box:fill-box`. A stroke that writes itself uses `pathLength="1"`, `stroke-dasharray:1 2` and `stroke-dashoffset` 1→0.
 
 ---
 
@@ -85,6 +86,8 @@ The primary button text is `#fff` in light theme and `#0B0E10` in dark.
 |---|---|---|
 | Button | `.btn`, plus `.btn--primary`, `.btn--ghost`, `.btn--danger`, `.btn--sm` | 38px high (30px small), `--r-md`, 1px rule border, 13px/600, 15px icon before the text |
 | Segmented toggle | `.seg` / `.seg--ico` | joined buttons 36px high, hairline dividers; selected = `--ink` fill with `--paper` text |
+| Screen switch | `.practab` + `practab(node, from)` | a two-way `.seg` whose `--ink` fill is one thumb; each screen carries its own copy and the thumb and label colours slide over from the screen you came from (300ms `--ease`). Used for Cards / Spelling under the Practice tab |
+| Tab bar | `.rail` > `.rail__btn[data-nav]`, `.rail__ind`, `railPlate()` | four tabs: Library, Lesson, Practice, Progress. Settings is reached from the ⋮ menu only. The current tab sits on one `--signal-soft` plate, clipped to the tab, that travels edge by edge (the leading edge first, the far edge 18% later, 420ms, both on `--ease`). Each icon has a rest shape and a current shape with the same path structure (`.mo`, CSS `d:`), so the icon changes shape when its tab becomes current (420ms, 60ms after the plate) and returns in 260ms |
 | Pill / tag | `.chip`, `.chip--level` | 24px, radius 100px, 11px/600 with .04em spacing |
 | Count badge | `.shelf-label b` style | mono 10px/600, 1px rule border, radius 100px, padding 1px 7px |
 | Popup menu | `openMenu(anchor, items, cls)`, `.menu` | surface, rule border, `--r-md`, `--shadow-lift`, 5px padding, rows 8×10px 13px, 15px icons in `--ink-3`, `hr` dividers, `.is-danger`, switch rows (`on:`), `.menu__meta` mono meta. Grows from its button; closes on outside tap, Escape and scroll |
