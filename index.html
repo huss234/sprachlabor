@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.32 · neural German, cached on device -->
+<!-- Sprachlabor — v3.33 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -1273,22 +1273,6 @@ pre.spec b{color:var(--signal);font-weight:500}
 .keytable div{background:var(--surface);padding:10px 13px;display:flex;align-items:baseline;gap:9px}
 .keytable code{font-family:var(--serif);font-size:16px;color:var(--ink);flex:none}
 .keytable span{font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
-
-/* the page before a deck is opened — the same weight as the empty
-   states it sits beside, so the grid's absence reads as deliberate */
-.pickdeck{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;gap:12px;padding:58px 26px;
-  border:1px dashed var(--rule);border-radius:var(--r-lg);background:var(--surface-2);
-}
-.pickdeck__mark{
-  display:flex;align-items:center;justify-content:center;
-  width:42px;height:42px;border-radius:100px;
-  border:1px solid var(--rule);background:var(--surface);color:var(--ink-3);
-}
-.pickdeck__mark svg{width:17px;height:17px;margin-left:2px}
-.pickdeck h3{font-size:16px;font-weight:600;letter-spacing:-.012em}
-.pickdeck p{font-size:13px;line-height:1.6;color:var(--ink-2);max-width:46ch}
 
 /* ---------- toast ---------- */
 .toasts{position:fixed;bottom:22px;left:calc(var(--rail) + 22px);z-index:120;display:flex;flex-direction:column;gap:8px}
@@ -3153,64 +3137,91 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 }
 
 /* ============================================================
-   V3 — THE CARDS DESK
-   The pool used to be a wall of cards with a filter strip above
-   it. It is now five decks you can open — All, Hard, Learning,
-   Known, and the ones the file never translated — each one
-   showing its size and starting a session on its own.
+   THE SET DESK — Cards and Spelling
+   One panel says where from (head), which set (rows on one
+   travelling --signal-soft plate, under a band of the whole
+   scope), and how big it is and what is in it (the column on
+   --surface-2, with the one primary action at its foot).
    ============================================================ */
-.cdesk{
-  display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));
-  margin-bottom:22px;
+.pk{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}
+.pk__head{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--rule-2)}
+.pk__head .selectbox{flex:0 1 auto;min-width:0;max-width:100%}
+.pk__body{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr)}
+.pk__sets{padding:18px 14px 14px}
+.pk__band{position:relative;height:8px;margin:0 12px 14px;border-radius:100px;background:var(--rule-2);overflow:hidden}
+.pk__band > i{
+  position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(0);
+  transition:transform .5s var(--ease),opacity .2s var(--ease);
 }
-.deck{
-  position:relative;overflow:hidden;display:flex;flex-direction:column;gap:11px;text-align:left;
-  padding:15px 15px 13px 18px;background:var(--surface);border:1px solid var(--rule);
-  border-radius:var(--r-lg);cursor:pointer;
-  transition:border-color .16s var(--ease),box-shadow .16s var(--ease),transform .16s var(--ease);
+.pk__band > i.is-dim{opacity:.2}
+.pk__rows{position:relative;display:flex;flex-direction:column;gap:2px}
+.pk__ind{
+  position:absolute;inset:0;background:var(--signal-soft);pointer-events:none;
+  clip-path:inset(0 100% 100% 0 round 8px);opacity:0;transition:opacity .16s var(--ease);
 }
-.deck::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gap)}
-.deck--hard::before{background:var(--hard)}
-.deck--learning::before{background:var(--learn)}
-.deck--known::before{background:var(--known)}
-.deck--gaps::before{background:var(--warn)}
-.deck:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--ink-3)}
-.deck[aria-pressed="true"]{border-color:var(--ink);box-shadow:var(--shadow)}
-.deck[aria-pressed="true"] .deck__name{color:var(--ink)}
-.deck:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
-.deck__name{
-  display:flex;align-items:center;gap:7px;font-size:10px;font-weight:700;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--ink-3);
+.pk__ind.is-on{opacity:1}
+.pk__row{
+  position:relative;display:grid;grid-template-columns:14px minmax(0,1fr) auto;align-items:center;gap:12px;
+  height:46px;padding:0 12px;border:0;border-radius:var(--r-md);background:transparent;
+  font:500 14px/1.2 var(--sans);color:var(--ink-2);text-align:left;cursor:pointer;
+  transition:background .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
 }
-.deck__name i{width:7px;height:7px;border-radius:100px;background:var(--gap);flex:none}
-.deck--hard .deck__name i{background:var(--hard)}
-.deck--learning .deck__name i{background:var(--learn)}
-.deck--known .deck__name i{background:var(--known)}
-.deck--gaps .deck__name i{background:var(--warn)}
-.deck__n{
-  font-family:var(--mono);font-size:31px;font-weight:600;letter-spacing:-.035em;line-height:1;
+.pk__row:active{transform:translateY(1px)}
+.pk__row[aria-pressed="true"]{color:var(--ink);font-weight:600}
+.pk__lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk__dot{position:relative;width:14px;height:14px;border-radius:100px;border:2px solid var(--c)}
+.pk__dot::after{
+  content:"";position:absolute;inset:2px;border-radius:100px;background:var(--c);
+  transform:scale(0);transition:transform .22s var(--ease);
 }
-.deck--hard .deck__n{color:var(--hard)}
-.deck--learning .deck__n{color:var(--learn)}
-.deck--known .deck__n{color:var(--known)}
-.deck__share{height:3px;border-radius:100px;background:var(--rule-2);overflow:hidden}
-.deck__share i{display:block;height:100%;border-radius:100px;background:var(--ink-3);transition:width .45s var(--ease)}
-.deck--hard .deck__share i{background:var(--hard)}
-.deck--learning .deck__share i{background:var(--learn)}
-.deck--known .deck__share i{background:var(--known)}
-.deck--gaps .deck__share i{background:var(--warn)}
-.deck__go{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;height:33px;width:100%;
-  border:1px solid var(--rule);border-radius:100px;background:var(--surface-2);color:var(--ink-2);
-  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-  transition:background .15s var(--ease),color .15s var(--ease),border-color .15s var(--ease);
+.pk__row[aria-pressed="true"] .pk__dot::after{transform:scale(1)}
+.pk__n{font:600 13px/1 var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.pk__row.is-empty{color:var(--ink-3)}
+.pk__row.is-empty .pk__n{color:var(--ink-3)}
+.pk__row.is-empty .pk__dot{opacity:.45}
+@media (hover:hover){.pk__row[aria-pressed="false"]:hover{background:var(--surface-2);color:var(--ink)}}
+
+.pk__go{
+  display:flex;flex-direction:column;gap:12px;min-width:0;padding:22px 22px 20px;
+  background:var(--surface-2);border-left:1px solid var(--rule-2);
 }
-.deck__go svg{width:11px;height:11px;flex:none}
-.deck:hover .deck__go{background:var(--ink);border-color:var(--ink);color:var(--paper)}
-.deck__go:disabled{opacity:.4;cursor:default}
-.deck:hover .deck__go:disabled{background:var(--surface-2);border-color:var(--rule);color:var(--ink-2)}
-.deck.is-empty{opacity:.55}
-.deck.is-empty:hover{transform:none;box-shadow:none;border-color:var(--rule)}
+.pk__name{color:var(--c);transition:color .2s var(--ease)}
+.pk__figrow{display:flex;align-items:baseline;gap:9px;margin-top:-2px}
+.pk__fig{font-size:64px;color:var(--c);transition:color .2s var(--ease)}
+.pk__unit{font-size:13px;font-weight:500;color:var(--ink-3)}
+.pk__peek{
+  font-family:var(--serif);font-size:16px;line-height:1.5;color:var(--ink-2);
+  height:3em;overflow:hidden;overflow-wrap:anywhere;
+}
+.pk__peek > span{white-space:nowrap}
+.pk__peek i{font-style:normal;color:var(--ink-3);margin:0 3px 0 7px}
+.pk__none{font:13px/1.6 var(--sans);color:var(--ink-3)}
+.pk__link{border:0;background:none;padding:0;font:600 13px var(--sans);color:var(--signal);cursor:pointer}
+.pk__opts{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px 14px}
+.pk__acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:4px}
+.pk__acts .btn{height:44px;justify-content:center}
+.pk__main{flex:1 1 150px}
+.pk__acts .btn[aria-pressed="true"]{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+.pk__ask .wopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px 22px;margin-top:14px}
+
+/* the grid a set opens into, under the desk */
+.cbrowse{margin-top:6px}
+.cbrowse .chead{border-bottom:0;margin-bottom:0;padding:6px 0 0}
+
+@media (max-width:720px){
+  .pk__head{padding:10px 14px}
+  .pk__body{grid-template-columns:minmax(0,1fr)}
+  .pk__sets{padding:14px 8px 8px}
+  .pk__go{border-left:0;border-top:1px solid var(--rule-2);padding:18px 18px 16px}
+  .pk__fig{font-size:52px}
+  .pk__row{height:44px}
+  .pk__main{flex-basis:100%}
+  .pk__acts .btn:not(.pk__main){flex:1 1 0}
+}
+@media (prefers-reduced-motion:reduce){
+  .pk__band > i{transition:opacity .2s var(--ease)}
+  .pk__row:active{transform:none}
+}
 
 /* the strip above the grid: what you are looking at, and how it is sorted */
 .chead{
@@ -3223,8 +3234,6 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .chead__acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
 @media (max-width:720px){
-  .cdesk{grid-template-columns:repeat(2,1fr);gap:10px}
-  .deck__n{font-size:26px}
   .chead{gap:10px}
   .chead__acts{width:100%}
   .chead__acts .btn{flex:1;justify-content:center}
@@ -3697,42 +3706,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
    answer is typed rather than recognised.
    ============================================================ */
 
-/* ---------- the launcher ---------- */
-.deck--wnew::before{background:var(--signal)}
-.deck--wnew .deck__name i{background:var(--signal)}
-.deck--wnew .deck__n{color:var(--signal)}
-.deck--wnew .deck__share i{background:var(--signal)}
-.deck--wshaky::before{background:var(--hard)}
-.deck--wshaky .deck__name i{background:var(--hard)}
-.deck--wshaky .deck__n{color:var(--hard)}
-.deck--wshaky .deck__share i{background:var(--hard)}
-.deck--wclose::before{background:var(--learn)}
-.deck--wclose .deck__name i{background:var(--learn)}
-.deck--wclose .deck__n{color:var(--learn)}
-.deck--wclose .deck__share i{background:var(--learn)}
-.deck--wsolid::before{background:var(--known)}
-.deck--wsolid .deck__name i{background:var(--known)}
-.deck--wsolid .deck__n{color:var(--known)}
-.deck--wsolid .deck__share i{background:var(--known)}
-
-.wbarline{
-  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
-  padding:12px 14px;background:var(--surface);border:1px solid var(--rule);
-  border-radius:var(--r-lg);margin-bottom:22px;
-}
-.wbarline .selectbox{flex:1;min-width:190px}
-.wsetgrid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));margin-bottom:22px}
 .wopts{display:flex;flex-direction:column;gap:13px}
-.wgo-row{
-  display:flex;gap:12px;align-items:center;flex-wrap:wrap;
-  padding:18px;border:1px solid var(--rule);border-radius:var(--r-lg);
-  background:var(--surface);box-shadow:var(--shadow);
-}
-.wgo-row .btn{height:46px}
-.wgo-note{font-size:12.5px;color:var(--ink-3);line-height:1.6;flex:1;min-width:180px}
-.wgo-note b{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:600}
-
-.wworst{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .wchip{
   display:inline-flex;align-items:center;gap:8px;padding:6px 11px;
   border:1px solid var(--rule);border-radius:100px;background:var(--surface-2);
@@ -4006,10 +3980,6 @@ body.is-spelling .toasts{top:58px;bottom:auto}
 @media (max-width:860px){
   .rail__btn{max-width:none;padding:7px 0 5px}
   .rail__btn span{font-size:8px;letter-spacing:.04em}
-}
-@media (max-width:720px){
-  .wgo-row .btn{flex:1;justify-content:center}
-  .wbarline .selectbox{min-width:0;width:100%}
 }
 
 
@@ -4485,30 +4455,39 @@ button.wrow:active{transform:scale(.99)}
         <div>
           <h1>Cards</h1>
         </div>
-        <div class="page-head__actions">
-          <button class="btn" id="btnSpellSlice">Spell</button>
-          <button class="btn btn--primary" id="btnReviewSlice">Review</button>
-        </div>
       </header>
 
-      <div class="cdesk" id="cardTally"></div>
-
-      <div class="cbar">
-        <label class="search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
-          <input type="search" id="cardSearch" placeholder="Search words, translations and definitions" autocomplete="off">
-        </label>
-        <select class="selectbox" id="cardScope" aria-label="Which files"></select>
-        <select class="selectbox" id="cardSort" aria-label="Sort cards">
-          <option value="file">File order</option>
-          <option value="weak">Weakest first</option>
-          <option value="az">A – Z</option>
-          <option value="za">Z – A</option>
-        </select>
-        <button class="btn" data-readpop="1" title="Text size and what a card shows"><span class="aaico">Aa</span>Reading</button>
+      <div class="pk" id="cardPick">
+        <div class="pk__head">
+          <span class="eyebrow">From</span>
+          <select class="selectbox" id="cardScope" aria-label="Which files"></select>
+        </div>
+        <div class="pk__body">
+          <div class="pk__sets">
+            <div class="pk__band" id="cardBand" aria-hidden="true"></div>
+            <div class="pk__rows" id="cardTally" role="group" aria-label="Sets"></div>
+          </div>
+          <div class="pk__go" id="cardGo"></div>
+        </div>
       </div>
 
-      <div id="cardBody"></div>
+      <div class="cbrowse" id="cardBrowse" hidden>
+        <div id="cardHead"></div>
+        <div class="cbar">
+          <label class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+            <input type="search" id="cardSearch" placeholder="Search words, translations and definitions" autocomplete="off">
+          </label>
+          <select class="selectbox" id="cardSort" aria-label="Sort cards">
+            <option value="file">File order</option>
+            <option value="weak">Weakest first</option>
+            <option value="az">A – Z</option>
+            <option value="za">Z – A</option>
+          </select>
+          <button class="btn" data-readpop="1" title="Text size and what a card shows"><span class="aaico">Aa</span>Reading</button>
+        </div>
+        <div id="cardBody"></div>
+      </div>
     </div>
   </section>
 
@@ -4523,9 +4502,6 @@ button.wrow:active{transform:scale(.99)}
       <header class="page-head">
         <div>
           <h1>Spelling</h1>
-        </div>
-        <div class="page-head__actions">
-          <button class="btn btn--primary" data-spbegin="1">Start writing</button>
         </div>
       </header>
 
@@ -6374,9 +6350,10 @@ function applyRoute() {
   }
   setFlip = false;
   if (view === "progress" && pmo.mode) progMotion();
-  /* stepping off the page closes whatever deck was open, so coming back
-     costs the five tiles and nothing else */
-  if (view !== "cards" && state.cards.open) { state.cards.open = null; invalidate("cards"); }
+  if (!sameView && (view === "cards" || view === "spell")) pkEnter(node);
+  /* stepping off the page closes whatever set was open, so coming back
+     costs the desk and nothing else */
+  if (view !== "cards" && (state.cards.open || state.cards.q)) { state.cards.open = null; state.cards.q = ""; invalidate("cards"); }
   if (!drill.on && !spell.on) {
     const want = view === "lesson" ? { k: "v", id: id, tg: null }
       : view === "cards" ? { k: "v", id: null, tg: "cards" }
@@ -8427,44 +8404,160 @@ function scopeOptions() {
   }
   return opts.join("");
 }
-/* The five decks. A deck is a filter and a session in the same object:
-   click the tile to look through it, click its play button to study it.
-   This is the whole point of the page — "just the hard ones" has to be
-   one tap away, not a chip you have to notice first. */
+/* The sets. Each is a filter over the scope; one is chosen at a time and
+   the column beside the list starts it, spells it or opens it. */
 const CARD_DECKS = [
-  { k: "all",      name: "Every card", note: "The whole slice, hardest first" },
-  { k: "hard",     name: "Hard",       note: "The ones that keep slipping" },
-  { k: "learning", name: "Learning",   note: "Halfway there" },
-  { k: "known",    name: "Known",      note: "Keep them warm" },
-  { k: "gaps",     name: "No answer",  note: "The file carried no translation" }
+  { k: "all",      name: "Every card", c: "var(--ink)" },
+  { k: "hard",     name: "Hard",       c: "var(--hard)" },
+  { k: "learning", name: "Learning",   c: "var(--learn)" },
+  { k: "known",    name: "Known",      c: "var(--known)" },
+  { k: "gaps",     name: "No answer",  c: "var(--warn)" }
 ];
+
+/* ============================================================
+   THE SET DESK (.pk) — Cards and Spelling choose what to study
+   the same way: where from (the head), which set (the rows, one
+   travelling plate, a band of the whole scope above them), and
+   the column that says how big it is, shows a few of its words
+   and starts it. Nothing here is rebuilt on a tap: the rows, the
+   band and the column are built once and then only updated, so
+   the plate can travel, the figures count and the words fade
+   through instead of the whole desk blinking.
+   ============================================================ */
+function pkRows(host, sets, cur, attr) {
+  if (!host) return;
+  const sig = sets.map(s => s.k + ":" + s.name).join("|");
+  if (host.__sig !== sig) {
+    host.__sig = sig;
+    host.innerHTML = '<i class="pk__ind" aria-hidden="true"></i>' + sets.map(s =>
+      '<button type="button" class="pk__row" ' + attr + '="' + s.k + '" aria-pressed="false" style="--c:' + s.c + '">' +
+        '<i class="pk__dot" aria-hidden="true"></i><span class="pk__lbl">' + esc(s.name) + "</span>" +
+        '<b class="pk__n">' + s.n + "</b></button>").join("");
+  }
+  let on = null;
+  sets.forEach(s => {
+    const b = host.querySelector("[" + attr + '="' + s.k + '"]'), n = b.querySelector(".pk__n");
+    const was = +n.textContent;
+    if (was !== s.n) { if (host.offsetWidth && !reducedMotion()) countTo(n, was, s.n); else n.textContent = s.n; }
+    b.classList.toggle("is-empty", !s.n);
+    b.setAttribute("aria-pressed", String(s.k === cur));
+    if (s.k === cur) on = b;
+  });
+  const st = host.__plate || (host.__plate = { at: null, from: null, to: null, fwd: true, anim: null, round: () => "8px" });
+  st.cur = on;
+  movePlate(st, host.querySelector(".pk__ind"), on);
+  /* a hidden screen has no boxes: the plate is set down once it shows */
+  if (!host.__ro && "ResizeObserver" in window) {
+    host.__ro = new ResizeObserver(() => { if (st.cur && st.cur.isConnected) movePlate(st, host.querySelector(".pk__ind"), st.cur, true); });
+    host.__ro.observe(host);
+  }
+}
+/* the band: the scope in its parts, one strip each, placed by transform
+   so a change of scope slides the joins instead of reflowing the bar */
+function pkBand(host, parts, cur) {
+  if (!host) return;
+  const tot = parts.reduce((a, p) => a + p.n, 0);
+  const sig = parts.map(p => p.k).join("|");
+  if (host.__sig !== sig) {
+    host.__sig = sig;
+    host.innerHTML = parts.map(p => '<i data-k="' + p.k + '" style="background:' + p.c + '"></i>').join("");
+  }
+  let x = 0;
+  parts.forEach((p, i) => {
+    const seg = host.children[i], w = tot ? p.n / tot : 0;
+    seg.style.transform = "translateX(" + (x * 100).toFixed(3) + "%) scaleX(" + Math.max(0, w - (w ? .005 : 0)).toFixed(4) + ")";
+    seg.classList.toggle("is-dim", cur !== "all" && cur !== p.k);
+    x += w;
+  });
+}
+/* the column's words: a handful from the set, in serif, so you see what
+   you are about to study before you start it. Each word keeps its dot,
+   so two lines end on a whole word and no line starts with a dot. */
+function pkPeek(words, n, empty) {
+  if (!n) return '<span class="pk__none">' + empty + "</span>";
+  return words.slice(0, 8).map((w, i, a) => "<span>" + esc(w) + (i < a.length - 1 ? '<i aria-hidden="true">·</i>' : "") + "</span>").join(" ");
+}
+/* The column's figure counts to its new value; the name and the words
+   fade through (out on the leaving curve, then up in), never crossing. */
+function pkSay(go, o) {
+  const fig = go.querySelector(".pk__fig"), name = go.querySelector(".pk__name"), peek = go.querySelector(".pk__peek");
+  go.style.setProperty("--c", o.c);
+  const was = fig.textContent === "" ? null : +fig.textContent;
+  if (was !== o.n) { if (was !== null && go.offsetWidth && !reducedMotion()) countTo(fig, was, o.n); else fig.textContent = o.n; }
+  go.querySelector(".pk__unit").textContent = o.unit;
+  const want = { name: esc(o.name), peek: o.peek }, key = want.name + "\u0000" + want.peek;
+  if (go.__say === key) return;
+  const first = go.__say === undefined;
+  go.__say = key; go.__want = want;
+  const put = () => { name.innerHTML = go.__want.name; peek.innerHTML = go.__want.peek; };
+  if (first || !go.offsetWidth || !("animate" in go)) { put(); return; }
+  /* already on its way out: it comes back in with whatever is wanted last */
+  if (go.__out) return;
+  (go.__anims || []).forEach(a => a.cancel());
+  const out = [name, peek].map(n => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }));
+  go.__anims = out; go.__out = true;
+  out[0].onfinish = () => {
+    go.__out = false;
+    put();
+    go.__anims = [name, peek].map((n, i) => n.animate(reducedMotion()
+      ? [{ opacity: 0 }, { opacity: 1 }]
+      : [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }],
+      { duration: 260, delay: i * 40, easing: "cubic-bezier(.2,.7,.3,1)", fill: "backwards" }));
+    out.forEach(a => a.cancel());
+  };
+}
+/* arriving on the screen: the band draws itself part by part and the
+   column's figure counts up, after the screen's own fade-through */
+function pkEnter(node) {
+  const pk = node && node.querySelector(".pk");
+  if (!pk || reducedMotion() || !("animate" in pk)) return;
+  pk.querySelectorAll(".pk__band > i").forEach((seg, i) => {
+    const to = seg.style.transform, from = to.replace(/scaleX\([^)]*\)/, "scaleX(0)");
+    seg.animate([{ transform: from }, { transform: to }],
+      { duration: 600, delay: 220 + i * 70, easing: "cubic-bezier(.2,.7,.3,1)", fill: "backwards" });
+  });
+  const fig = pk.querySelector(".pk__fig");
+  if (fig && +fig.textContent) {
+    const n = +fig.textContent;
+    fig.textContent = 0;
+    setTimeout(() => { if (fig.isConnected && +fig.textContent === 0) countTo(fig, 0, n); }, 180);
+  }
+}
+
 function paintTally() {
   const host = $("#cardTally");
   if (!host) return;
   const pool = cardPool();
   const c = countByStatus(pool);
-  const cur = state.cards.status;
-  host.innerHTML = CARD_DECKS.map(d => {
-    const n = c[d.k] || 0;
-    if (d.k === "gaps" && !n) return "";
-    const share = c.all ? Math.round((n / c.all) * 100) : 0;
-    return '<div class="deck deck--' + d.k + (n ? "" : " is-empty") + '" data-cstatus="' + d.k + '"' +
-      ' role="button" tabindex="0" aria-pressed="' + (cur === d.k) + '" title="' + esc(d.note) + '">' +
-      '<span class="deck__name"><i></i>' + d.name + "</span>" +
-      '<span class="deck__n">' + n + "</span>" +
-      '<span class="deck__share"><i style="width:' + (d.k === "all" ? 100 : share) + '%"></i></span>' +
-      '<button type="button" class="deck__go" data-cstudy="' + d.k + '"' + (n ? "" : " disabled") + '>' +
-        ICO_DRILL + "Study</button>" +
-    "</div>";
-  }).join("");
+  let cur = state.cards.status;
+  const sets = CARD_DECKS.filter(d => d.k !== "gaps" || c.gaps || cur === "gaps").map(d => ({ k: d.k, name: d.name, c: d.c, n: c[d.k] || 0 }));
+  pkRows(host, sets, cur, "data-cstatus");
+  pkBand($("#cardBand"), CARD_DECKS.slice(1, 4).map(d => ({ k: d.k, c: d.c, n: c[d.k] || 0 })), cur);
 
-  const btn = $("#btnReviewSlice");
-  if (btn) {
-    const n = sliceOf(pool).length;
-    btn.innerHTML = ICO_DRILL + "Review " + n + (n === 1 ? " card" : " cards");
-    btn.disabled = !n;
-    btn.style.opacity = n ? "" : ".5";
+  const go = $("#cardGo");
+  if (!go) return;
+  if (!go.querySelector(".pk__fig")) {
+    go.innerHTML =
+      '<span class="eyebrow pk__name"></span>' +
+      '<div class="pk__figrow"><b class="hfig pk__fig"></b><span class="pk__unit"></span></div>' +
+      '<p class="pk__peek"></p>' +
+      '<div class="pk__acts">' +
+        '<button class="btn btn--primary pk__main" id="btnReviewSlice">' + ICO_DRILL + "Review</button>" +
+        '<button class="btn" id="btnSpellSlice">' + ICO_PEN + "Spell</button>" +
+        '<button class="btn" data-cbrowse="1" aria-pressed="false">' + ICO_CARDS + "Browse</button>" +
+      "</div>";
   }
+  const deck = CARD_DECKS.filter(d => d.k === cur)[0] || CARD_DECKS[0];
+  const slice = sliceOf(pool), n = slice.length;
+  pkSay(go, {
+    k: deck.k, name: deck.name, c: deck.c, n: n, unit: n === 1 ? "card" : "cards",
+    peek: pkPeek(slice.slice(0, 8).map(e => e.v.word), n,
+      state.lessons.length ? "Nothing in this set right now." : 'Nothing here yet. <button class="pk__link" data-himport="1">Import files</button>')
+  });
+  go.querySelectorAll(".pk__acts .btn:not([data-cbrowse])").forEach(b => { b.disabled = !n; });
+  const br = go.querySelector("[data-cbrowse]");
+  br.disabled = !n && !state.cards.open;
+  br.setAttribute("aria-pressed", String(!!state.cards.open));
 }
 function sortSlice(pool) {
   const s = state.cards.sort || "file";
@@ -8478,64 +8571,77 @@ function sortSlice(pool) {
     return d !== 0 ? d : w(a).localeCompare(w(b));
   });
 }
-/* Building a deck is the expensive thing this page does, so it is not
-   done until you ask for one. Landing on Cards gives you the five decks
-   and their counts — which is the question the page is actually there to
-   answer — and the grid is built for the deck you open, and only that
-   one. */
-function renderDeckPrompt() {
-  const host = $("#cardBody");
-  if (!host) return;
-  const n = cardPool().length;
-  host.innerHTML =
-    '<div class="pickdeck">' +
-      '<div class="pickdeck__mark" aria-hidden="true">' + ICO_DRILL + "</div>" +
-      "<h3>Open a deck</h3>" +
-      "<p>" + (n
-        ? "There " + (n === 1 ? "is <b>1 card</b>" : "are <b>" + n + " cards</b>") +
-          " in this scope. Choose a deck above."
-        : "Nothing in this scope yet. Widen it, clear the search, or import a file.") +
-      "</p>" +
-    "</div>";
+/* Building a set's grid is the expensive thing this page does, so it is
+   not done until you ask for one with Browse. Landing on Cards gives you
+   the sets and their counts, which is the question the page is there to
+   answer, and the grid is built for the set you open, and only that one.
+   It opens under the desk and leaves by fading out before it is hidden. */
+function cardBrowseShow(want) {
+  const box = $("#cardBrowse");
+  if (!box) return;
+  if (want && box.hidden) {
+    if (box.__out) { box.__out.cancel(); box.__out = null; }
+    box.hidden = false;
+    if (box.offsetWidth && !reducedMotion() && "animate" in box) {
+      Array.prototype.forEach.call(box.children, (k, i) => k.animate(
+        [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }],
+        { duration: 340, delay: i * 40, easing: "cubic-bezier(.2,.7,.3,1)", fill: "backwards" }));
+      const y = box.getBoundingClientRect().top;
+      if (y > innerHeight * .62) window.scrollBy({ top: y - 90, behavior: "smooth" });
+    }
+  } else if (!want && !box.hidden && !box.__out) {
+    if (!box.offsetWidth || !("animate" in box)) { box.hidden = true; return; }
+    box.__out = box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" });
+    box.__out.onfinish = () => { box.__out.cancel(); box.__out = null; if (!state.cards.open) box.hidden = true; };
+  }
 }
-
 function renderCardsGrid() {
-  const host = $("#cardBody");
-  if (!host) return;
-  if (!state.cards.open) return renderDeckPrompt();
+  const host = $("#cardBody"), head = $("#cardHead");
+  if (!host || !head) return;
+  cardBrowseShow(!!state.cards.open);
+  if (!state.cards.open) return;
   const pool = sortSlice(sliceOf(cardPool()));
   const deck = CARD_DECKS.filter(d => d.k === state.cards.status)[0] || CARD_DECKS[0];
-  if (!pool.length) {
-    host.innerHTML = '<div class="emptycards"><h3>This deck is empty</h3>' +
-      "<p>" + (state.lessons.length
-        ? "Nothing sits in this deck right now."
-        : "Import a file and its cards land here.") + "</p>" +
-      '<button class="btn" data-goto="settings/data">Add lessons</button></div>';
-    return;
-  }
   const lim = Math.min(state.cards.limit, pool.length);
-  host.innerHTML =
+  const headHTML =
     '<div class="chead">' +
       '<div class="chead__n"><b>' + pool.length + "</b> " + (pool.length === 1 ? "card" : "cards") +
         " in <em>" + esc(deck.name) + "</em>" + (lim < pool.length ? " · showing " + lim : "") + "</div>" +
       '<div class="chead__acts">' +
-        '<button class="btn btn--sm" data-cclose="1">Close deck</button>' +
         '<button class="btn btn--sm" data-flipall="1">Show every answer</button>' +
-        '<button class="btn btn--sm btn--primary" data-cstudy="' + deck.k + '">' + ICO_DRILL + "Study this deck</button>" +
+        '<button class="btn btn--sm" data-cclose="1">Close</button>' +
       "</div>" +
-    "</div>" +
-    '<div class="grid-cards">' +
-      pool.slice(0, lim).map(e => cardHTML(e.lesson, e.v, e.i, e.src, e.also)).join("") +
-    "</div>" +
-    (lim < pool.length
-      ? '<div class="morerow"><button class="btn" data-cmore="1">Show ' +
-        Math.min(60, pool.length - lim) + " more of " + pool.length + "</button></div>"
-      : "");
+    "</div>";
+  const bodyHTML = !pool.length
+    ? '<div class="emptycards"><h3>This set is empty</h3>' +
+      "<p>" + (state.cards.q ? "Nothing in it matches the search." : "Nothing sits in this set right now.") + "</p></div>"
+    : '<div class="grid-cards">' +
+        pool.slice(0, lim).map(e => cardHTML(e.lesson, e.v, e.i, e.src, e.also)).join("") +
+      "</div>" +
+      (lim < pool.length
+        ? '<div class="morerow"><button class="btn" data-cmore="1">Show ' +
+          Math.min(60, pool.length - lim) + " more of " + pool.length + "</button></div>"
+        : "");
+  /* another set in the open grid is a fade-through of the grid itself;
+     a search or a sort only repaints it, so the caret stays put */
+  const swap = host.__st && host.__st !== deck.k && host.offsetWidth && "animate" in host;
+  host.__st = deck.k;
+  const put = () => { head.innerHTML = headHTML; host.innerHTML = bodyHTML; };
+  if (host.__anim) { host.__anim.cancel(); host.__anim = null; }
+  if (!swap) { put(); return; }
+  const out = host.__anim = host.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" });
+  out.onfinish = () => {
+    put(); out.cancel(); host.__anim = null;
+    host.animate(reducedMotion() ? [{ opacity: 0 }, { opacity: 1 }]
+      : [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }],
+      { duration: 340, easing: "cubic-bezier(.2,.7,.3,1)" });
+  };
 }
 function renderCards() {
   const sel = $("#cardScope");
   if (!sel) return;
-  sel.innerHTML = scopeOptions();
+  const opts = scopeOptions();
+  if (sel.__opts !== opts) { sel.innerHTML = opts; sel.__opts = opts; }
   if (!sel.querySelector('option[value="' + CSS.escape(state.cards.scope) + '"]')) state.cards.scope = "all";
   sel.value = state.cards.scope;
   const srt = $("#cardSort");
@@ -9369,26 +9475,24 @@ document.addEventListener("click", e => {
     return;
   }
 
-  /* cards view controls — the deck's own play button jumps the queue,
-     otherwise the tile behind it would only ever select the deck */
-  const cstu = t.closest("[data-cstudy]");
-  if (cstu) {
-    e.preventDefault(); e.stopPropagation();
-    state.cards.status = cstu.dataset.cstudy; state.cards.limit = 60;
-    paintTally(); renderCardsGrid(); reviewSlice();
-    return;
-  }
+  /* cards view controls — a row chooses the set; an open grid follows it */
   const cst = t.closest("[data-cstatus]");
   if (cst) {
+    if (state.cards.status === cst.dataset.cstatus) return;
     state.cards.status = cst.dataset.cstatus;
-    state.cards.open = cst.dataset.cstatus;      /* this is the request */
+    if (state.cards.open) state.cards.open = cst.dataset.cstatus;
     state.cards.limit = 60;
     paintTally(); renderCardsGrid(); return;
   }
-  if (t.closest("[data-cclose]")) {
-    state.cards.open = null;
+  const cbr = t.closest("[data-cbrowse]");
+  if (cbr || t.closest("[data-cclose]")) {
+    const open = cbr ? !state.cards.open : false;
+    state.cards.open = open ? state.cards.status : null;      /* this is the request */
+    state.cards.limit = 60;
+    /* closing drops the search too, so no hidden filter is left on the counts */
+    if (!open && state.cards.q) { state.cards.q = ""; const box = $("#cardSearch"); if (box) box.value = ""; }
     paintTally(); renderCardsGrid();
-    window.scrollTo(0, 0);
+    if (!open && window.scrollY > 0) window.scrollTo({ top: 0, behavior: reducedMotion() ? "auto" : "smooth" });
     return;
   }
   const csrt = t.closest("[data-csort]");
@@ -9500,28 +9604,18 @@ document.addEventListener("click", e => {
 
   /* ---------- SCHREIBPROBE ---------- */
   const spdeck = t.closest("[data-spdeck]");
-  const spstudy = t.closest("[data-spstudy]");
-  if (spstudy) {
-    e.preventDefault(); e.stopPropagation();
-    spellFromLauncher(spstudy.dataset.spstudy);
-    return;
-  }
   if (spdeck) {
+    if (spellCfg().deck === spdeck.dataset.spdeck) return;
     setSpellCfg("deck", spdeck.dataset.spdeck);
-    renderSpell();
+    painted.spell = "";
+    paintSpellDesk();
     return;
   }
   if (t.closest("[data-spbegin]")) { e.preventDefault(); spellFromLauncher(null); return; }
-  if (t.closest("[data-spworst]")) {
-    e.preventDefault();
-    const worst = spellWorst(spellPool(), 10);
-    startSpelling(worst, "The ones that keep going wrong", null);
-    return;
-  }
   const splen = t.closest("[data-splen]");
-  if (splen) { e.preventDefault(); setSpellCfg("len", +splen.dataset.splen); renderSpell(); return; }
+  if (splen) { e.preventDefault(); setSpellCfg("len", +splen.dataset.splen); paintSpellDesk(); return; }
   const sporder = t.closest("[data-sporder]");
-  if (sporder) { e.preventDefault(); setSpellCfg("order", sporder.dataset.sporder); renderSpell(); return; }
+  if (sporder) { e.preventDefault(); setSpellCfg("order", sporder.dataset.sporder); paintSpellDesk(); return; }
   const spfile = t.closest("[data-spfile]");
   if (spfile) { e.preventDefault(); spellLesson(state.lessons.find(x => x.id === spfile.dataset.spfile)); return; }
   if (t.closest("#btnSpellSlice")) { e.preventDefault(); spellCardsSlice(); return; }
@@ -9586,7 +9680,8 @@ document.addEventListener("change", e => {
   if (so) { setSpellCfg(so.dataset.spopt, so.checked ? 1 : 0); return; }
   if (e.target && e.target.id === "spellScope") {
     setSpellCfg("scope", e.target.value);
-    renderSpell();
+    painted.spell = "";
+    paintSpellDesk();
   }
 });
 
@@ -10799,7 +10894,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.32";
+const APP_VERSION = "3.33";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -14382,21 +14477,26 @@ function spellPool() {
   }));
   return out;
 }
+/* The sets: every word, the four records, and the ten that keep going
+   wrong, which is a set like the others rather than a panel of its own */
 const SPELL_DECKS = [
-  { k: "all",   name: "Every word",  note: "The whole scope, weakest first" },
-  { k: "new",   name: "Never typed", note: "You have never written these out" },
-  { k: "shaky", name: "Shaky",       note: "The last attempt went wrong" },
-  { k: "close", name: "Nearly",      note: "One or two clean runs so far" },
-  { k: "solid", name: "Solid",       note: "Three clean runs in a row" }
+  { k: "all",   name: "Every word",        c: "var(--ink)" },
+  { k: "new",   name: "Never typed",       c: "var(--signal)" },
+  { k: "shaky", name: "Shaky",             c: "var(--hard)" },
+  { k: "close", name: "Nearly",            c: "var(--learn)" },
+  { k: "solid", name: "Solid",             c: "var(--known)" },
+  { k: "worst", name: "Keeps going wrong", c: "var(--die)" }
 ];
 function spellSlice(pool, deck) {
   const k = deck || spellCfg().deck;
   if (!k || k === "all") return pool;
+  if (k === "worst") return spellWorst(pool, 10);
   return pool.filter(e => spStat(e.v) === k);
 }
 function spellCounts(pool) {
   const c = { all: pool.length, "new": 0, shaky: 0, close: 0, solid: 0 };
   pool.forEach(e => { c[spStat(e.v)]++; });
+  c.worst = spellWorst(pool, 10).length;
   return c;
 }
 const SPELL_RANK = { "new": 0, shaky: 1, close: 2, solid: 3 };
@@ -14439,87 +14539,86 @@ function renderSpell() {
   const host = $("#spellBody");
   if (!host) return;
   const cfg = spellCfg();
+  if (!host.querySelector("#spellPick")) {
+    host.innerHTML =
+      '<div class="pk" id="spellPick">' +
+        '<div class="pk__head">' +
+          '<span class="eyebrow">From</span>' +
+          '<select class="selectbox" id="spellScope" aria-label="Which files"></select>' +
+        "</div>" +
+        '<div class="pk__body">' +
+          '<div class="pk__sets">' +
+            '<div class="pk__band" id="spellBand" aria-hidden="true"></div>' +
+            '<div class="pk__rows" id="spellSets" role="group" aria-label="Sets"></div>' +
+          "</div>" +
+          '<div class="pk__go" id="spellGo">' +
+            '<span class="eyebrow pk__name"></span>' +
+            '<div class="pk__figrow"><b class="hfig pk__fig"></b><span class="pk__unit"></span></div>' +
+            '<p class="pk__peek"></p>' +
+            '<div class="pk__opts">' +
+              '<span class="eyebrow">Length</span>' +
+              '<div class="seg seg--full" role="group" aria-label="Session length">' +
+                [10, 20, 40, 0].map(n => '<button data-splen="' + n + '" aria-pressed="false">' + (n ? n : "All") + "</button>").join("") +
+              "</div>" +
+              '<span class="eyebrow">Order</span>' +
+              '<div class="seg seg--full" role="group" aria-label="Order">' +
+                '<button data-sporder="weak" aria-pressed="false">Weakest</button>' +
+                '<button data-sporder="random" aria-pressed="false">Shuffle</button>' +
+                '<button data-sporder="az" aria-pressed="false">A–Z</button>' +
+              "</div>" +
+            "</div>" +
+            '<div class="pk__acts">' +
+              '<button class="btn btn--primary pk__main" data-spbegin="1">' + ICO_PEN + "<span>Write</span></button>" +
+            "</div>" +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+
+      '<div class="panel pk__ask">' +
+        "<h3>How it asks" + tipBtn("strict") + "</h3>" +
+        tipBody("strict", "Strict marking counts a missing capital or umlaut as a miss; off, it lets it through but still names it. " +
+          "The answer box asks for a German keyboard with autocorrect off, and the key row above the keyboard always types <b>ä ö ü ß</b>.") +
+        '<div class="wopts">' +
+          spSwitch("strict", "Strict marking") +
+          spSwitch("cloze", "Show the sentence") +
+          spSwitch("article", "Ask for der / die / das") +
+          spSwitch("autosay", "Say the word when it is marked") +
+        "</div>" +
+      "</div>";
+  }
+  paintSpellDesk();
+}
+/* the desk only: rows, band, the column and its switches, updated in place */
+function paintSpellDesk() {
+  const cfg = spellCfg();
+  const sel = $("#spellScope");
+  if (!sel) return;
+  const opts = scopeOptions();
+  if (sel.__opts !== opts) { sel.innerHTML = opts; sel.__opts = opts; }
+  if (!sel.querySelector('option[value="' + CSS.escape(cfg.scope) + '"]')) { cfg.scope = "all"; state.settings.spell = cfg; }
+  sel.value = cfg.scope;
+
   const pool = spellPool();
   const c = spellCounts(pool);
-  const worst = spellWorst(pool, 10);
-  const sliceN = spellSlice(pool).length;
-  const take = cfg.len ? Math.min(cfg.len, sliceN) : sliceN;
+  if (cfg.deck === "worst" && !c.worst) { cfg.deck = "all"; state.settings.spell = cfg; }
+  const sets = SPELL_DECKS.filter(d => d.k !== "worst" || c.worst).map(d => ({ k: d.k, name: d.name, c: d.c, n: c[d.k] || 0 }));
+  pkRows($("#spellSets"), sets, cfg.deck, "data-spdeck");
+  pkBand($("#spellBand"), SPELL_DECKS.slice(1, 5).map(d => ({ k: d.k, c: d.c, n: c[d.k] || 0 })), cfg.deck);
+
+  const go = $("#spellGo");
   const deck = SPELL_DECKS.filter(d => d.k === cfg.deck)[0] || SPELL_DECKS[0];
-
-  host.innerHTML =
-    '<div class="wbarline">' +
-      '<select class="selectbox" id="spellScope" aria-label="Which files">' + scopeOptions() + "</select>" +
-      '<div class="seg" role="group" aria-label="Order">' +
-        '<button data-sporder="weak"   aria-pressed="' + (cfg.order === "weak") + '">Weakest first</button>' +
-        '<button data-sporder="random" aria-pressed="' + (cfg.order === "random") + '">Shuffle</button>' +
-        '<button data-sporder="az"     aria-pressed="' + (cfg.order === "az") + '">A–Z</button>' +
-      "</div>" +
-    "</div>" +
-
-    '<div class="cdesk">' + SPELL_DECKS.map(d => {
-      const n = c[d.k] || 0;
-      const share = c.all ? Math.round((n / c.all) * 100) : 0;
-      return '<div class="deck deck--w' + d.k + (n ? "" : " is-empty") + '" data-spdeck="' + d.k + '"' +
-        ' role="button" tabindex="0" aria-pressed="' + (cfg.deck === d.k) + '" title="' + esc(d.note) + '">' +
-        '<span class="deck__name"><i></i>' + d.name + "</span>" +
-        '<span class="deck__n">' + n + "</span>" +
-        '<span class="deck__share"><i style="width:' + (d.k === "all" ? 100 : share) + '%"></i></span>' +
-        '<button type="button" class="deck__go" data-spstudy="' + d.k + '"' + (n ? "" : " disabled") + ">" +
-          ICO_PEN + "Write</button>" +
-      "</div>";
-    }).join("") + "</div>" +
-
-    '<div class="wgo-row">' +
-      '<div class="wgo-note">' +
-        (sliceN
-          ? "<b>" + take + "</b> " + (take === 1 ? "word" : "words") + " from <b>" + esc(deck.name) + "</b>" +
-            (cfg.len && sliceN > cfg.len ? " — " + sliceN + " are waiting in all" : "") + "."
-          : "Nothing in this deck yet. Open another one above, widen the scope, or import a file.") +
-      "</div>" +
-      '<button class="btn btn--primary" data-spbegin="1"' + (sliceN ? "" : " disabled") + ">" + ICO_PEN +
-        "Start writing</button>" +
-    "</div>" +
-
-    '<div class="wsetgrid">' +
-      '<div class="panel">' +
-        "<h3>How long</h3>" +
-        '<div class="seg seg--full" role="group" aria-label="Session length">' +
-          [10, 20, 40, 0].map(n =>
-            '<button data-splen="' + n + '" aria-pressed="' + (cfg.len === n) + '">' +
-            (n ? n : "All") + "</button>").join("") +
-        "</div>" +
-      "</div>" +
-      '<div class="panel">' +
-        "<h3>What counts as right" + tipBtn("strict") + "</h3>" +
-        tipBody("strict", "Strict marks a missing capital or umlaut as a miss. Off, it lets it through but still names it.") +
-        '<div class="wopts">' +
-          spSwitch("strict", "Strict marking", "capitals and umlauts must match") +
-          spSwitch("cloze", "Show the sentence", "with the word cut out of it") +
-          spSwitch("article", "Ask for der / die / das", "on every noun") +
-          spSwitch("autosay", "Say the word when it is marked", "device voice") +
-        "</div>" +
-      "</div>" +
-    "</div>" +
-
-    (worst.length
-      ? '<div class="panel"><h3>The ones that keep going wrong</h3>' +
-        '<div class="wworst">' + worst.map(e => {
-          const s = spOf(e.v);
-          return '<span class="wchip">' + esc(spBare(e.v.word)) + "<b>" + (s.n - s.ok) + "/" + s.n + "</b></span>";
-        }).join("") + "</div>" +
-        '<div class="btnrow" style="margin-top:14px"><button class="btn btn--primary" data-spworst="1">' +
-        ICO_PEN + "Write these " + worst.length + "</button></div></div>"
-      : "") +
-
-    '<div class="panel panel--tiponly"><h3>Typing German on a phone' + tipBtn("phonekb") + "</h3>" +
-      tipBody("phonekb", "The answer box asks for a German keyboard with autocorrect off. Gboard and Samsung switch when German is added to the keyboard\u2019s own languages. The key row under the box always types <b>ä ö ü ß</b>.") +
-    "</div>";
-
-  const sel = $("#spellScope");
-  if (sel) {
-    if (!sel.querySelector('option[value="' + CSS.escape(cfg.scope) + '"]')) { cfg.scope = "all"; state.settings.spell = cfg; }
-    sel.value = cfg.scope;
-  }
+  const slice = spellSlice(pool), n = slice.length;
+  const take = cfg.len ? Math.min(cfg.len, n) : n;
+  pkSay(go, {
+    k: deck.k, name: deck.name, c: deck.c, n: n, unit: n === 1 ? "word" : "words",
+    peek: pkPeek(slice.slice(0, 8).map(e => spBare(e.v.word)), n,
+      state.lessons.length ? "Nothing in this set yet." : 'Nothing here yet. <button class="pk__link" data-himport="1">Import files</button>')
+  });
+  go.querySelectorAll("[data-splen]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.splen === cfg.len)));
+  go.querySelectorAll("[data-sporder]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sporder === cfg.order)));
+  const main = go.querySelector("[data-spbegin]");
+  main.disabled = !n;
+  main.querySelector("span").textContent = n ? "Write " + take + (take === 1 ? " word" : " words") : "Write";
 }
 
 /* ============================================================
