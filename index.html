@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.13 · neural German, cached on device -->
+<!-- Sprachlabor — v3.14 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -272,12 +272,16 @@ ul,ol{margin:0;padding:0;list-style:none}
    stress band draws under the first. Every step fills backwards only,
    so the finished word is just the resting state. */
 .wmark.is-play .wmark__t{animation:wmrise .62s var(--ease) calc(var(--wd, 0s) + .1s + var(--n) * .15s) backwards}
-.wmark.is-play .wmark__s{animation:wmclose .6s var(--ease) calc(var(--wd, 0s) + 1.05s) backwards}
-.wmark.is-play .wmark__dot{animation:wmdot 1.25s var(--ease) calc(var(--wd, 0s) + .2s + var(--n) * .15s) backwards}
-.wmark.is-play .wmark__s:first-child::after{animation:wipe .5s var(--ease) calc(var(--wd, 0s) + 1.5s) backwards}
+.wmark.is-play .wmark__s{animation:wmclose .6s var(--ease) calc(var(--wd, 0s) + 1.2s) backwards}
+/* A dot arrives with its syllable and is gone the moment the syllables
+   start to close (on the leaving curve), so it never meets a letter.
+   Both animate opacity only and end at the resting 0. */
+.wmark.is-play .wmark__dot{animation:wmdotin .3s var(--ease) calc(var(--wd, 0s) + .25s + var(--n) * .15s) both,wmdotout .16s cubic-bezier(.4,0,1,1) calc(var(--wd, 0s) + 1.04s) forwards}
+.wmark.is-play .wmark__s:first-child::after{animation:wipe .5s var(--ease) calc(var(--wd, 0s) + 1.65s) backwards}
 @keyframes wmrise{from{transform:translateY(110%)}to{transform:none}}
 @keyframes wmclose{from{transform:translateX(calc(var(--n) * .62em))}to{transform:none}}
-@keyframes wmdot{0%{opacity:0}25%{opacity:1}70%{opacity:1}100%{opacity:0}}
+@keyframes wmdotin{from{opacity:0}to{opacity:1}}
+@keyframes wmdotout{from{opacity:1}to{opacity:0}}
 @media (prefers-reduced-motion:reduce){
   .is-play .bmark__bar{animation-name:fade}
   .wmark.is-play .wmark__t{animation-name:fade}
@@ -9866,7 +9870,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.13";
+const APP_VERSION = "3.14";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
