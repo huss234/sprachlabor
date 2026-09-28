@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.3 · neural German, cached on device -->
+<!-- Sprachlabor — v3.4 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -248,13 +248,15 @@ ul,ol{margin:0;padding:0;list-style:none}
 .syncsplit.is-attn .syncmore__chev{opacity:0}
 .syncsplit.is-attn .syncmore__attn{opacity:1}
 /* the details, grown out of the control like any other menu */
-.menu--sync{width:min(320px,calc(100vw - 20px));padding:14px 14px 12px;cursor:default}
-.syncp__head{display:flex;align-items:flex-start;gap:10px;padding:0 2px 12px;border-bottom:1px solid var(--rule-2)}
-.syncp__head .dot{margin-top:5px}
+.menu--sync{width:min(340px,calc(100vw - 20px));padding:18px 18px 16px;cursor:default}
+.syncp__head{display:flex;align-items:flex-start;gap:11px;padding:0 4px}
+.syncp__head .dot{margin-top:6px}
 .syncp__head b{display:block;font-size:13.5px;font-weight:600;line-height:1.4;letter-spacing:-.005em}
 .syncp__head span{display:block;font-size:12px;color:var(--ink-2);margin-top:2px}
-.syncp__rows{margin:4px 0 12px}
-.syncp__rows div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:7px 2px;border-bottom:1px solid var(--rule-2)}
+/* the facts sit in their own inset block, clear of the panel's edges */
+.syncp__rows{margin:16px 0;padding:2px 14px;background:var(--surface-2);border:1px solid var(--rule-2);border-radius:var(--r-md)}
+.syncp__rows div{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--rule-2)}
+.syncp__rows div:last-child{border-bottom:none}
 .syncp__rows dt{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);flex:none}
 .syncp__rows dd{margin:0;font-family:var(--mono);font-size:11.5px;color:var(--ink);text-align:right;min-width:0;overflow-wrap:anywhere}
 .syncp__rows small{margin-left:5px;font-family:var(--sans);font-size:10.5px;color:var(--ink-3)}
@@ -267,11 +269,32 @@ ul,ol{margin:0;padding:0;list-style:none}
 :root[data-theme="dark"] .menu.menu--sync .syncp__acts .btn--primary{color:#0B0E10}
 .menu.menu--sync .syncp__acts .btn--primary:hover{filter:brightness(1.08)}
 .menu.menu--sync .syncp__acts .btn--primary svg{color:inherit}
-.syncp__log{margin-top:14px}
-.syncp__log ol{margin-top:7px;display:grid;gap:6px;max-height:140px;overflow-y:auto;overscroll-behavior:contain}
-.syncp__log li{display:flex;gap:10px;font-size:12px;line-height:1.45;color:var(--ink-2)}
+/* the activity log is folded away until asked for, so the panel stays
+   the same size however many syncs there have been */
+.syncp__log{margin-top:16px;border-top:1px solid var(--rule-2);padding-top:6px}
+.menu.menu--sync .syncp__logbtn{
+  display:flex;align-items:center;gap:8px;width:100%;padding:8px 4px;border-radius:var(--r-sm);
+  color:var(--ink-3);transition:background .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
+}
+.menu.menu--sync .syncp__logbtn:hover{background:var(--surface-2);color:var(--ink-2)}
+.menu.menu--sync .syncp__logbtn:active{transform:scale(.98)}
+.syncp__logbtn .eyebrow{color:inherit}
+.syncp__count{font-family:var(--mono);font-size:10px;font-weight:600;border:1px solid var(--rule);border-radius:100px;padding:0 7px;line-height:1.6;color:var(--ink-3)}
+.menu.menu--sync .syncp__logbtn svg{width:14px;height:14px;margin-left:auto;color:inherit;transition:transform .26s var(--ease)}
+.syncp__log.is-open .syncp__logbtn svg{transform:rotate(180deg)}
+.syncp__logbody{display:grid;grid-template-rows:0fr;opacity:0;
+  transition:grid-template-rows .2s cubic-bezier(.4,0,1,1),opacity .14s cubic-bezier(.4,0,1,1)}
+.syncp__log.is-open .syncp__logbody{grid-template-rows:1fr;opacity:1;
+  transition:grid-template-rows .28s var(--ease),opacity .22s var(--ease) .05s}
+.syncp__logbody>div{min-height:0;overflow:hidden}
+.syncp__log ol{margin:6px 0 2px;padding:0 4px;display:grid;gap:8px;max-height:168px;overflow-y:auto;overscroll-behavior:contain}
+.syncp__log li{display:flex;gap:12px;font-size:12px;line-height:1.45;color:var(--ink-2)}
 .syncp__log time{flex:none;min-width:44px;font-size:10.5px;color:var(--ink-3);padding-top:1px}
-.syncp__none{font-size:12px;color:var(--ink-3);margin-top:6px}
+.syncp__none{font-size:12px;color:var(--ink-3);margin:6px 4px 2px}
+@media (prefers-reduced-motion:reduce){
+  .syncp__logbody,.syncp__log.is-open .syncp__logbody{transition:opacity .16s var(--ease)}
+  .syncp__log.is-open .syncp__logbtn svg{transform:none}
+}
 @media (prefers-reduced-motion:reduce){
   .syncmore,.syncsplit.is-open .syncmore,.syncmore svg{transition:opacity .16s var(--ease),border-color .15s var(--ease),background .15s var(--ease),color .15s var(--ease)}
   .syncsplit:not(.is-open) .syncmore svg,.syncmore[aria-expanded="true"] .syncmore__chev{transform:none}
@@ -9033,14 +9056,14 @@ function syncWhen(ms) {
   return d.toDateString() === now.toDateString() ? hm : d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 const SyncPanel = {
-  node: null, last: "",
+  node: null, last: "", logOpen: false,
   open(anchor) {
     closeMenu();
     const m = el("div", "menu menu--sync");
     m.setAttribute("role", "dialog");
     m.setAttribute("aria-label", "Sync details");
     document.body.appendChild(m);
-    this.node = m; this.last = "";
+    this.node = m; this.last = ""; this.logOpen = false;
     menuNode = m; menuFrom = anchor;
     anchor.setAttribute("aria-expanded", "true");
     this.paint();
@@ -9054,6 +9077,14 @@ const SyncPanel = {
       if (!b) return;
       if (b.dataset.sx === "now") syncNow(true);
       if (b.dataset.sx === "settings") { closeMenu(); go("settings", "sync"); }
+      if (b.dataset.sx === "log") {
+        /* flipped on the node that is there, so it animates; the next paint draws the same state */
+        this.logOpen = !this.logOpen;
+        b.closest(".syncp__log").classList.toggle("is-open", this.logOpen);
+        b.setAttribute("aria-expanded", String(this.logOpen));
+        b.nextElementSibling.inert = !this.logOpen;
+        this.last = this.html();
+      }
     });
     SyncUI.apply();
   },
@@ -9070,7 +9101,7 @@ const SyncPanel = {
   html() {
     const v = syncView(), row = (k, val) => "<div><dt>" + k + "</dt><dd>" + val + "</dd></div>";
     const lim = GH.rate.remaining == null ? "—" : GH.rate.remaining.toLocaleString() + " / " + (GH.rate.limit || 0).toLocaleString();
-    const log = Sync.st.log.slice(0, 12);
+    const log = Sync.st.log.slice(0, 12), lo = this.logOpen;
     return '<div class="syncp__head"><span class="dot' + (v.k === "off" ? "" : " dot--" + v.k) + '"></span>' +
         "<div><b>" + esc(v.long) + "</b><span>Last synced " + esc(timeAgo(state.settings.lastSync)) + "</span></div></div>" +
       '<dl class="syncp__rows">' +
@@ -9083,9 +9114,15 @@ const SyncPanel = {
         '<button class="btn btn--primary btn--sm" data-sx="now"' + (Sync.busy ? " disabled" : "") + ">" + MI.sync + "Sync now</button>" +
         '<button class="btn btn--sm" data-sx="settings">' + MI.gear + "Sync settings</button>" +
       "</div>" +
-      '<div class="syncp__log"><div class="eyebrow">Recent</div>' +
-        (log.length ? "<ol>" + log.map(x => '<li><time class="mono">' + esc(syncWhen(x.at)) + "</time><span>" + esc(x.text) + "</span></li>").join("") + "</ol>"
-          : '<p class="syncp__none">Nothing yet.</p>') +
+      '<div class="syncp__log' + (lo ? " is-open" : "") + '">' +
+        '<button type="button" class="syncp__logbtn" data-sx="log" aria-expanded="' + lo + '" aria-controls="syncLog">' +
+          '<span class="eyebrow">Activity</span>' + (log.length ? '<span class="syncp__count">' + log.length + "</span>" : "") +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5l6 6 6-6"/></svg>' +
+        "</button>" +
+        '<div class="syncp__logbody" id="syncLog"' + (lo ? "" : " inert") + "><div>" +
+          (log.length ? "<ol>" + log.map(x => '<li><time class="mono">' + esc(syncWhen(x.at)) + "</time><span>" + esc(x.text) + "</span></li>").join("") + "</ol>"
+            : '<p class="syncp__none">Nothing yet.</p>') +
+        "</div></div>" +
       "</div>";
   }
 };
@@ -9146,7 +9183,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.3";
+const APP_VERSION = "3.4";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
