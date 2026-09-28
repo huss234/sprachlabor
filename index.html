@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.26 · neural German, cached on device -->
+<!-- Sprachlabor — v3.27 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -5156,7 +5156,7 @@ function rehydrate(lib) {
 }
 
 const writeLibrary  = () => store.queue(KEY_LIB, dehydrate, 300);
-const writeProgress = () => store.queue(KEY_PROG, () => ({ progress: state.progress, settings: state.settings }), 600);
+const writeProgress = () => { store.queue(KEY_PROG, () => ({ progress: state.progress, settings: state.settings }), 600); settingsMoved(); };
 const writeEvents   = () => store.queue(KEY_EVT,  () => state.events, 800);
 
 var libRev = 0;
@@ -10047,6 +10047,8 @@ const Sync = {
     return d;
   },
   devHash() { return recHash(stable(devSettings())) + ":" + devForm(); },
+  /* this device's settings differ from the copy GitHub holds */
+  settingsWaiting() { return !!(this.sh && this.st && this.st.snapshotAt && this.devHash() !== this.sh.dev); },
   devFile() {
     return { path: "devices/" + deviceId() + ".json", text: JSON.stringify({
       v: 1, id: deviceId(), form: devForm(), at: Date.now(), app: APP_VERSION, settings: devSettings() }) };
@@ -10058,7 +10060,7 @@ const Sync = {
     this.waiting = this.diff().n;          /* counted now: a change a moment ago must not be missed */
     return this.waiting === 0 && !!this.st.snapshotAt && this.devHash() === this.sh.dev;
   },
-  recount() { if (!this.st) return; this.waiting = this.diff().n; paintSync(); },
+  recount() { if (!this.st) return; this.waiting = this.diff().n + (this.settingsWaiting() ? 1 : 0); paintSync(); },
   recountSoon() { clearTimeout(this.timers.count); this.timers.count = setTimeout(() => this.recount(), 400); },
 
   /* ---------- sending ---------- */
@@ -10109,6 +10111,7 @@ const Sync = {
       if (x[0][0] === "l" && !state.lessons.some(l => l.id === id)) { delete S.l[id]; delete S.lm[id]; }
       if (x[0][0] === "f" && !folderById(id)) { delete S.f[id]; delete S.fm[id]; }
     });
+    if (!d.n && S.dev !== dh) this.log1("Settings of this device saved to GitHub");
     S.dev = dh;
     this.st.lastOid = oid; this.st.lastPushAt = Date.now();
     this.st.journalCount = (this.st.journalCount || 0) + files.length;
@@ -10708,6 +10711,13 @@ function markDirty() {
   Sync.recountSoon();
   Sync.requestPush(12000);       /* settle first, then sync once */
 }
+/* Every settings write ends in writeProgress(). Where you are in the app
+   is saved there too but is not a device setting, so it stays quiet;
+   a real setting schedules its own sync like any other change. */
+function settingsMoved() {
+  if (!Sync.st || !Sync.sh || !ghReady()) return;
+  if (Sync.devHash() !== Sync.sh.dev) markDirty();
+}
 
 async function syncNow(manual) {
   if (!ghReady()) { if (manual) toast("Add your GitHub details below first", true); return; }
@@ -10759,7 +10769,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.26";
+const APP_VERSION = "3.27";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
