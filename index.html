@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.24 · neural German, cached on device -->
+<!-- Sprachlabor — v3.25 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -1464,6 +1464,124 @@ pre.spec b{color:var(--signal);font-weight:500}
 .radios b{display:block;font-size:13.5px;font-weight:600}
 .radios span{display:block;font-size:12.5px;color:var(--ink-2);margin-top:2px;line-height:1.5}
 .radios label:has(input:checked){border-color:var(--signal);background:var(--signal-soft)}
+
+/* ---------- the import sheet: pick, review, done ----------
+   A modal that changes step in place: the body fades out still, the
+   sheet eases to its new height, then the new blocks rise in turn. */
+.modal.imp{width:min(540px,100%);display:flex;flex-direction:column;overflow:hidden}
+.modal.imp:focus{outline:none}
+.imp-scrim.is-closing{animation:leave .16s cubic-bezier(.4,0,1,1) both}
+.imp-scrim.is-closing .imp{animation:impout .16s cubic-bezier(.4,0,1,1) both}
+@keyframes impout{to{opacity:0;transform:translateY(10px) scale(.985)}}
+.imp__head{display:flex;align-items:center;gap:12px;padding:18px 18px 0 22px;flex:none}
+.imp__head h3{font-size:17px;font-weight:600;letter-spacing:-.015em;margin-right:auto}
+.imp__steps{display:flex;gap:4px}
+.imp__steps i{position:relative;width:18px;height:3px;border-radius:100px;background:var(--rule);overflow:hidden}
+.imp__steps i::after{content:"";position:absolute;inset:0;background:var(--signal);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+.imp__steps i.is-on::after{transform:none}
+.imp__x{
+  width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:var(--r-md);color:var(--ink-3);
+  transition:background .14s var(--ease),color .14s var(--ease),transform .1s var(--ease);
+}
+.imp__x svg{width:17px;height:17px;stroke-width:1.8}
+.imp__x:hover{background:var(--surface-2);color:var(--ink)}
+.imp__x:active{transform:scale(.94)}
+.imp__body{flex:1;min-height:0;overflow-y:auto;padding:16px 22px 20px;display:flex;flex-direction:column;gap:14px}
+.imp__body > *{flex:none}
+.imp .seg{display:flex}
+.imp .seg button{flex:1}
+.imp__drop{
+  display:flex;flex-direction:column;align-items:center;gap:6px;padding:30px 20px 26px;text-align:center;cursor:pointer;
+  border:1.5px dashed var(--rule);border-radius:var(--r-lg);background:var(--surface-2);
+  transition:border-color .16s var(--ease),background .16s var(--ease),transform .1s var(--ease);
+}
+.imp__drop:active{transform:scale(.99)}
+.imp__drop:focus-visible{outline:none;border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
+.imp__drop.is-over{border-color:var(--signal);background:var(--signal-soft)}
+.imp__ico{
+  width:48px;height:48px;display:grid;place-items:center;margin-bottom:6px;border-radius:100px;
+  background:var(--surface);border:1px solid var(--rule);color:var(--ink-3);
+  transition:color .16s var(--ease),border-color .16s var(--ease);
+}
+.imp__ico svg{width:22px;height:22px;overflow:visible}
+.imp__ico .imp__arrow{transition:transform .22s var(--ease)}
+.imp__drop.is-over .imp__ico{color:var(--signal);border-color:var(--signal)}
+.imp__drop.is-over .imp__arrow{transform:translateY(-3px)}
+@media (hover:hover){
+  .imp__drop:hover{border-color:var(--ink-3)}
+  .imp__drop:hover .imp__arrow{transform:translateY(-3px)}
+}
+.imp__drop b{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.imp__drop small{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-bottom:10px}
+.imp__drop.is-busy{pointer-events:none}
+.imp__drop.is-busy .imp__ico{color:var(--warn);border-color:var(--warn);animation:pulse 1s var(--ease) infinite}
+.imp__line{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.imp__line .eyebrow{margin-right:auto}
+.imp__line .btn svg{width:14px;height:14px}
+.imp__body > .imp__line + textarea.code{margin-top:-6px}
+.imp textarea.code{min-height:170px;display:block}
+.imp__sum{display:flex;align-items:center;gap:10px}
+.imp__sum > span{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);margin-right:auto}
+.imp__sum > span i{font-style:normal;color:var(--ink-3);padding:0 5px}
+.imp__list{border:1px solid var(--rule-2);border-radius:var(--r-md);background:var(--surface-2);max-height:min(46vh,340px);overflow-y:auto}
+.imp__row{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 14px;
+  border-bottom:1px solid var(--rule-2);transition:background .14s var(--ease),opacity .16s var(--ease);
+}
+.imp__row:last-child{border-bottom:none}
+button.imp__row:hover{background:var(--surface)}
+button.imp__row[aria-pressed="false"] .imp__name{opacity:.45}
+.imp__tick{
+  width:20px;height:20px;flex:none;display:grid;place-items:center;border-radius:100px;
+  border:1.5px solid var(--ink-3);color:transparent;
+  transition:background .14s var(--ease),border-color .14s var(--ease),color .14s var(--ease),transform .1s var(--ease);
+}
+.imp__tick svg{width:12px;height:12px}
+.imp__row[aria-pressed="true"] .imp__tick{background:var(--signal);border-color:var(--signal);color:var(--surface)}
+button.imp__row:active .imp__tick{transform:scale(.9)}
+.imp__row.is-bad .imp__tick{border-color:var(--die);color:var(--die)}
+.imp__name{flex:1;min-width:0;transition:opacity .16s var(--ease)}
+.imp__name b{display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp__name span{display:block;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp__row.is-bad .imp__name span{color:var(--die)}
+.imp__tag{
+  flex:none;font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  padding:3px 8px;border-radius:100px;border:1px solid var(--ok);color:var(--ok);
+}
+.imp__tag.is-upd{border-color:var(--warn);color:var(--warn)}
+.imp__tag.is-bad{border-color:var(--die);color:var(--die)}
+.imp__dest{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 14px;
+  border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);
+  transition:border-color .14s var(--ease),background .14s var(--ease),transform .1s var(--ease);
+}
+.imp__dest:hover{border-color:var(--ink-3)}
+.imp__dest:active{transform:scale(.99)}
+.imp__dest > span:nth-child(2){flex:1;min-width:0;display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
+.imp__dest > span:nth-child(2) em{font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp__dest svg{width:15px;height:15px;flex:none;color:var(--ink-3)}
+.imp__done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:10px 0 4px}
+.imp__seal{width:64px;height:64px;margin-bottom:8px;color:var(--ok)}
+.imp__seal circle{stroke-dasharray:1 2;animation:draw .6s var(--ease) both}
+.imp__seal path{stroke-dasharray:1 2;animation:draw .34s var(--ease) .42s both}
+.imp__seal.is-bad{color:var(--die)}
+.imp__done h4{font-family:var(--serif);font-size:24px;font-weight:500;letter-spacing:-.01em}
+.imp__done p{font-size:13px;color:var(--ink-2)}
+.imp__facts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--rule-2);border-radius:var(--r-md);background:var(--surface-2)}
+.imp__facts div{padding:12px 10px;text-align:center;border-left:1px solid var(--rule-2)}
+.imp__facts div:first-child{border-left:none}
+.imp__facts dt{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.imp__facts dd{font-family:var(--mono);font-size:18px;font-weight:600;margin-top:4px}
+@media (max-width:520px){
+  .imp-scrim{padding:12px}
+  .imp__head{padding-left:18px}
+  .imp__body{padding:14px 18px 18px}
+  .imp__facts dd{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .imp-scrim.is-closing .imp{animation-name:leave}
+  .imp__drop:hover .imp__arrow,.imp__drop.is-over .imp__arrow{transform:none}
+}
 
 /* ============================================================
    LIBRARY — breadcrumb browser (one navigation model, no tree)
@@ -8720,6 +8838,314 @@ function readFiles(files) {
   });
 }
 
+/* ---------- the import sheet ----------
+   Every "Import" in the app lands here. Files are chosen or dropped, or
+   an assistant's answer is pasted, and each lesson is read and checked
+   before anything is saved: you see what is new, what replaces a file
+   you have and what cannot be read, and you pick the folder. A file you
+   already have keeps its folder unless you pick one. */
+let imp = null;
+const IMP_STEPS = ["pick", "review", "done"];
+const ICO_TRAY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="imp__arrow" d="M12 15V4M8 8l4-4 4 4"/><path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>';
+const ICO_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></svg>';
+const ICO_NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg>';
+
+function openImport() {
+  closeMenu();
+  if (imp) return;
+  imp = { step: "pick", tab: "files", items: [], text: "", dest: state.view === "library" ? state.cwd || null : null,
+          destSet: false, res: null, busy: false, t: 0 };
+  const scrim = el("div", "scrim imp-scrim");
+  scrim.innerHTML =
+    '<div class="modal imp" role="dialog" aria-modal="true" aria-labelledby="impT" tabindex="-1">' +
+      '<div class="imp__head"><h3 id="impT">Import</h3>' +
+        '<span class="imp__steps" aria-hidden="true"><i></i><i></i><i></i></span>' +
+        '<button class="imp__x" data-impx="1" aria-label="Close">' + ICO_X + "</button></div>" +
+      '<div class="imp__body" id="impBody"></div>' +
+      '<div class="modal__foot" id="impFoot"></div>' +
+      '<input type="file" id="impPick" accept=".json,application/json" multiple hidden>' +
+    "</div>";
+  imp.node = scrim;
+  scrim.addEventListener("mousedown", e => { if (e.target === scrim) closeImport(); });
+  scrim.addEventListener("click", impClick);
+  scrim.addEventListener("keydown", e => {
+    if ((e.key === "Enter" || e.key === " ") && e.target.id === "impDrop") { e.preventDefault(); e.target.click(); }
+  });
+  scrim.addEventListener("input", e => {
+    if (e.target.id !== "impText") return;
+    imp.text = e.target.value;
+    const b = scrim.querySelector("[data-impread]");
+    if (b) b.disabled = !imp.text.trim();
+  });
+  scrim.querySelector("#impPick").addEventListener("change", e => { impFiles(e.target.files); e.target.value = ""; });
+  /* a file dropped anywhere on the sheet is taken, never opened by the browser */
+  ["dragenter", "dragover"].forEach(ev => scrim.addEventListener(ev, e => {
+    if (!e.dataTransfer || Array.prototype.indexOf.call(e.dataTransfer.types || [], "Files") < 0) return;
+    e.preventDefault();
+    const dz = scrim.querySelector("#impDrop");
+    if (dz) dz.classList.add("is-over");
+  }));
+  scrim.addEventListener("dragleave", e => {
+    if (e.relatedTarget && scrim.contains(e.relatedTarget)) return;
+    const dz = scrim.querySelector("#impDrop");
+    if (dz) dz.classList.remove("is-over");
+  });
+  scrim.addEventListener("drop", e => {
+    e.preventDefault();
+    const dz = scrim.querySelector("#impDrop");
+    if (dz) dz.classList.remove("is-over");
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) impFiles(e.dataTransfer.files);
+  });
+  document.body.appendChild(scrim);
+  impPaint();
+  /* focus goes to the sheet itself: no ring on a control you did not
+     reach by key, and no phone keyboard springing up over the text box */
+  scrim.querySelector(".imp").focus({ preventScroll: true });
+}
+
+function closeImport() {
+  if (!imp) return;
+  const n = imp.node;
+  clearTimeout(imp.t);
+  imp = null;
+  n.classList.add("is-closing");
+  n.addEventListener("animationend", e => { if (e.target === n) n.remove(); });
+  setTimeout(() => n.remove(), 240);
+}
+
+/* one lesson file, a bundle or a bare array; each entry becomes a row */
+function impRead(name, text) {
+  let json;
+  try { json = parseLoose(text); }
+  catch (e) { return [{ name: name, bad: "Not valid JSON" }]; }
+  return unpack(json).map(raw => {
+    try { return { name: name, l: normalizeLesson(raw), on: true }; }
+    catch (e) { return { name: name, bad: e.message || "Not a lesson" }; }
+  });
+}
+/* the same file twice keeps the later copy, where the earlier one stood */
+function impPush(it) {
+  const i = it.l ? imp.items.findIndex(x => x.l && x.l.id === it.l.id) : -1;
+  if (i >= 0) imp.items[i] = it; else imp.items.push(it);
+}
+function impFiles(files) {
+  const arr = Array.prototype.slice.call(files || []);
+  if (!imp || !arr.length || imp.busy) return;
+  imp.busy = true;
+  const dz = imp.node.querySelector("#impDrop");
+  if (dz) dz.classList.add("is-busy");
+  Promise.all(arr.map(f => /\.json$/i.test(f.name) || f.type === "application/json"
+    ? f.text().then(t => impRead(f.name, t), () => [{ name: f.name, bad: "Could not be read" }])
+    : Promise.resolve([{ name: f.name, bad: "Not a .json file" }])
+  )).then(res => {
+    if (!imp) return;
+    imp.busy = false;
+    res.forEach(r => r.forEach(impPush));
+    impGo("review");
+  });
+}
+
+function impClick(e) {
+  const t = e.target;
+  if (!imp) return;
+  if (t.closest("[data-impx]")) { closeImport(); return; }
+  const tab = t.closest("[data-imptab]");
+  if (tab) { if (imp.tab !== tab.dataset.imptab) { imp.tab = tab.dataset.imptab; impGo("pick"); } return; }
+  if (t.closest("#impDrop")) { imp.node.querySelector("#impPick").click(); return; }
+  if (t.closest("[data-impclip]")) {
+    navigator.clipboard.readText().then(txt => {
+      const box = imp && imp.node.querySelector("#impText");
+      if (!box) return;
+      box.value = txt; box.dispatchEvent(new Event("input", { bubbles: true }));
+      if (!txt.trim()) toast("The clipboard is empty", true);
+    }, () => toast("The browser did not allow reading the clipboard", true));
+    return;
+  }
+  if (t.closest("[data-impread]")) {
+    impRead("Pasted text", imp.text).forEach(impPush);
+    imp.text = "";
+    impGo("review");
+    return;
+  }
+  if (t.closest("[data-impmore]")) { impGo("pick"); return; }
+  if (t.closest("[data-impback]")) { impGo("review"); return; }
+  const tog = t.closest("[data-imptog]");
+  if (tog) {
+    const it = imp.items[+tog.dataset.imptog];
+    it.on = !it.on;
+    tog.setAttribute("aria-pressed", String(it.on));
+    impPaintSum();
+    return;
+  }
+  if (t.closest("[data-impdest]")) {
+    const set = id => {
+      if (!imp) return;
+      imp.dest = id || null; imp.destSet = true;
+      const d = imp.node.querySelector("[data-impdest]");
+      if (d) d.outerHTML = impDest();
+    };
+    askFolder({ title: "Add to", current: imp.dest, then: set }).then(v => { if (v !== undefined) set(v); });
+    return;
+  }
+  if (t.closest("[data-impgo]")) { impCommit(); return; }
+  if (t.closest("[data-impopen]")) { const id = imp.res.first; closeImport(); go("lesson", id); return; }
+  if (t.closest("[data-impshelf]")) {
+    state.cwd = imp.res.dest; state.settings.cwd = state.cwd; saveProgress();
+    closeImport();
+    if (state.view === "library") libSwap(renderLibrary, true); else go("library");
+    return;
+  }
+  if (t.closest("[data-impdone]")) { closeImport(); return; }
+}
+
+/* ---- the three steps ---- */
+function impPick() {
+  const hover = matchMedia("(hover:hover)").matches;
+  const clip = !!(navigator.clipboard && navigator.clipboard.readText);
+  return '<div class="seg" role="group" aria-label="Source">' +
+      '<button data-imptab="files" aria-pressed="' + (imp.tab === "files") + '">Files</button>' +
+      '<button data-imptab="paste" aria-pressed="' + (imp.tab === "paste") + '">Paste</button></div>' +
+    (imp.tab === "files"
+      ? '<div class="imp__drop" id="impDrop" role="button" tabindex="0" aria-label="Choose .json files">' +
+          '<span class="imp__ico">' + ICO_TRAY + "</span>" +
+          "<b>" + (hover ? "Drop files here" : "Choose files") + "</b>" +
+          "<small>.json · lesson, deck or library</small>" +
+          '<span class="btn btn--primary btn--sm">' + MI.up + "Choose files</span>" +
+        "</div>"
+      : '<div class="imp__line"><span class="eyebrow">Answer</span>' +
+          (clip ? '<button class="btn btn--ghost btn--sm" data-impclip="1">' + ICO_COPY + "Paste from clipboard</button>" : "") + "</div>" +
+        '<textarea class="code" id="impText" spellcheck="false" placeholder=\'{ "format": "sprachlabor.lesson", … }\'>' + esc(imp.text) + "</textarea>" +
+        '<div class="imp__line"><span class="eyebrow">Copy a prompt</span>' +
+          '<button class="btn btn--sm" data-copy="paragraph">' + ICO_COPY + "Paragraph</button>" +
+          '<button class="btn btn--sm" data-copy="deck">' + ICO_COPY + "Deck</button></div>");
+}
+function impCounts() {
+  const c = { on: 0, add: 0, upd: 0, bad: 0 };
+  imp.items.forEach(it => {
+    if (it.bad) { c.bad++; return; }
+    if (!it.on) return;
+    c.on++;
+    if (state.lessons.some(x => x.id === it.l.id)) c.upd++; else c.add++;
+  });
+  return c;
+}
+function impSumHTML() {
+  const c = impCounts(), bits = [];
+  if (c.add) bits.push(c.add + " new");
+  if (c.upd) bits.push(c.upd + " replace" + (c.upd === 1 ? "s" : ""));
+  if (c.bad) bits.push(c.bad + " skipped");
+  return bits.length ? bits.join("<i>·</i>") : "Nothing picked";
+}
+function impDest() {
+  return '<button class="imp__dest" data-impdest="1"><span class="eyebrow">Add to</span>' +
+    "<span>" + (imp.dest ? ICO_FOLDER : ICO_HOME) + "<em>" + esc(pathLabel(imp.dest)) + "</em></span>" + ICO_NEXT + "</button>";
+}
+function impReview() {
+  return '<div class="imp__sum"><span id="impSum">' + impSumHTML() + "</span>" +
+      '<button class="btn btn--ghost btn--sm" data-impmore="1">' + MI.add + "Add more</button></div>" +
+    '<div class="imp__list">' + imp.items.map((it, i) => it.bad
+      ? '<div class="imp__row is-bad"><span class="imp__tick" aria-hidden="true">' + ICO_X + "</span>" +
+          '<span class="imp__name"><b>' + esc(it.name) + "</b><span>" + esc(it.bad) + "</span></span>" +
+          '<span class="imp__tag is-bad">Skipped</span></div>'
+      : '<button class="imp__row" data-imptog="' + i + '" aria-pressed="' + it.on + '">' +
+          '<span class="imp__tick" aria-hidden="true">' + ICON_OK + "</span>" +
+          '<span class="imp__name"><b>' + esc(fileName(it.l)) + "</b><span>" +
+            (it.l.kind === "deck" ? "Deck" : "Paragraph") + " · " + esc(it.l.level) + " · " + plural(it.l.vocabulary.length, "card") +
+          "</span></span>" +
+          (state.lessons.some(x => x.id === it.l.id)
+            ? '<span class="imp__tag is-upd">Replaces</span>' : '<span class="imp__tag">New</span>') +
+        "</button>").join("") + "</div>" +
+    (imp.items.some(it => it.l) ? impDest() : "");
+}
+function impDone() {
+  const r = imp.res, n = r.added + r.replaced;
+  return '<div class="imp__done">' +
+      '<svg class="imp__seal' + (n ? "" : " is-bad") + '" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '<circle cx="32" cy="32" r="29" pathLength="1" transform="rotate(-90 32 32)"/>' +
+        (n ? '<path d="M20 33l8 8 16-17" pathLength="1"/>' : '<path d="M24 24l16 16M40 24L24 40" pathLength="1"/>') + "</svg>" +
+      "<h4>" + (n ? plural(n, "file") + " imported" : "Nothing imported") + "</h4>" +
+      "<p>" + (n ? "In " + esc(pathLabel(r.dest)) : esc(r.why || "No file could be read.")) + "</p></div>" +
+    '<dl class="imp__facts">' +
+      "<div><dt>New</dt><dd>" + r.added + "</dd></div>" +
+      "<div><dt>Replaced</dt><dd>" + r.replaced + "</dd></div>" +
+      "<div><dt>Skipped</dt><dd>" + r.skipped + "</dd></div>" +
+      "<div><dt>Cards</dt><dd>" + r.cards + "</dd></div></dl>";
+}
+function impFootHTML() {
+  if (imp.step === "pick") {
+    return (imp.items.length ? '<button class="btn" data-impback="1">Back</button>' : '<button class="btn" data-impx="1">Cancel</button>') +
+      (imp.tab === "paste" ? '<button class="btn btn--primary" data-impread="1"' + (imp.text.trim() ? "" : " disabled") + ">Read</button>" : "");
+  }
+  if (imp.step === "review") {
+    const c = impCounts();
+    return '<button class="btn" data-impx="1">Cancel</button>' +
+      '<button class="btn btn--primary" data-impgo="1"' + (c.on ? "" : " disabled") + ">" + MI.up +
+        (c.on ? "Import " + plural(c.on, "file") : "Import") + "</button>";
+  }
+  const r = imp.res;
+  return (r.added + r.replaced === 1 ? '<button class="btn" data-impopen="1">Open</button>' : "") +
+    (r.added + r.replaced ? '<button class="btn" data-impshelf="1">' + ICO_FOLDER + "Show in Library</button>" : "") +
+    '<button class="btn btn--primary" data-impdone="1">Done</button>';
+}
+function impPaintSum() {
+  const s = imp.node.querySelector("#impSum");
+  if (s) s.innerHTML = impSumHTML();
+  imp.node.querySelector("#impFoot").innerHTML = impFootHTML();
+}
+function impPaint() {
+  const n = imp.node;
+  n.querySelector("#impBody").innerHTML = imp.step === "pick" ? impPick() : imp.step === "review" ? impReview() : impDone();
+  n.querySelector("#impFoot").innerHTML = impFootHTML();
+  const at = IMP_STEPS.indexOf(imp.step);
+  n.querySelectorAll(".imp__steps i").forEach((i, k) => i.classList.toggle("is-on", k <= at));
+}
+
+/* A step changes as a fade-through: the body and the buttons fade out
+   still, the sheet eases to the new height, the new blocks rise in turn. */
+function impGo(step) {
+  if (!imp) return;
+  imp.step = step;
+  const n = imp.node, box = n.querySelector(".imp");
+  const parts = () => [n.querySelector("#impBody"), n.querySelector("#impFoot")];
+  clearTimeout(imp.t);
+  if (reducedMotion()) { impPaint(); return; }
+  const h0 = box.offsetHeight;
+  const outs = parts().map(p => p.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }));
+  imp.t = setTimeout(() => {
+    if (!imp) return;
+    impPaint();
+    const h1 = box.offsetHeight;
+    if (h0 !== h1) box.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: 240, easing: "cubic-bezier(.2,.7,.3,1)" });
+    outs.forEach(a => a.cancel());
+    const blocks = Array.prototype.slice.call(n.querySelectorAll("#impBody > *, .imp__row"));
+    blocks.forEach((b, i) => b.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }],
+      { duration: 320, easing: "cubic-bezier(.2,.7,.3,1)", delay: 60 + Math.min(i, 10) * 40, fill: "backwards" }));
+    n.querySelector("#impFoot").animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: "cubic-bezier(.2,.7,.3,1)", delay: 60, fill: "backwards" });
+    if (!box.contains(document.activeElement)) box.focus({ preventScroll: true });
+  }, 100);
+}
+
+function impCommit() {
+  const pick = imp.items.filter(it => it.l && it.on);
+  if (!pick.length) return;
+  let cards = 0;
+  const list = pick.map(it => {
+    const l = it.l, was = state.lessons.find(x => x.id === l.id);
+    l.folder = imp.destSet ? imp.dest : was ? was.folder || null : folderById(l.folder) ? l.folder : imp.dest;
+    cards += l.vocabulary.length;
+    return l;
+  });
+  const r = addLessons(list, true);
+  const bad = imp.items.filter(it => it.bad);
+  imp.res = { added: r.added, replaced: r.replaced, skipped: bad.length + r.bad, cards: r.added + r.replaced ? cards : 0,
+              dest: imp.destSet || list.length === 1 ? list[0].folder || null : imp.dest, first: list[0].id,
+              why: bad.length ? bad[0].bad : "" };
+  renderData();
+  if (state.view === "library") renderLibrary();
+  if (state.view === "home") renderHome();
+  impGo("done");
+}
+
 /* ============================================================
    EVENTS — delegated from the document
    ============================================================ */
@@ -8861,7 +9287,7 @@ document.addEventListener("click", e => {
 
   /* Home */
   if (t.closest("[data-hresume]")) { resumePending(); return; }
-  if (t.closest("[data-himport]")) { $("#filePick").click(); return; }
+  if (t.closest("[data-himport]")) { openImport(); return; }
   const hdrop = t.closest("[data-hdrop]");
   if (hdrop) { dropPending(hdrop.closest(".hsess")); return; }
   const hst = t.closest("[data-hst]");
@@ -9095,6 +9521,7 @@ document.addEventListener("keydown", e => {
   }
   if (e.key === "Escape") {
     if (modalNode) { closeModal(undefined); return; }
+    if (imp) { closeImport(); return; }
     if (menuNode) { closeMenu(); return; }
     if (libSel.on && state.view === "library") { libSelect(false); return; }
     closePop(); return;
@@ -10244,7 +10671,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.24";
+const APP_VERSION = "3.25";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -12989,7 +13416,7 @@ function libNewMenu(anchor) {
   openMenu(anchor, [
     { id: "folder", label: state.cwd ? "New subfolder" : "New folder", icon: MI.add, run: () => newFolderFlow(state.cwd || null) },
     "-",
-    { id: "import", label: "Import files", icon: MI.up, meta: ".json", run: () => $("#filePick").click() },
+    { id: "import", label: "Import files", icon: MI.up, meta: ".json", run: openImport },
     { id: "paste", label: "Paste text", icon: MI.rename, run: () => go("settings", "data") }
   ]);
 }
@@ -13067,8 +13494,7 @@ function appMenu(anchor) {
   /* syncing lives on the pill beside the dots; the menu only offers to set it up */
   if (!ghReady()) items.push({ id: "sync", label: "Connect GitHub", icon: MI.sync, run: () => go("settings", "sync") });
   items.push(
-    /* the picker opens straight from the menu; the tap is the gesture it needs */
-    { id: "import", label: "Import lessons", icon: MI.up, meta: ".json", run: () => $("#filePick").click() },
+    { id: "import", label: "Import lessons", icon: MI.up, meta: ".json", run: openImport },
     { id: "theme", label: "Dark mode", icon: MI.moon, on: () => state.settings.theme === "dark",
       run: () => setTheme(state.settings.theme === "dark" ? "light" : "dark") }
   );
