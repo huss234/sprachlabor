@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.40 · neural German, cached on device -->
+<!-- Sprachlabor — v3.41 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -120,6 +120,26 @@
   --scrim:rgba(0,0,0,.62);
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
   --shadow-lift:0 2px 4px rgba(0,0,0,.5), 0 18px 40px -18px rgba(0,0,0,.75);
+}
+/* Palettes (Settings, Appearance, Colours; PALETTES in the script). A
+   palette only swaps the panel's seeds, and everything worked out from
+   them follows. Tinte also brings its own warm paper. The meaning colours
+   stay put, so no primary is green, red or amber and no secondary can be
+   taken for a status. Autobahn is the table above. */
+:root[data-palette="graphit"]{--pan-signal:#2B3238;--pan-signal-dk:#D5DCE1}
+:root[data-palette="violett"]{--pan-signal:#5B34C8;--pan-signal-dk:#B3A0FF;--pan-stress:#C9EE2E;--pan-stress-ink:#172000}
+:root[data-palette="petrol"]{--pan-signal:#086275;--pan-signal-dk:#5CC6DA;--pan-stress:#F5DC3C;--pan-stress-ink:#1F1A00}
+:root[data-palette="rhein"]{--pan-signal:#2F5578;--pan-signal-dk:#9EC1E6;--pan-stress:#34D1E0;--pan-stress-ink:#00262B}
+:root[data-palette="tinte"]{--pan-signal:#2A3791;--pan-signal-dk:#A3ACF2;--pan-stress:#F2B705;--pan-stress-ink:#231800}
+:root[data-palette="tinte"]:not([data-theme="dark"]){
+  --paper:#EFEBE4;--paper-2:#E6E0D6;--surface:#FFFDF9;--surface-2:#F7F3EC;
+  --ink:#1C1A17;--ink-2:#57514A;--ink-3:#8A8278;--rule:#DDD6CB;--rule-2:#EAE4DA;
+  --heat-0:#EAE5DC;--gap:#8A8278;--gap-soft:#F1ECE4;
+}
+:root[data-palette="tinte"][data-theme="dark"]{
+  --paper:#13110F;--paper-2:#0E0C0B;--surface:#1B1916;--surface-2:#23201C;
+  --ink:#EDE8E1;--ink-2:#B3ABA0;--ink-3:#857D72;--rule:#332F2A;--rule-2:#2A2723;
+  --heat-0:#2A2622;--gap:#857D72;--gap-soft:#23201C;
 }
 
 *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:rgba(0,0,0,0)}
@@ -2514,6 +2534,45 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 /* settings extras */
 .seg--full{display:flex;width:100%}
 .seg--full button{flex:1;text-align:center;justify-content:center}
+/* palette picker: one tile per palette, each drawing a small specimen of
+   itself (its paper, a primary key, the heat ramp, the secondary) in the
+   current theme; the tile's own colours come in as --p/--pd/--s/--pb/--pbd */
+.pals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pal{
+  --pp:var(--p);--pg:var(--pb);
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;
+  padding:7px 7px 10px;border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);text-align:left;
+  transition:border-color .16s var(--ease),box-shadow .16s var(--ease),transform .1s var(--ease);
+}
+:root[data-theme="dark"] .pal{--pp:var(--pd);--pg:var(--pbd)}
+@media (hover:hover){.pal:hover{border-color:var(--ink-3)}}
+.pal:active{transform:scale(.97)}
+.pal[aria-checked="true"]{border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
+.pal:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.pal__sw{position:relative;align-self:stretch;height:58px;margin-bottom:8px;border-radius:var(--r-sm);background:var(--pg);box-shadow:inset 0 0 0 1px var(--rule-2)}
+.pal__sw i{position:absolute}
+.pal__key{left:8px;top:9px;width:46%;height:12px;border-radius:3px;background:var(--pp)}
+.pal__heat{left:8px;bottom:9px;display:flex;gap:3px}
+.pal__heat b{width:11px;height:11px;border-radius:2px;background:color-mix(in srgb,var(--pp) var(--k),var(--pg))}
+.pal__heat b:nth-child(1){--k:25%}
+.pal__heat b:nth-child(2){--k:50%}
+.pal__heat b:nth-child(3){--k:75%}
+.pal__heat b:nth-child(4){--k:100%}
+.pal__dot{right:9px;bottom:9px;width:18px;height:18px;border-radius:100px;background:var(--s)}
+.pal__tick{
+  right:7px;top:7px;width:18px;height:18px;border-radius:100px;display:grid;place-items:center;
+  background:var(--signal);color:var(--on-signal);opacity:0;transform:scale(.6);
+  transition:opacity .18s var(--ease),transform .22s var(--ease);
+}
+.pal__tick svg{width:11px;height:11px}
+.pal[aria-checked="true"] .pal__tick{opacity:1;transform:none}
+.pal__name{font-size:13px;font-weight:600;color:var(--ink);padding:0 3px}
+.pal__sub{font-size:11px;color:var(--ink-3);padding:0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+@media (max-width:520px){.pals{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){
+  .pal:active{transform:none}
+  .pal__tick{transform:none}
+}
 .numrow{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
 .numrow .field{margin-bottom:0;flex:1;min-width:120px}
 .field input[type=number]{
@@ -4702,6 +4761,12 @@ button.wrow:active{transform:scale(.99)}
               </div>
             </div>
 
+            <div class="panel">
+              <h3>Colours<button class="tipbtn" type="button" data-tipbtn="pal" aria-controls="tip-pal" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-pal" inert><div><p>Word genders and card statuses keep their own colours in every palette.</p></div></div>
+              <div class="pals" id="palPick" role="radiogroup" aria-label="Colour palette"></div>
+            </div>
+
             <div id="readLook"></div>
           </div>
 
@@ -6670,6 +6735,44 @@ function recentLessons(n) {
   return out;
 }
 
+/* ---------- palettes ----------
+   id, name, what it is, primary (light, dark), secondary, paper (light,
+   dark) for the tile's specimen. The colours themselves live in the
+   stylesheet (:root[data-palette]); these only draw the tiles. */
+const PALETTES = [
+  ["autobahn", "Autobahn", "Cobalt · signal yellow", "#1338BE", "#7D9BFF", "#FFC800", "#ECEEF0", "#0F1214"],
+  ["graphit", "Graphit", "Graphite · signal yellow", "#2B3238", "#D5DCE1", "#FFC800", "#ECEEF0", "#0F1214"],
+  ["tinte", "Tinte", "Ink blue · saffron · warm", "#2A3791", "#A3ACF2", "#F2B705", "#EFEBE4", "#13110F"],
+  ["rhein", "Rhein", "Slate · cyan", "#2F5578", "#9EC1E6", "#34D1E0", "#ECEEF0", "#0F1214"],
+  ["petrol", "Petrol", "Petrol · lemon", "#086275", "#5CC6DA", "#F5DC3C", "#ECEEF0", "#0F1214"],
+  ["violett", "Violett", "Violet · lime", "#5B34C8", "#B3A0FF", "#C9EE2E", "#ECEEF0", "#0F1214"]
+];
+function paletteOf() {
+  const p = state.settings.palette;
+  return PALETTES.some(x => x[0] === p) ? p : PALETTES[0][0];
+}
+function renderPalettes() {
+  const box = $("#palPick");
+  if (!box) return;
+  const cur = paletteOf();
+  box.innerHTML = PALETTES.map(x =>
+    '<button class="pal" type="button" role="radio" data-pal="' + x[0] + '" aria-checked="' + (x[0] === cur) + '"' +
+      ' style="--p:' + x[3] + ";--pd:" + x[4] + ";--s:" + x[5] + ";--pb:" + x[6] + ";--pbd:" + x[7] + '">' +
+      '<span class="pal__sw" aria-hidden="true"><i class="pal__key"></i><i class="pal__heat"><b></b><b></b><b></b><b></b></i>' +
+        '<i class="pal__dot"></i><i class="pal__tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i></span>' +
+      '<span class="pal__name">' + x[1] + '</span><span class="pal__sub">' + x[2] + "</span></button>").join("");
+}
+function setPalette(p) {
+  if (!PALETTES.some(x => x[0] === p) || p === paletteOf()) return;
+  state.settings.palette = p;
+  $$("#palPick .pal").forEach(b => b.setAttribute("aria-checked", String(b.dataset.pal === p)));
+  /* the tick lands on the tile first, then the page crossfades, as with the theme */
+  clearTimeout(setPalette.tm);
+  if (!reducedMotion()) setPalette.tm = setTimeout(() => recolour("data-palette", p), 180);
+  else recolour("data-palette", p);
+  saveProgress();
+}
+
 /* ---------- theme ---------- */
 function setTheme(t) {
   state.settings.theme = t;
@@ -6685,13 +6788,14 @@ function setTheme(t) {
 /* The page changes theme as one crossfade instead of every colour
    snapping at once. With view transitions a still of the old theme fades
    into the live new one; elsewhere every colour eases over for as long.
-   The callback applies whichever theme was asked for last, so two quick
-   taps can never land on the wrong one. */
-function retheme(t) {
-  const root = document.documentElement;
-  if ((retheme.want || root.getAttribute("data-theme")) === t) return;
-  retheme.want = t;
-  const put = () => root.setAttribute("data-theme", retheme.want);
+   The callback applies whichever value was asked for last, so two quick
+   taps can never land on the wrong one. A palette changes the same way. */
+function retheme(t) { recolour("data-theme", t); }
+function recolour(attr, v) {
+  const root = document.documentElement, want = recolour.want || (recolour.want = {});
+  if ((attr in want ? want[attr] : root.getAttribute(attr)) === v) return;
+  want[attr] = v;
+  const put = () => root.setAttribute(attr, want[attr]);
   if (document.hidden) return put();
   if (document.startViewTransition) {
     /* a second tap skips the first transition; its promise says so, harmlessly */
@@ -6700,8 +6804,8 @@ function retheme(t) {
   root.classList.add("is-retheme");
   getComputedStyle(root).color;
   put();
-  clearTimeout(retheme.tm);
-  retheme.tm = setTimeout(() => root.classList.remove("is-retheme"), 460);
+  clearTimeout(recolour.tm);
+  recolour.tm = setTimeout(() => root.classList.remove("is-retheme"), 460);
 }
 
 
@@ -10932,6 +11036,8 @@ const Sync = {
     if (!best) return;
     Object.keys(best.settings).forEach(k => { if (DEV_SKIP.indexOf(k) < 0) state.settings[k] = best.settings[k]; });
     retheme(state.settings.theme || "light");
+    recolour("data-palette", paletteOf());
+    renderPalettes();
     applyRead();
     saveProgress();
     this.log1("Settings restored from your other " + form);
@@ -11297,7 +11403,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.40";
+const APP_VERSION = "3.41";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -11532,6 +11638,7 @@ function renderSettings() {
   $("#goalCards").value = g.cards;
   $("#goalMins").value = g.mins;
   $$("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeSet === state.settings.theme)));
+  renderPalettes();
   $$("#trSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tr === state.settings.translation)));
   $$("#weekStartSeg button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.wstart === weekStart())));
   renderReadSettings();
@@ -13358,7 +13465,7 @@ const ICO_PIN  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const ICO_BLANK = '<svg viewBox="0 0 24 24"></svg>';
 const LIB_SORTS = [["title", "Name"], ["added", "Newest"], ["progress", "Weakest"], ["opened", "Recently opened"]];
 /* folder tints are tokens the app already has, never new colours */
-const FOLDER_TINTS = [["", "Grey", "var(--ink-3)"], ["blue", "Blue", "var(--signal)"], ["green", "Green", "var(--das)"],
+const FOLDER_TINTS = [["", "Grey", "var(--ink-3)"], ["blue", "Blue", "var(--der)"], ["green", "Green", "var(--das)"],
   ["amber", "Amber", "var(--warn)"], ["red", "Red", "var(--die)"], ["ink", "Ink", "var(--ink)"]];
 function tintOf(f) { const t = FOLDER_TINTS.find(x => x[0] === ((f && f.color) || "")); return (t || FOLDER_TINTS[0])[2]; }
 
@@ -14629,6 +14736,8 @@ function extraClick(e) {
   /* --- settings --- */
   const th = t.closest("[data-theme-set]");
   if (th) { setTheme(th.dataset.themeSet); return true; }
+  const pl = t.closest("[data-pal]");
+  if (pl) { setPalette(pl.dataset.pal); return true; }
   const wsb = t.closest("[data-wstart]");
   if (wsb) {
     state.settings.weekStart = +wsb.dataset.wstart;
@@ -16872,6 +16981,7 @@ function spellTheTrouble() {
   speech.boot();
 
   document.documentElement.setAttribute("data-theme", state.settings.theme || "light");
+  document.documentElement.setAttribute("data-palette", paletteOf());
   applyRead();
   $$("#libView button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.libview === state.filter.view)));
 
