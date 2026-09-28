@@ -5,7 +5,7 @@ A single-file German reading lab: everything is in `index.html`, served by GitHu
 ## Before any visible change
 
 Read `DESIGN.md` first and follow it exactly. It is this app's own design
-language (Ulm/Swiss functionalist, hairline, one cobalt accent). It is not
+language (Ulm/Swiss functionalist, hairline, cobalt and signal yellow). It is not
 Material Design, M3 Expressive, Fluent or Apple HIG, and nothing from those
 belongs here.
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.39 · neural German, cached on device -->
+<!-- Sprachlabor — v3.40 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -16,8 +16,31 @@
    Cool gray paper, graphite ink, Autobahn cobalt, signal yellow.
    Type: Newsreader = German source. Archivo = UI/English.
          IBM Plex Mono = pronunciation notation.
+
+   THE COLOUR PANEL (Farbtafel). Three roles, and every colour in
+   the app is one of them or is worked out from one of them:
+     Primary   Kobalt      --pan-signal   what you do and where you are:
+                                          the primary action, the current
+                                          tab or row, focus, links, on-states,
+                                          and the activity scale (heat, bars)
+     Secondary Signalgelb  --pan-stress   the goal and the voice: the stressed
+                                          syllable, time, writing, the goal
+                                          line, a day that met the goal, a
+                                          record
+     Neutral   Graphit     --paper … --rule   everything else; --ink is the
+                                          one strong fill (instrument, the
+                                          lit segment, toasts, a picked bar)
+   Tints, the heat ramp and the text on a filled accent are worked out
+   from the seeds with color-mix, so changing a seed recolours all of
+   them. Meaning colours (der/die/das, card status, ok/warn/danger)
+   are fixed: they mean the same whatever the panel.
    ============================================================ */
 :root{
+  /* panel seeds: a light and a dark value of each role */
+  --pan-signal:#1338BE;
+  --pan-signal-dk:#7D9BFF;
+  --pan-stress:#FFC800;
+  --pan-stress-ink:#1A1400;
   --paper:#ECEEF0;
   --paper-2:#E1E5E8;
   --surface:#FFFFFF;
@@ -27,15 +50,33 @@
   --ink-3:#7C878E;
   --rule:#D3D9DD;
   --rule-2:#E4E9EC;
-  --signal:#1338BE;
-  --signal-soft:#E7EBFA;
-  --stress:#FFC800;
-  --stress-ink:#1A1400;
+  /* primary, and what is worked out from it */
+  --signal:var(--pan-signal);
+  --signal-soft:color-mix(in srgb,var(--signal) 10%,#fff);
+  --on-signal:#fff;
+  --heat-0:#E7EAEC;
+  --heat-1:color-mix(in srgb,var(--signal) 25%,#fff);
+  --heat-2:color-mix(in srgb,var(--signal) 46%,#fff);
+  --heat-3:color-mix(in srgb,var(--signal) 75%,#fff);
+  --heat-4:var(--signal);
+  --on-heat:#fff;
+  /* secondary */
+  --stress:var(--pan-stress);
+  --stress-ink:var(--pan-stress-ink);
+  --stress-soft:color-mix(in srgb,var(--stress) 22%,var(--surface));
+  --stress-text:color-mix(in srgb,var(--stress) 40%,var(--stress-ink));
+  /* fixed meaning colours */
   --der:#1338BE;
   --die:#C0264C;
   --das:#17795E;
   --ok:#17795E;
   --warn:#B4620A;
+  --hard:#C0264C;  --hard-soft:#FAE8EC;
+  --learn:#B4620A; --learn-soft:#FBF0E2;
+  --known:#17795E; --known-soft:#E3F1EC;
+  --gap:#7C878E;   --gap-soft:#EEF1F3;
+  --on-fill:#fff;
+  --scrim:rgba(20,24,27,.42);
   --shadow:0 1px 2px rgba(20,24,27,.05), 0 8px 24px -12px rgba(20,24,27,.18);
   --shadow-lift:0 2px 4px rgba(20,24,27,.06), 0 18px 40px -18px rgba(20,24,27,.28);
   --rail:76px;
@@ -56,15 +97,27 @@
   --ink-3:#78838A;
   --rule:#2B3237;
   --rule-2:#232A2E;
-  --signal:#7D9BFF;
-  --signal-soft:#1B2338;
-  --stress:#FFC800;
-  --stress-ink:#1A1400;
+  --signal:var(--pan-signal-dk);
+  --signal-soft:color-mix(in srgb,var(--signal) 22%,#000);
+  --on-signal:#0B0E10;
+  --heat-0:#22282D;
+  --heat-1:color-mix(in oklab,var(--signal) 50%,#000);
+  --heat-2:color-mix(in oklab,var(--signal) 65%,#000);
+  --heat-3:color-mix(in oklab,var(--signal) 82%,#000);
+  --heat-4:var(--signal);
+  --on-heat:color-mix(in srgb,var(--signal) 17%,#fff);
+  --stress-text:var(--stress);
   --der:#7D9BFF;
   --die:#FF8FA8;
   --das:#5CCFA6;
   --ok:#5CCFA6;
   --warn:#E5A159;
+  --hard:#FF8FA8;  --hard-soft:#2B1820;
+  --learn:#E5A159; --learn-soft:#2A2015;
+  --known:#5CCFA6; --known-soft:#112A23;
+  --gap:#78838A;   --gap-soft:#1E2327;
+  --on-fill:#0B0E10;
+  --scrim:rgba(0,0,0,.62);
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
   --shadow-lift:0 2px 4px rgba(0,0,0,.5), 0 18px 40px -18px rgba(0,0,0,.75);
 }
@@ -119,8 +172,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .btn:hover{background:var(--surface-2);border-color:var(--ink-3)}
 .btn:active{transform:translateY(1px)}
 .btn[disabled]{opacity:.45;pointer-events:none}
-.btn--primary{background:var(--signal);border-color:var(--signal);color:#fff}
-:root[data-theme="dark"] .btn--primary{color:#0B0E10}
+.btn--primary{background:var(--signal);border-color:var(--signal);color:var(--on-signal)}
 .btn--primary:hover{background:var(--signal);border-color:var(--signal);filter:brightness(1.08)}
 .btn--ghost{border-color:transparent;background:transparent}
 .btn--ghost:hover{background:var(--surface-2);border-color:transparent}
@@ -384,8 +436,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .menu.menu--sync .syncp__acts .btn{flex:1;width:auto;justify-content:center;padding:0 11px;border-radius:var(--r-md);color:var(--ink);transition:background .15s var(--ease),border-color .15s var(--ease),transform .1s var(--ease)}
 .menu.menu--sync .syncp__acts .btn:hover{background:var(--surface-2)}
 .menu.menu--sync .syncp__acts .btn:active{transform:scale(.97)}
-.menu.menu--sync .syncp__acts .btn--primary,.menu.menu--sync .syncp__acts .btn--primary:hover{background:var(--signal);border-color:var(--signal);color:#fff}
-:root[data-theme="dark"] .menu.menu--sync .syncp__acts .btn--primary{color:#0B0E10}
+.menu.menu--sync .syncp__acts .btn--primary,.menu.menu--sync .syncp__acts .btn--primary:hover{background:var(--signal);border-color:var(--signal);color:var(--on-signal)}
 .menu.menu--sync .syncp__acts .btn--primary:hover{filter:brightness(1.08)}
 .menu.menu--sync .syncp__acts .btn--primary svg{color:inherit}
 /* the activity log is folded away until asked for, so the panel stays
@@ -824,21 +875,19 @@ ul,ol{margin:0;padding:0;list-style:none}
 @media (max-width:640px){.lpage{padding:22px 18px 26px}}
 :root[data-rpage="paper"] .lpage{
   --surface:#FFFFFF;--surface-2:#F5F7F8;--ink:#14181B;--ink-2:#4A5359;--ink-3:#7C878E;--rule:#D3D9DD;--rule-2:#E4E9EC;
-  --signal:#1338BE;--signal-soft:#E7EBFA;--der:#1338BE;--die:#C0264C;--das:#17795E;
+  --signal:var(--pan-signal);--signal-soft:color-mix(in srgb,var(--signal) 10%,var(--surface));--on-signal:#fff;--der:#1338BE;--die:#C0264C;--das:#17795E;
   --hard:#C0264C;--learn:#B4620A;--known:#17795E;--ok:#17795E;
 }
 :root[data-rpage="sepia"] .lpage{
   --surface:#F7F0E3;--surface-2:#EFE5D2;--ink:#2F271C;--ink-2:#5E503D;--ink-3:#8C7C63;--rule:#E3D5BC;--rule-2:#EBDFC9;
-  --signal:#1338BE;--signal-soft:#E8E2EC;--der:#1D4FA8;--die:#B0243F;--das:#2C6E3F;
+  --signal:var(--pan-signal);--signal-soft:color-mix(in srgb,var(--signal) 10%,var(--surface));--on-signal:#fff;--der:#1D4FA8;--die:#B0243F;--das:#2C6E3F;
   --hard:#B0243F;--learn:#A45A07;--known:#2C6E3F;--ok:#2C6E3F;
 }
 :root[data-rpage="night"] .lpage{
   --surface:#15181B;--surface-2:#1C2024;--ink:#DCE1E5;--ink-2:#A5AFB6;--ink-3:#78838A;--rule:#2B3237;--rule-2:#232A2E;
-  --signal:#7D9BFF;--signal-soft:#1B2338;--der:#7D9BFF;--die:#FF8FA8;--das:#5CCFA6;
+  --signal:var(--pan-signal-dk);--signal-soft:color-mix(in srgb,var(--signal) 22%,#000);--on-signal:#0B0E10;--der:#7D9BFF;--die:#FF8FA8;--das:#5CCFA6;
   --hard:#FF8FA8;--learn:#E5A159;--known:#5CCFA6;--ok:#5CCFA6;
 }
-:root[data-rpage="night"] .lpage .tok--vocab.is-open{color:#0B0E10}
-:root[data-theme="dark"]:is([data-rpage="paper"],[data-rpage="sepia"]) .lpage .tok--vocab.is-open{color:#fff}
 /* the sentence being read aloud */
 .sent.is-reading{background:var(--signal-soft);box-shadow:-8px 0 0 var(--signal-soft),8px 0 0 var(--signal-soft),-11px 0 0 var(--signal);transition:background .2s var(--ease),box-shadow .2s var(--ease)}
 
@@ -886,8 +935,7 @@ ul,ol{margin:0;padding:0;list-style:none}
   transition:background-color .12s var(--ease),color .12s var(--ease);
 }
 .tok--vocab:hover{background-color:var(--signal-soft);color:var(--signal)}
-.tok--vocab.is-open{background-color:var(--signal);color:#fff}
-:root[data-theme="dark"] .tok--vocab.is-open{color:#0B0E10}
+.tok--vocab.is-open{background-color:var(--signal);color:var(--on-signal)}
 /* words carry no line: they light under the finger or the cursor. The
    Appearance switch can add a quiet dotted rule under every word that
    has a card (a real text-decoration, so it shows with any font). */
@@ -1263,8 +1311,7 @@ body.has-sheet .toasts{bottom:auto;top:22px}
   outline:none;background-color:var(--signal-soft);color:var(--signal);
   box-shadow:0 0 0 2px var(--signal);
 }
-.exw.is-playing{background-color:var(--signal);color:#fff;text-decoration-color:transparent}
-:root[data-theme="dark"] .exw.is-playing{color:#0B0E10}
+.exw.is-playing{background-color:var(--signal);color:var(--on-signal);text-decoration-color:transparent}
 .exw.is-loading{background-color:var(--signal-soft);color:var(--signal);animation:exwait 1s var(--ease) infinite}
 @keyframes exwait{0%,100%{opacity:1}50%{opacity:.5}}
 @media (prefers-reduced-motion:reduce){.exw.is-loading{animation:none}}
@@ -1392,7 +1439,7 @@ pre.spec b{color:var(--signal);font-weight:500}
 .toast.is-out{animation:slideout .22s var(--ease) forwards}
 @keyframes slideout{to{opacity:0;transform:translateX(-14px)}}
 .toast svg{width:15px;height:15px;flex:none}
-.toast--bad{background:var(--die);color:#fff}
+.toast--bad{background:var(--die);color:var(--on-fill)}
 
 /* ============================================================
    SETTINGS / SYNC
@@ -1479,21 +1526,8 @@ pre.spec b{color:var(--signal);font-weight:500}
    ADDITIONS — folders, calendar, statistics, dialogs
    Same grammar as the rest of the file: hairline grids,
    monospace numerals, one signal colour, one stress colour.
+   The heat ramp is part of the colour panel at the top.
    ============================================================ */
-:root{
-  --heat-0:#E7EAEC;
-  --heat-1:#C3CEF2;
-  --heat-2:#8EA3E4;
-  --heat-3:#4C6BD4;
-  --heat-4:#1338BE;
-}
-:root[data-theme="dark"]{
-  --heat-0:#22282D;
-  --heat-1:#2B3A63;
-  --heat-2:#3B5297;
-  --heat-3:#5473CE;
-  --heat-4:#7D9BFF;
-}
 
 /* ============================================================
    RAIL — reworked so every item is icon + label, nothing else.
@@ -1521,11 +1555,10 @@ pre.spec b{color:var(--signal);font-weight:500}
    DIALOG — one modal for every folder action
    ============================================================ */
 .scrim{
-  position:fixed;inset:0;z-index:100;background:rgba(20,24,27,.42);
+  position:fixed;inset:0;z-index:100;background:var(--scrim);
   display:grid;place-items:center;padding:20px;
   animation:fade .16s var(--ease) both;backdrop-filter:blur(2px);
 }
-:root[data-theme="dark"] .scrim{background:rgba(0,0,0,.62)}
 .modal{
   width:min(460px,100%);max-height:calc(100vh - 40px);overflow-y:auto;
   background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
@@ -1777,8 +1810,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .is-sel .lcard .dcard__menu,.is-sel .lcard__act{visibility:hidden}
 .is-sel .lcard[draggable="true"]{cursor:pointer}
 .lcard.is-picked{border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
-.lcard.is-picked .lcard__chk{background:var(--signal);border-color:var(--signal);color:#fff}
-:root[data-theme="dark"] .lcard.is-picked .lcard__chk{color:#0B0E10}
+.lcard.is-picked .lcard__chk{background:var(--signal);border-color:var(--signal);color:var(--on-signal)}
 .is-sel .lcard:active .lcard__chk{transform:scale(.9)}
 @media (hover:hover){.is-sel .lcard:hover{transform:none;box-shadow:var(--shadow)} .lcard.is-picked:hover{box-shadow:0 0 0 3px var(--signal-soft)}}
 .selbar{
@@ -1846,7 +1878,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 }
 .menu button:hover{background:var(--surface-2)}
 .menu button.is-danger{color:var(--die)}
-.menu button.is-danger:hover{background:var(--die);color:#fff}
+.menu button.is-danger:hover{background:var(--die);color:var(--on-fill)}
 .menu svg{width:15px;height:15px;flex:none;color:var(--ink-3)}
 .menu button:hover svg{color:inherit}
 .menu hr{border:none;border-top:1px solid var(--rule-2);margin:5px 2px}
@@ -2005,7 +2037,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .hkpi b i{font-style:normal}
 .hkpi b small{font-size:12px;font-weight:500;color:var(--ink-3);letter-spacing:0;margin-left:4px}
 .hkpi em{font-style:normal;font-size:12px;color:var(--ink-2);line-height:1.35}
-.hkpi__ring{position:absolute;top:13px;right:13px;width:34px;height:34px;color:var(--ok)}
+.hkpi__ring{position:absolute;top:13px;right:13px;width:34px;height:34px;color:var(--signal)}
 .hkpi__ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .hmix{display:flex;gap:2px;width:100%;height:6px;margin-top:4px}
 .hmix i{min-width:3px;border-radius:2px;transform-origin:0 50%}
@@ -2178,7 +2210,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .ring__track{stroke:var(--rule);fill:none}
 .ring__fill{stroke:var(--signal);fill:none;stroke-linecap:round;transition:stroke-dashoffset .7s var(--ease)}
-.ring__fill.is-done{stroke:var(--ok)}
+.ring__fill.is-done{stroke:var(--stress)}
 .ring__mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .ring__mid b{font-family:var(--mono);font-size:23px;font-weight:600;letter-spacing:-.03em;line-height:1}
 .ring__mid span{font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-top:4px}
@@ -2190,10 +2222,10 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
   transition:transform .1s var(--ease),border-color .15s var(--ease);
 }
 .pch__d.is-on{background:var(--heat-2);border-color:transparent}
-.pch__d.is-met{background:var(--signal);border-color:transparent}
+.pch__d.is-met{background:var(--stress);border-color:transparent}
 .pch__d.is-rest{background:repeating-linear-gradient(45deg,var(--rule-2),var(--rule-2) 2px,transparent 2px,transparent 5px)}
 /* the link to the day before, across the gap */
-.pch__d.is-joined i{position:absolute;right:100%;top:50%;width:6px;height:3px;margin-top:-1.5px;background:var(--signal);transform-origin:100% 50%}
+.pch__d.is-joined i{position:absolute;right:100%;top:50%;width:6px;height:3px;margin-top:-1.5px;background:var(--stress);transform-origin:100% 50%}
 .pch__d.is-today{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--ink)}
 .pch__d.is-today:not(.is-on):not(.is-met):not(.is-rest){animation:pchwait 1.8s var(--ease) infinite}
 @keyframes pchwait{50%{background:var(--signal-soft);border-color:var(--signal)}}
@@ -2278,7 +2310,8 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
   transition:transform .55s var(--ease) var(--d,0s),fill .2s var(--ease);
 }
 .schart.is-live .sbar{transition-delay:0s}
-.schart .sbar.is-met,.schart.is-acc .sbar,.schart.is-flat .sbar{fill:var(--signal)}
+.schart.is-acc .sbar,.schart.is-flat .sbar{fill:var(--signal)}
+.schart .sbar.is-met{fill:var(--stress)}
 @media (hover:hover){.schart .sc__g:hover .sbar{fill:var(--ink)}}
 .schart .sc__g:active .sbar{fill:var(--ink)}
 .schart .sc__goal{transition:transform .55s var(--ease),opacity .2s var(--ease)}
@@ -2337,17 +2370,15 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .cday.is-out{opacity:.3}
 .cday.is-future{background:transparent;border:1px dashed var(--rule-2);color:var(--ink-3);opacity:.75}
 .cday.l1{background:var(--heat-1)}
-.cday.l2{background:var(--heat-2);color:#fff}
-.cday.l3{background:var(--heat-3);color:#fff}
-.cday.l4{background:var(--heat-4);color:#fff}
-:root[data-theme="dark"] .cday.l2,:root[data-theme="dark"] .cday.l3{color:#EAEEFF}
-:root[data-theme="dark"] .cday.l4{color:#0B0E10}
+.cday.l2{background:var(--heat-2);color:var(--on-heat)}
+.cday.l3{background:var(--heat-3);color:var(--on-heat)}
+.cday.l4{background:var(--heat-4);color:var(--on-signal)}
 .cday.is-today{box-shadow:inset 0 0 0 2px var(--ink)}
-.cday.is-sel{box-shadow:0 0 0 2px var(--stress),var(--shadow);z-index:3}
+.cday.is-sel{box-shadow:0 0 0 2px var(--ink),var(--shadow);z-index:3}
 .cal__week{position:relative}
 .cal__week.is-band::before{
   content:"";position:absolute;top:-2px;bottom:-2px;left:var(--calgut);right:-3px;
-  border-radius:6px;background:var(--stress);opacity:.15;pointer-events:none;
+  border-radius:6px;background:var(--signal);opacity:.12;pointer-events:none;
 }
 .cday.is-rest{background:repeating-linear-gradient(45deg,var(--rule-2),var(--rule-2) 3px,transparent 3px,transparent 6px);color:var(--ink-3)}
 .cday__dot{width:4px;height:4px;border-radius:100px;background:currentColor;opacity:.75}
@@ -2399,7 +2430,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .chart .tick{font-family:var(--mono);font-size:9.5px;fill:var(--ink-3)}
 .chart .bar{fill:var(--signal);transition:fill .14s var(--ease)}
 .chart .bar.is-empty{fill:var(--rule)}
-.chart .bar.is-sel{fill:var(--stress)}
+.chart .bar.is-sel{fill:var(--ink)}
 .chart .bar-hit{fill:transparent;cursor:pointer}
 .chart .bar-hit:hover + .bar,.chart .bar-g:hover .bar,.chart .bar-g:active .bar{fill:var(--ink)}
 .chart .bar2{fill:var(--ok);opacity:.9}
@@ -2416,7 +2447,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .boxbar{display:flex;height:34px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--rule)}
 .boxbar div{
   display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:600;
-  color:#fff;min-width:0;transition:flex .5s var(--ease);
+  color:var(--on-heat);min-width:0;transition:flex .5s var(--ease);
 }
 .boxkey{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:11.5px;color:var(--ink-2)}
 .boxkey span{display:flex;align-items:center;gap:6px}
@@ -2477,7 +2508,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .dj__b b{font-weight:600;display:block;font-size:13px}
 .dj__b span{font-size:11.5px;color:var(--ink-3)}
 .dj__x{color:var(--ink-3);width:26px;height:26px;border-radius:5px;display:grid;place-items:center;flex:none}
-.dj__x:hover{background:var(--die);color:#fff}
+.dj__x:hover{background:var(--die);color:var(--on-fill)}
 .dj__x svg{width:13px;height:13px}
 
 /* settings extras */
@@ -2729,19 +2760,8 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
    The card is the fundamental unit of the app, so it gets its
    own colour system: one hairline spine on the left that always
    tells you the status, and a status bar welded to the bottom.
+   The status colours are fixed colours of the panel at the top.
    ============================================================ */
-:root{
-  --hard:#C0264C;  --hard-soft:#FAE8EC;
-  --learn:#B4620A; --learn-soft:#FBF0E2;
-  --known:#17795E; --known-soft:#E3F1EC;
-  --gap:#7C878E;   --gap-soft:#EEF1F3;
-}
-:root[data-theme="dark"]{
-  --hard:#FF8FA8;  --hard-soft:#2B1820;
-  --learn:#E5A159; --learn-soft:#2A2015;
-  --known:#5CCFA6; --known-soft:#112A23;
-  --gap:#78838A;   --gap-soft:#1E2327;
-}
 
 .grid-cards{
   display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(282px,1fr));align-items:start;
@@ -3175,11 +3195,10 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .dfoot{width:min(600px,100%);display:flex;flex-direction:column;gap:11px}
 .dreveal{
   display:flex;align-items:center;justify-content:center;gap:11px;height:60px;
-  border:1px solid var(--signal);border-radius:var(--r-md);background:var(--signal);color:#fff;
+  border:1px solid var(--signal);border-radius:var(--r-md);background:var(--signal);color:var(--on-signal);
   font-size:13.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   transition:filter .15s var(--ease),transform .12s var(--ease);
 }
-:root[data-theme="dark"] .dreveal{color:#0B0E10}
 .dreveal:hover{filter:brightness(1.07)}
 .dreveal:active{transform:translateY(1px)}
 .dreveal .kbd{border-color:currentColor;color:inherit;opacity:.75}
@@ -4040,11 +4059,10 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .sp-bar__row > .is-in{animation:fade .16s var(--ease) backwards}
 .sp-go{
   flex:none;width:88px;margin-left:auto;display:flex;align-items:center;justify-content:center;gap:8px;
-  border:1px solid var(--signal);border-radius:var(--r-md);background:var(--signal);color:#fff;
+  border:1px solid var(--signal);border-radius:var(--r-md);background:var(--signal);color:var(--on-signal);
   font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
   transition:filter .15s var(--ease),transform .12s var(--ease),background .2s var(--ease),border-color .2s var(--ease),color .2s var(--ease);
 }
-:root[data-theme="dark"] .sp-go{color:#0B0E10}
 .sp-go:active{transform:scale(.97)}
 .sp-go > span{transition:opacity .16s var(--ease)}
 .sp-go.is-out > span{opacity:0;transition:opacity .1s cubic-bezier(.4,0,1,1)}
@@ -4271,9 +4289,9 @@ button.wrow:active{transform:scale(.99)}
   font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   padding:3px 6px;border-radius:4px;flex:none;
 }
-.wchip--hard{background:rgba(192,38,76,.12);color:var(--die)}
-.wchip--learning{background:rgba(180,98,10,.13);color:var(--warn)}
-.wchip--known{background:rgba(23,121,94,.13);color:var(--ok)}
+.wchip--hard{background:var(--hard-soft);color:var(--hard)}
+.wchip--learning{background:var(--learn-soft);color:var(--learn)}
+.wchip--known{background:var(--known-soft);color:var(--known)}
 .wchip--new{background:var(--surface-2);color:var(--ink-3)}
 @media (max-width:640px){
   .wrow__tr,.wrow__id{display:none}
@@ -4295,8 +4313,8 @@ button.wrow:active{transform:scale(.99)}
 .srow__i{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;flex:none}
 .srow__i svg{width:14px;height:14px}
 .srow__i.k-drill{background:var(--signal-soft);color:var(--signal)}
-.srow__i.k-spell{background:rgba(180,98,10,.13);color:var(--warn)}
-.srow__i.k-read{background:rgba(23,121,94,.13);color:var(--ok)}
+.srow__i.k-spell{background:var(--stress-soft);color:var(--stress-text)}
+.srow__i.k-read{background:var(--surface-2);color:var(--ink-2)}
 .srow__i.k-desk{background:var(--signal-soft);color:var(--heat-3)}
 .srow__i.k-hand{background:var(--surface-2);color:var(--ink-3)}
 .srow__b{flex:1;min-width:0}
@@ -4331,7 +4349,6 @@ button.wrow:active{transform:scale(.99)}
 .ring--sm .ring__mid b{font-size:17px}
 .ring--sm .ring__mid span{font-size:8px;margin-top:3px}
 .ring__fill--time{stroke:var(--stress)}
-:root[data-theme="dark"] .ring__fill--time{stroke:var(--stress)}
 
 /* ---------- pace pill row ---------- */
 .pace{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
@@ -4351,7 +4368,7 @@ button.wrow:active{transform:scale(.99)}
 .mile .meter{display:block;margin:9px 0 7px}
 .mile__note{font-size:11.5px;color:var(--ink-3)}
 .mile.is-near .mile__note{color:var(--signal);font-weight:600}
-.wchip--fresh{background:var(--signal-soft);color:var(--signal)}
+.wchip--fresh{background:var(--stress-soft);color:var(--stress-text)}
 .krow__v .wchip{font-family:var(--sans);vertical-align:2px;margin-right:4px}
 
 /* ---------- disclosure (the .syncp__log pattern, outside the menu) ---------- */
@@ -11280,7 +11297,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.39";
+const APP_VERSION = "3.40";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -13004,6 +13021,7 @@ function milesBlock() {
 
 const BOXNAMES = ["Untouched", "Box 1", "Box 2", "Box 3", "Box 4", "Box 5"];
 const BOXCOL = ["var(--rule)", "var(--heat-1)", "var(--heat-2)", "var(--heat-3)", "var(--heat-4)", "var(--ok)"];
+const BOXINK = ["var(--ink-2)", "var(--ink)", "var(--on-heat)", "var(--on-heat)", "var(--on-signal)", "var(--on-fill)"];
 
 /* ---------- the activity chart: one chart, three readings ----------
    Every bar is drawn at full height and scaled down to its value from
@@ -13139,7 +13157,7 @@ function renderCharts() {
         '<div class="seg seg--sm" role="group" aria-label="Reading">' + SERIES.map(x =>
           '<button data-series="' + x[0] + '" aria-pressed="' + (ser === x[0]) + '">' + x[1] + "</button>").join("") + "</div></div>" +
       seriesChart(B, !wide) +
-      (B.daily ? '<div class="chart__legend sc__leg"><span><i style="background:var(--signal)"></i>goal met</span>' +
+      (B.daily ? '<div class="chart__legend sc__leg"><span><i style="background:var(--stress)"></i>goal met</span>' +
         '<span><i style="background:var(--heat-2)"></i>under it</span>' +
         '<span><i class="is-line"></i>goal · <b class="sc__gv"></b></span></div>' : "") +
     "</div>";
@@ -16276,7 +16294,7 @@ function krows(rows) {
 }
 
 const MIXCOL = {
-  drill: "var(--signal)", spell: "var(--warn)", read: "var(--ok)",
+  drill: "var(--signal)", spell: "var(--stress)", read: "var(--ink-2)",
   desk: "var(--heat-3)", hand: "var(--ink-3)", app: "var(--rule)"
 };
 
@@ -16583,7 +16601,7 @@ function renderWordsTab() {
         '<div class="chart__head"><div><h3>Where your words sit' + tipBtn("boxes2") + "</h3>" +
           tipBody("boxes2", "Across the whole library, right now. Box 5 is solid.") + "</div></div>" +
         '<div class="boxbar">' + spread.map((n, i) => n
-          ? '<div style="flex:' + n + ";background:" + BOXCOL[i] + ";color:" + (i === 0 ? "var(--ink-2)" : "#fff") +
+          ? '<div style="flex:' + n + ";background:" + BOXCOL[i] + ";color:" + BOXINK[i] +
             '" title="' + BOXNAMES[i] + ": " + n + '">' + (n / totalW > .07 ? n : "") + "</div>" : "").join("") + "</div>" +
         '<div class="boxkey">' + spread.map((n, i) => n
           ? '<span><i style="background:' + BOXCOL[i] + '"></i>' + BOXNAMES[i] + " · " + n + "</span>" : "").join("") + "</div>" +
