@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.36 · neural German, cached on device -->
+<!-- Sprachlabor — v3.37 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -2059,73 +2059,138 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
    ============================================================ */
 .prog-top{display:grid;gap:16px;grid-template-columns:minmax(280px,1fr) minmax(300px,1.1fr);align-items:stretch;margin-bottom:16px}
 
-/* --- streak + goal card --- */
-.today{
+/* --- the chain: the run, three weeks as links, today's two targets ---
+   The page opens on the one number that brings you back: the run. Its
+   last three weeks sit under it as links, joined where two days in a
+   row both counted, solid where the day met the goal; today waits,
+   breathing, until it counts too. */
+.pch{
   background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
-  padding:20px 22px;display:flex;flex-direction:column;gap:16px;
+  padding:22px 24px 20px;margin-bottom:10px;
 }
-.today__row{display:flex;align-items:center;gap:20px}
-/* the one sentence about today, and the one button that acts on it */
-.today__head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:16px;border-bottom:1px solid var(--rule-2)}
-.today__head h3{font-size:19px;font-weight:600;letter-spacing:-.018em;line-height:1.25}
-.today__head p{font-size:13px;color:var(--ink-2);margin-top:5px;line-height:1.5;max-width:46ch}
-.today__head .btn{flex:none}
-.today__label{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:7px}
-.today__count{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--ink-3)}
-@media (max-width:520px){
-  .today__head{flex-direction:column;align-items:stretch}
-  .today__head .btn{justify-content:center}
-}
+.pch__top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.pch__run{display:flex;align-items:flex-end;gap:14px;min-width:0}
+.pch__fig{font-size:78px;color:var(--ink)}
+.pch__lbl{display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding-bottom:9px}
+.pch__lbl em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.pch__rings{display:flex;gap:12px;flex:none}
 .ring{width:96px;height:96px;flex:none;position:relative}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .ring__track{stroke:var(--rule);fill:none}
 .ring__fill{stroke:var(--signal);fill:none;stroke-linecap:round;transition:stroke-dashoffset .7s var(--ease)}
 .ring__fill.is-done{stroke:var(--ok)}
-.ring__mid{
-  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-}
+.ring__mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .ring__mid b{font-family:var(--mono);font-size:23px;font-weight:600;letter-spacing:-.03em;line-height:1}
 .ring__mid span{font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-top:4px}
-.today__facts{flex:1;min-width:0}
-.today__streak{display:flex;align-items:baseline;gap:9px}
-.today__streak b{font-family:var(--mono);font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
-.today__streak span{font-size:13px;color:var(--ink-2);font-weight:500}
-.today__note{font-size:12.5px;color:var(--ink-3);margin-top:8px;line-height:1.5}
+.ring--pch{width:84px;height:84px}
+.ring--pch .ring__mid b{font-size:20px}
+.pch__chain{display:grid;grid-template-columns:repeat(21,minmax(0,1fr));gap:4px;margin-top:22px}
+.pch__d{
+  position:relative;height:26px;border-radius:5px;background:var(--surface-2);border:1px solid var(--rule-2);
+  transition:transform .1s var(--ease),border-color .15s var(--ease);
+}
+.pch__d.is-on{background:var(--heat-2);border-color:transparent}
+.pch__d.is-met{background:var(--signal);border-color:transparent}
+.pch__d.is-rest{background:repeating-linear-gradient(45deg,var(--rule-2),var(--rule-2) 2px,transparent 2px,transparent 5px)}
+/* the link to the day before, across the gap */
+.pch__d.is-joined i{position:absolute;right:100%;top:50%;width:6px;height:3px;margin-top:-1.5px;background:var(--signal);transform-origin:100% 50%}
+.pch__d.is-today{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--ink)}
+.pch__d.is-today:not(.is-on):not(.is-met):not(.is-rest){animation:pchwait 1.8s var(--ease) infinite}
+@keyframes pchwait{50%{background:var(--signal-soft);border-color:var(--signal)}}
+@media (hover:hover){.pch__d:hover{transform:translateY(-2px);border-color:var(--ink-3)}}
+.pch__d:active{transform:scale(.9)}
+.pch__ends{display:flex;justify-content:space-between;margin-top:8px;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.pch__foot{
+  display:flex;align-items:center;justify-content:space-between;gap:14px 18px;flex-wrap:wrap;
+  margin-top:18px;padding-top:16px;border-top:1px solid var(--rule-2);
+}
+.pch__say{min-width:0}
+.pch__say h3{font-size:17px;font-weight:600;letter-spacing:-.016em;line-height:1.3}
+.pch__next{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12px;color:var(--ink-3)}
+.pch__next .meter{flex:none;width:92px}
+.pch__foot .btn{flex:none;height:42px}
+/* arriving: the links fall into place left to right, then join */
+@keyframes pchin{from{opacity:0;transform:scale(.4)}}
+@keyframes pchjoin{from{transform:scaleX(0)}}
+.pch.is-in .pch__d{animation:pchin .38s var(--ease) backwards;animation-delay:calc(.12s + var(--i) * 22ms)}
+.pch.is-in .pch__d.is-today:not(.is-on):not(.is-met):not(.is-rest){animation:pchin .38s var(--ease) calc(.12s + var(--i) * 22ms) backwards,pchwait 1.8s var(--ease) 1s infinite}
+.pch.is-in .pch__d.is-joined i{animation:pchjoin .24s var(--ease) backwards;animation-delay:calc(.3s + var(--i) * 22ms)}
+@media (max-width:640px){
+  .pch{padding:18px 16px 16px}
+  .pch__fig{font-size:60px}
+  .pch__run{gap:10px}
+  .pch__lbl{padding-bottom:6px}
+  .ring--pch{width:66px;height:66px}
+  .ring--pch .ring__mid b{font-size:16px}
+  .ring--pch .ring__mid span{font-size:8px;margin-top:2px}
+  .pch__rings{gap:8px}
+  .pch__chain{gap:3px}
+  .pch__d{height:22px;border-radius:4px}
+  .pch__d.is-joined i{width:5px}
+  .pch__foot{flex-direction:column;align-items:stretch}
+  .pch__foot .btn{justify-content:center}
+}
+@media (max-width:360px){.pch__fig{font-size:50px}.ring--pch{width:58px;height:58px}}
 
-/* --- THE SIGNATURE: the week, set like the pronunciation strip --- */
-.weekstrip{
-  display:flex;align-items:stretch;border:1px solid var(--rule);border-radius:var(--r-sm);
-  overflow:hidden;background:var(--surface-2);
+/* --- the period bar: the range, and ‹ › to walk through it ---
+   It stays under the top edge while the page scrolls, so a chart far
+   down can still be moved a week back. */
+.pbar{
+  position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;
+  gap:10px 16px;flex-wrap:wrap;padding:10px 0 12px;margin-bottom:6px;background:var(--paper);
 }
-.weekstrip button{
-  flex:1;min-width:0;padding:7px 2px 8px;border-right:1px solid var(--rule);
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  font-family:var(--mono);font-size:10px;font-weight:500;color:var(--ink-3);
-  letter-spacing:.04em;transition:background .14s var(--ease),color .14s var(--ease),transform .1s var(--ease);
+.pbar__step{display:flex;align-items:center;gap:6px}
+.pbar__key{
+  width:38px;height:38px;border-radius:var(--r-md);border:1px solid var(--rule);background:var(--surface);
+  display:grid;place-items:center;color:var(--ink-2);
+  transition:background .14s var(--ease),border-color .14s var(--ease),color .14s var(--ease),opacity .14s var(--ease),transform .1s var(--ease);
 }
-.weekstrip button:active{transform:scale(.94)}
-.weekstrip button:last-child{border-right:none}
-.weekstrip button:hover{background:var(--surface)}
-.weekstrip button b{
-  font-size:12.5px;font-weight:600;color:var(--ink-2);line-height:1;
-  display:block;font-family:var(--mono);
+.pbar__key svg{width:15px;height:15px}
+@media (hover:hover){.pbar__key:hover{border-color:var(--ink-3);color:var(--ink)}}
+.pbar__key:active{transform:scale(.94)}
+.pbar__key:disabled{opacity:.3;pointer-events:none}
+.pbar__what{min-width:156px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.pbar__what b{font-size:14.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.pbar__what .eyebrow{font-size:9.5px}
+@media (max-width:640px){
+  .pbar{padding:8px 0 10px}
+  .pbar__seg{display:flex;width:100%}
+  .pbar__seg button{flex:1;justify-content:center;padding:0 4px}
+  .pbar__step{width:100%}
+  .pbar__what{flex:1}
 }
-.weekstrip button.is-hit{background:var(--stress);color:var(--stress-ink)}
-.weekstrip button.is-hit b{color:var(--stress-ink)}
-.weekstrip button.is-some{background:var(--signal-soft);color:var(--signal)}
-.weekstrip button.is-some b{color:var(--signal)}
-.weekstrip button.is-rest{background:var(--rule-2)}
-.weekstrip button.is-today{box-shadow:inset 0 0 0 2px var(--ink)}
-.weekstrip button.is-future{opacity:.4}
 
-.spark{display:grid;grid-template-columns:repeat(30,1fr);gap:2px}
-.spark i{display:block;aspect-ratio:1;border-radius:2px;background:var(--heat-0)}
-.spark i.l1{background:var(--heat-1)}
-.spark i.l2{background:var(--heat-2)}
-.spark i.l3{background:var(--heat-3)}
-.spark i.l4{background:var(--heat-4)}
-.spark i.is-rest{background:repeating-linear-gradient(45deg,var(--rule-2),var(--rule-2) 2px,transparent 2px,transparent 4px)}
-.today__fill{margin-top:auto}
+/* --- the map and the chart share a row on a wide screen --- */
+.pov{margin-bottom:16px}
+.pov > .chart{margin-bottom:0}
+.pmap .calwrap{display:flex;flex-direction:column}
+.is-grow .calwrap .cday{animation:fade .3s var(--ease) backwards;animation-delay:calc(var(--i) * 8ms)}
+.miles--more{margin:6px 0 10px}
+.pyear{margin:14px 0 6px}
+.pyear:first-child{margin-top:0}
+
+/* --- the activity chart: one chart, three readings --- */
+.seg--sm button{height:30px;padding:0 11px;font-size:12px}
+.schart .chart__head{align-items:flex-start}
+.sc__sum{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.schart .sbar{
+  fill:var(--heat-2);transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0);
+  transition:transform .55s var(--ease) var(--d,0s),fill .2s var(--ease);
+}
+.schart.is-live .sbar{transition-delay:0s}
+.schart .sbar.is-met,.schart.is-acc .sbar,.schart.is-flat .sbar{fill:var(--signal)}
+@media (hover:hover){.schart .sc__g:hover .sbar{fill:var(--ink)}}
+.schart .sc__g:active .sbar{fill:var(--ink)}
+.schart .sc__goal{transition:transform .55s var(--ease),opacity .2s var(--ease)}
+.chart__legend i.is-line{width:14px;height:0;border-top:1.5px dashed var(--stress);border-radius:0}
+.chart__legend b{font-weight:600;color:var(--ink)}
+@media (prefers-reduced-motion:reduce){
+  .pch.is-in .pch__d,.pch.is-in .pch__d.is-joined i{animation-name:fade}
+  .pch__d.is-today{animation:none !important}
+  .schart .sbar,.schart .sc__goal{transition:fill .2s var(--ease),opacity .2s var(--ease)}
+  .pch__d:active,.pbar__key:active{transform:none}
+}
+
 .pickup{display:flex;flex-direction:column;gap:1px;background:var(--rule-2);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden}
 .pickup button{
   display:flex;align-items:center;gap:11px;padding:9px 11px;background:var(--surface);
@@ -2141,30 +2206,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .pickup button:hover .pickup__go{color:var(--signal)}
 .pickup__go svg{width:13px;height:13px}
 
-.cal__title.is-on span,.cal__title.is-on{color:var(--signal)}
-
-/* --- calendar --- */
-.calwrap{
-  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
-  padding:18px 20px 20px;display:flex;flex-direction:column;
-}
-.cal__bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-.cal__title{font-size:15px;font-weight:600;letter-spacing:-.01em}
-.cal__title span{font-family:var(--mono);color:var(--ink-3);font-weight:500;font-size:13px;margin-left:6px}
-.cal__nav{display:flex;gap:4px;align-items:center}
-.cal__nav button{
-  width:30px;height:30px;border-radius:6px;display:grid;place-items:center;color:var(--ink-2);
-  border:1px solid var(--rule);background:var(--surface);transition:background .13s var(--ease),color .13s var(--ease),transform .1s var(--ease);
-}
-.cal__nav button:active{transform:scale(.94)}
-.cal__title{border-radius:var(--r-sm);padding:2px 4px;margin-left:-4px;transition:background .14s var(--ease),color .14s var(--ease),transform .1s var(--ease)}
-.cal__title:hover{background:var(--surface-2)}
-.cal__title:active{transform:scale(.97)}
-.cal__grid.is-slide{animation:calslide .22s var(--ease) both}
-@keyframes calslide{from{opacity:0;transform:translateX(var(--sx))}to{opacity:1;transform:none}}
-.cal__nav button:hover{background:var(--surface-2);color:var(--ink)}
-.cal__nav button svg{width:14px;height:14px}
-.cal__nav .btn--sm{width:auto}
+/* --- the month, inside its map card --- */
 
 .calwrap{--calgut:21px}
 .cal__dow{
@@ -2221,22 +2263,6 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .cal__legend i{width:11px;height:11px;border-radius:2px;display:inline-block}
 .cal__legend .sp{flex:1}
 
-/* --- selected-range readout --- */
-.scope{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
-  padding:14px 18px;background:var(--ink);color:var(--paper);border-radius:var(--r-lg);
-  margin-bottom:16px;
-}
-:root[data-theme="dark"] .scope{background:var(--surface-2);color:var(--ink);border:1px solid var(--rule)}
-.scope__what b{font-size:15px;font-weight:600;display:block;letter-spacing:-.01em}
-.scope__what span{font-size:12px;opacity:.72;margin-top:2px;display:block}
-.scope__nums{display:flex;gap:22px;flex-wrap:wrap}
-.scope__nums div{text-align:right}
-.scope__nums b{display:block;font-family:var(--mono);font-size:19px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
-.scope__nums span{font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;opacity:.6}
-.scope .btn{background:transparent;border-color:currentColor;color:inherit;opacity:.85}
-.scope .btn:hover{background:rgba(255,255,255,.12);border-color:currentColor;color:inherit;opacity:1}
-:root[data-theme="dark"] .scope .btn:hover{background:var(--surface)}
 
 /* --- metric tiles --- */
 .metrics{
@@ -2251,7 +2277,12 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .metric__v small{font-size:13px;font-weight:500;color:var(--ink-3);margin-left:2px;letter-spacing:0}
 .metric__d{font-size:11.5px;margin-top:6px;color:var(--ink-3);display:flex;align-items:flex-start;gap:4px;line-height:1.45}
 .metric__d.is-up{color:var(--ok)}
-.metric__d.is-down{color:var(--die)}
+.metric__d.is-down{color:var(--ink-3)}
+.metric__p{display:block;font-size:11.5px;font-weight:600;color:var(--signal);margin-top:5px}
+.metric--ring{position:relative;padding-right:76px}
+.ring--kpi{position:absolute;top:15px;right:16px;width:50px;height:50px}
+.pkpis{margin-bottom:18px}
+@media (max-width:640px){.metric--ring{padding-right:62px}.ring--kpi{width:40px;height:40px;right:12px;top:13px}}
 .metric__d svg{width:11px;height:11px;flex:none;margin-top:2px}
 
 /* --- charts --- */
@@ -2297,6 +2328,9 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
   display:flex;align-items:center;gap:12px;padding:10px 2px;background:var(--surface);
   font-size:13px;
 }
+button.lbrow{width:100%;text-align:left;transition:background .14s var(--ease),transform .1s var(--ease)}
+@media (hover:hover){button.lbrow:not(:disabled):hover{background:var(--surface-2)}}
+button.lbrow:not(:disabled):active{transform:scale(.99)}
 .lbrow__n{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);width:18px;flex:none}
 .lbrow__t{flex:1.5;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .lbrow__b{flex:1;min-width:48px;height:5px;background:var(--rule-2);border-radius:100px;overflow:hidden}
@@ -2561,9 +2595,6 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width:1000px){
-  .prog-top{grid-template-columns:1fr}
-}
 @media (max-width:860px){
   .rail{height:62px}
   .rail__btn{padding:7px 0 5px;max-width:none;gap:4px}
@@ -2573,30 +2604,24 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
   /* the bottom bar keeps its four tabs; Settings is in the ⋮ menu there */
   .rail__sep,.rail__btn[data-nav="settings"]{display:none}
   .shell{padding-bottom:66px}
-  .scope{padding:13px 15px}
-  .scope__nums{gap:16px}
-  .today{padding:17px}
-  .ring{width:80px;height:80px}
   .metric{padding:13px 14px}
   .metric__v{font-size:22px}
   .cday{min-height:30px;font-size:10px}
-  .calwrap{padding:15px 14px 16px}
 }
 @media (max-width:520px){
   .grid-dirs{grid-template-columns:1fr;gap:8px}
   .is-list .dcard{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"ico body menu"}
   .is-list .dcard__foot{display:none}
-  .today__row{gap:14px}
   .calwrap{--calgut:17px}
   .cal__dow,.cal__week{grid-template-columns:16px repeat(7,1fr);gap:2px}
   .cal__grid{gap:2px}
 }
 @media print{
-  .ltools,.lfilt,.lsum__top .btn,.lsum__more,.cal__nav,.dcard__menu,.lcard__act,.setnav{display:none !important}
+  .ltools,.lfilt,.lsum__top .btn,.lsum__more,.pbar,.dcard__menu,.lcard__act,.setnav{display:none !important}
 }
 
 /* cards became containers, so they carry their own affordance */
-.lcard,.dcard,.cday,.weekstrip button{cursor:pointer}
+.lcard,.dcard,.cday{cursor:pointer}
 .lcard:focus-visible,.dcard:focus-visible,.lsum__next:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
 
 /* ============================================================
@@ -4085,11 +4110,6 @@ body.is-spelling .toasts{top:58px;bottom:auto}
   .hud{left:12px;right:auto;bottom:74px;bottom:calc(62px + env(safe-area-inset-bottom) + 12px)}
 }
 @media (max-width:520px){
-  .today__row{flex-wrap:wrap}
-  .tworings{gap:10px}
-  .ring{width:84px;height:84px}
-  .ring--sm{width:62px;height:62px}
-  .ring--sm .ring__mid b{font-size:15px}
   .clockcard{gap:16px;padding:18px}
   .clockcard__side{margin-left:0;gap:18px}
 }
@@ -4355,15 +4375,16 @@ button.wrow:active{transform:scale(.99)}
 }
 .is-grow .mixbar,.is-grow .boxbar,.is-grow .spark,.is-grow .hours,.is-grow .year{animation:wipe .55s var(--ease) both}
 .is-grow .chart .line,.is-grow .chart .line2{stroke-dasharray:1 2;animation:draw .7s var(--ease) both}
-.is-grow .chart .area,.is-grow .chart .area2,.is-grow .chart .pt{animation:fade .4s var(--ease) .3s both}
+/* fades in to the opacity the part already has (an area is a 9% tint), not to 1 */
+@keyframes fadeto{from{opacity:0}}
+.is-grow .chart .area,.is-grow .chart .area2,.is-grow .chart .pt{animation:fadeto .4s var(--ease) .3s backwards}
 @media (prefers-reduced-motion:reduce){
   .is-lift > :not(.cols),.is-lift > .cols > *{animation-name:fade}
   .is-grow .bar,.is-grow .dowcol i,.is-grow .meter i,.is-grow .frow__bar i,.is-grow .lbrow__b i,.is-grow .wrow__b i,.is-grow .pickup__m i,
   .is-grow .mixbar,.is-grow .boxbar,.is-grow .spark,.is-grow .hours,.is-grow .year,.is-grow .chart .line,.is-grow .chart .line2{animation:none}
-  .cal__grid.is-slide{animation-name:fade}
   .ptabs__ind,.seg__thumb{transition:none}
-  .cday:active,.weekstrip button:active,.pickup button:active,.cal__nav button:active,.cal__wk:active,.ptabs button:active,
-  button.wrow:active,.fold__btn:active,.year i[data-day]:active,.cal__title:active{transform:none}
+  .cday:active,.pickup button:active,.cal__wk:active,.ptabs button:active,
+  button.wrow:active,.fold__btn:active,.year i[data-day]:active,button.lbrow:active{transform:none}
 }
 
 </style>
@@ -4548,19 +4569,15 @@ button.wrow:active{transform:scale(.99)}
         <div class="page-head__actions">
           <button class="btn" id="btnLogStudy">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
-            Log study time
+            Log time
           </button>
         </div>
       </header>
 
-      <div class="prog-top">
-        <div class="today" id="progToday"></div>
-        <div class="calwrap" id="progCal"></div>
-      </div>
-
-      <div id="progScope"></div>
-      <div id="progTabs"></div>
+      <div class="pch" id="progChain"></div>
+      <div class="pbar" id="progScope"></div>
       <div id="progMetrics"></div>
+      <div id="progTabs"></div>
       <div id="progCharts"></div>
     </div>
   </section>
@@ -9860,7 +9877,7 @@ document.addEventListener("keydown", e => {
    hashchange still covers someone editing the address bar by hand. */
 window.addEventListener("popstate", applyRoute);
 window.addEventListener("hashchange", applyRoute);
-let reflowT;
+let reflowT, reflowW = innerWidth;
 /* The sheet is fixed to the bottom edge, so neither scrolling the text
    behind it nor resizing the window can knock it out of place — it used
    to close on both because it was a floating card that had to be
@@ -9868,7 +9885,12 @@ let reflowT;
 window.addEventListener("resize", () => {
   closeMenu();
   clearTimeout(reflowT);
-  reflowT = setTimeout(() => { if (state.view === "progress") renderProgress(); }, 180);
+  /* only a change of width redraws the charts: a phone's address bar
+     sliding in and out changes the height on every scroll */
+  reflowT = setTimeout(() => {
+    if (state.view === "progress" && innerWidth !== reflowW) renderProgress();
+    reflowW = innerWidth;
+  }, 180);
 }, { passive: true });
 window.addEventListener("scroll", () => { if (menuNode) closeMenu(); }, { passive: true });
 ["pointerdown", "keydown", "wheel", "touchstart"].forEach(ev =>
@@ -11002,7 +11024,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.36";
+const APP_VERSION = "3.37";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -12074,10 +12096,12 @@ function milestones() {
    ============================================================ */
 /* the SVG viewBox matches the container in CSS pixels: one user unit is one
    pixel, so labels are the size they claim to be on a phone and on a desktop */
-function chartW() {
+function chartW(half) {
   const host = $("#progCharts");
-  const w = host ? host.clientWidth : 0;
-  return Math.max(300, Math.min(1100, (w || 720) - 42));
+  let w = host ? host.clientWidth : 0;
+  /* two charts side by side share the row (.cols: two columns from 616px) */
+  if (half && w >= 616) w = (w - 16) / 2;
+  return Math.max(260, Math.min(1100, (w || 720) - 42));
 }
 
 function niceMax(v) {
@@ -12195,28 +12219,23 @@ function weekIndex(k) {
   return Math.floor(daysBetween(firstWk, weekStartKey(k)) / 7) + 1;
 }
 
-function renderCal() {
-  const host = $("#progCal");
-  if (!host) return;
-  const S = stats();
-  const cur = state.cal;
-  const t = todayKey();
-  const scope = state.scope;
-  const monthFirst = cur.y + "-" + pad2(cur.m + 1) + "-01";
+/* the month as a grid of days, the week numbers down the side; it is
+   the month's own map on the Overview, so it carries no navigation:
+   the period bar above steps through the months */
+function calMonth(monthFirst) {
+  const S = stats(), t = todayKey(), scope = state.scope;
   const gridStart = weekStartKey(monthFirst);
   const lastDay = monthEndKey(monthFirst);
-
   const ws = weekStart();
   let dow = '<div class="cal__dow"><span></span>';
   for (let i = 0; i < 7; i++) dow += "<span>" + DOW1[(ws + i) % 7] + "</span>";
   dow += "</div>";
 
-  let grid = "", k = gridStart, guard = 0;
+  let grid = "", k = gridStart, guard = 0, n = 0;
   while (guard++ < 8) {
     const wkKey = k;
-    const wSel = scope.kind === "week" && weekStartKey(scope.key) === wkKey;
-    let row = '<div class="cal__week' + (wSel ? " is-band" : "") + '"><button class="cal__wk" data-week="' + wkKey +
-      '" aria-pressed="' + wSel + '" title="Week of ' + esc(niceDay(wkKey)) + '">' + weekIndex(wkKey) + "</button>";
+    let row = '<div class="cal__week"><button class="cal__wk" data-week="' + wkKey +
+      '" title="Week of ' + esc(niceDay(wkKey)) + '">' + weekIndex(wkKey) + "</button>";
     for (let i = 0; i < 7; i++) {
       const day = shiftDay(k, i);
       const D = S.days.get(day);
@@ -12229,27 +12248,15 @@ function renderCal() {
       if (day === t) cls.push("is-today");
       if (goalMet(D)) cls.push("is-goal");
       if (scope.kind === "day" && scope.key === day) cls.push("is-sel");
-      const n = D ? D.rev : 0;
-      row += '<button class="' + cls.join(" ") + '" data-day="' + day + '" title="' +
-        esc(niceDay(day) + " · " + (D ? plural(D.rev, "card") + (D.ms ? ", " + fmtMins(D.ms) : "") : "nothing yet")) + '">' +
-        keyDate(day).getDate() + (n ? '<span class="cday__dot"></span>' : "") + "</button>";
+      row += '<button class="' + cls.join(" ") + '" data-day="' + day + '" style="--i:' + (n++) + '"' + (future ? " disabled" : "") +
+        ' title="' + esc(niceDay(day) + " · " + (D ? plural(D.rev, "card") + (D.ms ? ", " + fmtMins(D.ms) : "") : "nothing yet")) + '">' +
+        keyDate(day).getDate() + "</button>";
     }
     grid += row + "</div>";
     k = shiftDay(k, 7);
     if (k > lastDay) break;
   }
-
-  host.innerHTML =
-    '<div class="cal__bar">' +
-      '<button class="cal__title' + (scope.kind === "month" && monthStartKey(scope.key) === monthFirst ? " is-on" : "") +
-        '" data-scope-month="' + monthFirst + '">' + MONTHS[cur.m] +
-        "<span>" + cur.y + "</span></button>" +
-      '<div class="cal__nav">' +
-        '<button data-cal="-1" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>' +
-        '<button class="btn btn--sm" data-cal="0">Today</button>' +
-        '<button data-cal="1" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>' +
-      "</div>" +
-    "</div>" + dow + '<div class="cal__grid">' + grid + "</div>" +
+  return '<div class="calwrap">' + dow + '<div class="cal__grid">' + grid + "</div>" +
     '<div class="cal__legend">' +
       "<span>Quieter</span>" +
       '<i style="background:var(--heat-0)"></i><i style="background:var(--heat-1)"></i>' +
@@ -12257,7 +12264,7 @@ function renderCal() {
       '<i style="background:var(--heat-4)"></i>' +
       "<span>Busier</span><span class='sp'></span>" +
       '<span><i style="background:var(--stress)"></i> goal met</span>' +
-    "</div>";
+    "</div></div>";
 }
 
 /* ---------- year heatmap ---------- */
@@ -12291,119 +12298,96 @@ function yearHeat(year) {
 }
 
 /* ============================================================
-   PROGRESS VIEW
+   PROGRESS VIEW — built for turning up
+   The page answers one question first: are you showing up? The
+   chain on top is all time (the run, the last three weeks as
+   links, today's two targets and the one button). Under it the
+   period bar picks a range and steps through it, and everything
+   below talks about that range: how many of its days you met the
+   goal, its map, one chart with three readings, then the ladders
+   and records that say what is next.
    ============================================================ */
-function renderToday() {
-  const host = $("#progToday");
+const CHAIN_DAYS = 21;
+function renderChain() {
+  const host = $("#progChain");
   if (!host) return;
-  const t = todayKey();
-  const D = dayStat(t);
-  const g = goals();
-  const st = streakInfo();
-  const p = Math.min(1, dayProgress(D));
-  const R = 42, C = 2 * Math.PI * R;
-
-  const ws = weekStart();
-  const wkStart = weekStartKey(t);
-  let strip = "";
-  for (let i = 0; i < 7; i++) {
-    const day = shiftDay(wkStart, i);
-    const dd = stats().days.get(day);
-    const cls = ["weekstrip-cell"];
-    if (goalMet(dd)) cls.push("is-hit");
-    else if (isActive(dd)) cls.push("is-some");
-    else if (dd && dd.rest) cls.push("is-rest");
-    if (day === t) cls.push("is-today");
-    if (day > t) cls.push("is-future");
-    strip += '<button class="' + cls.join(" ") + '" data-day="' + day + '" title="' +
-      esc(niceDay(day) + " · " + (dd ? plural(dd.rev, "card") : "nothing yet")) + '">' +
-      DOW1[(ws + i) % 7] + "<b>" + keyDate(day).getDate() + "</b></button>";
-  }
-
-  const note = st.current === 0
-    ? (st.best ? "Longest run: " + plural(st.best, "day") + "." : "One card starts the chain.")
-    : st.current >= st.best && st.current > 1
-      ? "That is your longest run so far."
-      : "Longest run: " + plural(st.best, "day") + ".";
-  const nextRun = LADDERS[0].steps.find(n => n > st.current);
-
-  /* A second ring, for minutes. The day has two targets and used to show
-     one of them as a shape and the other as a sentence; now both are the
-     same kind of object, and the time one moves while you watch it. */
+  const S = stats(), t = todayKey(), D = dayStat(t), g = goals(), st = streakInfo();
+  /* each ring is its own target: cards for the cards ring, minutes for the other */
+  const pc = Math.min(1, D.rev / g.cards);
   const liveMs = liveTodayMs();
   const pt = Math.min(1, liveMs / (g.mins * 60000));
-  const R2 = 42, C2 = 2 * Math.PI * R2;
+  const met = pc >= 1 || pt >= 1;
+  const R = 42, C = 2 * Math.PI * R;
 
-  /* The card opens with the one thing worth knowing today, said as a
-     sentence, and the one button that acts on it. Everything under it
-     is the evidence. */
+  /* the last three weeks as links; two days that both count are joined */
+  const counts = x => !!x && (isActive(x) || x.rest);
+  let cells = "";
+  for (let i = CHAIN_DAYS - 1; i >= 0; i--) {
+    const k = shiftDay(t, -i), DD = S.days.get(k), PD = S.days.get(shiftDay(k, -1));
+    const on = isActive(DD), rest = !on && DD && DD.rest;
+    const cls = ["pch__d"];
+    if (goalMet(DD)) cls.push("is-met"); else if (on) cls.push("is-on"); else if (rest) cls.push("is-rest");
+    if (counts(DD) && counts(PD) && i < CHAIN_DAYS - 1) cls.push("is-joined");
+    if (k === t) cls.push("is-today");
+    cells += '<button class="' + cls.join(" ") + '" data-day="' + k + '" style="--i:' + (CHAIN_DAYS - 1 - i) + '" title="' +
+      esc(niceDay(k) + " · " + (on ? plural(DD.rev, "card") + (DD.ms ? ", " + fmtMins(DD.ms) : "") : rest ? "rest day" : "nothing")) +
+      '"><i></i></button>';
+  }
+
+  const nextRun = LADDERS[0].steps.find(n => n > st.current);
+  const prevRun = LADDERS[0].steps.filter(n => n <= st.current).pop() || 0;
+  const frac = nextRun ? (st.current - prevRun) / (nextRun - prevRun) : 1;
   const cardsLeft = Math.max(0, g.cards - D.rev);
   const minsLeft = Math.max(1, Math.ceil((g.mins * 60000 - liveMs) / 60000));
-  const run = plural(st.current, "day");
-  const head = p >= 1 || pt >= 1
-    ? ["Today’s goal is met.", st.current > 1
-        ? "That makes " + run + " in a row" + (st.current >= st.best ? ", your longest run so far." : ".") + " Anything more is extra."
-        : "Anything more today is extra."]
-    : st.today
-      ? [plural(cardsLeft, "card") + " or " + minsLeft + " min to go.",
-         "Today already counts, so your streak stands at " + run + ". Either target meets the goal."]
-      : st.rest
-        ? ["Today is a rest day.", st.current ? "Your " + st.current + "-day streak is held. Nothing is lost by resting." : "Nothing is lost by resting."]
-        : st.current
-          ? ["Your " + st.current + "-day streak is waiting for today.", "One card keeps it going. " + plural(g.cards, "card") + " or " + g.mins + " min meets the goal."]
-          : [st.best ? "Start a new run today." : "Start your first run today.",
-             "One card starts a streak. " + plural(g.cards, "card") + " or " + g.mins + " min meets the goal."];
+  const head = met ? "Today’s goal is met."
+    : st.today ? plural(cardsLeft, "card") + " or " + minsLeft + " min to go."
+    : st.rest ? "Today is a rest day."
+    : st.current ? "Your " + st.current + "-day run is waiting for today."
+    : st.best ? "Start a new run today." : "Start your first run today.";
   const go1 = weakestList(1)[0] || state.lessons.find(l => l.vocabulary.length);
   const goL = go1 && (go1.l || go1);
   const cta = goL
-    ? '<button class="btn' + (p >= 1 || pt >= 1 ? "" : " btn--primary") + '" data-practice="' + esc(goL.id) + '" title="' + esc(goL.title) + '">' +
-        ICO_DRILL + (p >= 1 || pt >= 1 ? "Keep going" : st.today ? "Continue" : "Start a review") + "</button>"
+    ? '<button class="btn' + (met ? "" : " btn--primary") + '" data-practice="' + esc(goL.id) + '" title="' + esc(goL.title) + '">' +
+        ICO_DRILL + (met ? "Keep going" : st.today ? "Continue" : "Start a review") + "</button>"
     : "";
-  let wkOn = 0, wkPast = 0;
-  for (let i = 0; i < 7; i++) {
-    const day = shiftDay(wkStart, i);
-    if (day <= t) { wkPast++; if (goalMet(stats().days.get(day))) wkOn++; }
-  }
+  const record = st.current > 1 && st.current >= st.best;
 
   host.innerHTML =
-    '<div class="today__head"><div><h3>' + esc(head[0]) + "</h3><p>" + esc(head[1]) + "</p></div>" + cta + "</div>" +
-    '<div class="today__row">' +
-      '<div class="tworings">' +
-      '<div class="ring">' +
-        '<svg viewBox="0 0 100 100">' +
-          '<circle class="ring__track" cx="50" cy="50" r="' + R + '" stroke-width="8"/>' +
-          '<circle class="ring__fill' + (p >= 1 ? " is-done" : "") + '" data-rk="cards" data-c="' + C + '" data-p="' + p + '" cx="50" cy="50" r="' + R +
-            '" stroke-width="8" stroke-dasharray="' + C + '" stroke-dashoffset="' + (C * (1 - p)) + '"/>' +
-        "</svg>" +
-        '<div class="ring__mid"><b data-cu="' + D.rev + '" data-cuk="ring">' + D.rev + "</b><span>of " + g.cards + "</span></div>" +
+    '<div class="pch__top">' +
+      '<div class="pch__run">' +
+        '<b class="hfig pch__fig" data-cu="' + st.current + '" data-cuk="streak">' + st.current + "</b>" +
+        '<div class="pch__lbl"><span class="eyebrow">' + (st.current === 1 ? "Day" : "Days") + " in a row</span>" +
+          (record ? '<span class="wchip wchip--fresh">Longest yet</span>' : "<em>Best " + plural(st.best, "day") + "</em>") + "</div>" +
       "</div>" +
-      '<div class="ring ring--sm" title="Minutes studied today, counting the session you are in">' +
-        '<svg viewBox="0 0 100 100">' +
-          '<circle class="ring__track" cx="50" cy="50" r="' + R2 + '" stroke-width="10"/>' +
-          '<circle class="ring__fill ring__fill--time" id="ringTime" data-rk="time" data-c="' + C2 + '" data-p="' + pt + '" cx="50" cy="50" r="' + R2 +
-            '" stroke-width="10" stroke-dasharray="' + C2 + '" stroke-dashoffset="' + (C2 * (1 - pt)) + '"/>' +
-        "</svg>" +
-        '<div class="ring__mid"><b id="ringTimeV">' + Math.round(liveMs / 60000) + "</b><span>of " + g.mins + "m</span></div>" +
-      "</div>" +
-      "</div>" +
-      '<div class="today__facts">' +
-        '<div class="today__streak"><b data-cu="' + st.current + '" data-cuk="streak">' + st.current + "</b><span>day streak</span></div>" +
-        '<div class="today__note">' + esc(note) +
-          (nextRun ? " " + plural(nextRun - st.current, "day") + " to a " + nextRun + "-day run." : "") + "</div>" +
-        '<div class="today__note" style="margin-top:6px">' +
-          (clock.kind
-            ? '<span style="color:var(--ok);font-weight:600">' + esc(clockLabel()) + " now</span> · " +
-              '<span class="mono" id="liveSession">' + hms(liveStudyMs()) + "</span> this session"
-            : "Nothing being timed right now") +
-          " · " + fmtMins(liveAppTodayMs()) + " in the app today</div>" +
+      '<div class="pch__rings">' +
+        '<div class="ring ring--pch" title="Cards reviewed today">' +
+          '<svg viewBox="0 0 100 100">' +
+            '<circle class="ring__track" cx="50" cy="50" r="' + R + '" stroke-width="9"/>' +
+            '<circle class="ring__fill' + (pc >= 1 ? " is-done" : "") + '" data-rk="cards" data-c="' + C + '" data-p="' + pc + '" cx="50" cy="50" r="' + R +
+              '" stroke-width="9" stroke-dasharray="' + C + '" stroke-dashoffset="' + (C * (1 - pc)) + '"/>' +
+          "</svg>" +
+          '<div class="ring__mid"><b data-cu="' + D.rev + '" data-cuk="ring">' + D.rev + "</b><span>of " + g.cards + "</span></div>" +
+        "</div>" +
+        '<div class="ring ring--pch" title="Minutes studied today, counting the session you are in">' +
+          '<svg viewBox="0 0 100 100">' +
+            '<circle class="ring__track" cx="50" cy="50" r="' + R + '" stroke-width="9"/>' +
+            '<circle class="ring__fill ring__fill--time' + (pt >= 1 ? " is-done" : "") + '" id="ringTime" data-rk="time" data-c="' + C + '" data-p="' + pt + '" cx="50" cy="50" r="' + R +
+              '" stroke-width="9" stroke-dasharray="' + C + '" stroke-dashoffset="' + (C * (1 - pt)) + '"/>' +
+          "</svg>" +
+          '<div class="ring__mid"><b id="ringTimeV">' + Math.round(liveMs / 60000) + "</b><span>of " + g.mins + "m</span></div>" +
+        "</div>" +
       "</div>" +
     "</div>" +
-    '<div><div class="today__label"><span class="eyebrow">This week</span>' +
-      '<span class="today__count">' + wkOn + "/" + wkPast + " on target</span></div>" +
-      '<div class="weekstrip">' + strip + "</div></div>" +
-    weakestBlock() +
-    '<div class="today__fill"><div class="eyebrow" style="margin-bottom:7px">Last 30 days</div>' +
-      '<div class="spark">' + spark30() + "</div></div>";
+    '<div class="pch__chain" role="group" aria-label="The last three weeks">' + cells + "</div>" +
+    '<div class="pch__ends"><span>3 weeks ago</span><span>Today</span></div>' +
+    '<div class="pch__foot">' +
+      '<div class="pch__say"><h3>' + esc(head) + "</h3>" +
+        (nextRun
+          ? '<div class="pch__next"><span class="meter"><i style="width:' + Math.max(3, Math.round(frac * 100)) + '%"></i></span>' +
+            "<span>" + plural(nextRun - st.current, "day") + " to a " + nextRun + "-day run</span></div>"
+          : "") +
+      "</div>" + cta +
+    "</div>";
 }
 
 /* The page reports; this is the one place it also offers to act.
@@ -12415,36 +12399,6 @@ function weakestList(n) {
     .sort((a, b) => a.pct - b.pct)
     .slice(0, n);
 }
-function weakestBlock() {
-  const list = weakestList(3);
-  if (!list.length) {
-    return '<div><div class="eyebrow" style="margin-bottom:7px">Weakest lessons</div>' +
-      '<div style="font-size:12.5px;color:var(--ink-3);line-height:1.5">' +
-      (state.lessons.length ? "Every lesson is at box five. Import a new one when you are ready."
-                            : "Import a lesson and it will show up here.") + "</div></div>";
-  }
-  return '<div><div class="eyebrow" style="margin-bottom:7px">Weakest lessons</div><div class="pickup">' +
-    list.map(x =>
-      '<button data-practice="' + esc(x.l.id) + '">' +
-        '<span class="pickup__t">' + esc(x.l.title) + "</span>" +
-        '<span class="pickup__m"><i style="width:' + x.pct + '%"></i></span>' +
-        '<span class="pickup__p">' + x.pct + "%</span>" +
-        '<span class="pickup__go">' + ICO_DRILL + "</span>" +
-      "</button>").join("") + "</div></div>";
-}
-
-/* the same ramp as the calendar, so the two read as one instrument */
-function spark30() {
-  const S = stats(), t = todayKey();
-  let out = "";
-  for (let i = 29; i >= 0; i--) {
-    const k = shiftDay(t, -i);
-    const D = S.days.get(k);
-    out += '<i class="l' + heatLevel(D) + (D && D.rest && !isActive(D) ? " is-rest" : "") +
-      '" title="' + esc(niceDay(k) + " · " + (D ? plural(D.rev, "card") : "nothing")) + '"></i>';
-  }
-  return out;
-}
 
 function scopeTitle(scope) {
   const r = rangeOf(scope);
@@ -12455,57 +12409,114 @@ function scopeTitle(scope) {
   }
   if (scope.kind === "month") return MONTHS[keyDate(r.from).getMonth()] + " " + r.from.slice(0, 4);
   if (scope.kind === "year") return r.from.slice(0, 4);
-  return "All time";
+  return "Since " + niceDayLower(stats().first);
 }
-
-function renderScopeBar() {
+/* where the range stands from today, said the way you would say it */
+function periodRel(scope) {
+  const t = todayKey(), r = rangeOf(scope);
+  if (scope.kind === "all") return "All time";
+  const ago = (u, n) => n === 0 ? "This " + u : n === 1 ? "Last " + u : plural(n, u) + " ago";
+  if (scope.kind === "day") {
+    const n = daysBetween(scope.key, t);
+    return n === 0 ? "Today" : n === 1 ? "Yesterday" : plural(n, "day") + " ago";
+  }
+  if (scope.kind === "week") return ago("week", Math.round(daysBetween(r.from, weekStartKey(t)) / 7));
+  if (scope.kind === "month") {
+    const a = keyDate(r.from), b = keyDate(t);
+    return ago("month", (b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth());
+  }
+  return ago("year", +t.slice(0, 4) - +r.from.slice(0, 4));
+}
+/* The period bar: the range, and ‹ › to step through it. Built once;
+   after that only the seg, the words and the keys change, so the seg's
+   thumb slides and the title fades through instead of blinking. */
+const ICO_PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
+const ICO_NEXT2 = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
+function renderPeriodBar() {
   const host = $("#progScope");
   if (!host) return;
-  const sc = state.scope, r = rangeOf(sc);
-  const A = aggregate(r.from, r.to);
-  const acc = A.rev ? Math.round(A.ok / A.rev * 100) : 0;
-  const sub = sc.kind === "day"
-    ? (A.rev ? plural(A.sessions, "drill") + " · " + plural(A.lessons.size, "lesson") + " touched" : "No reviews recorded")
-    : A.activeDays + " of " + A.spanDays + " days active · " + A.goalDays + " hit the goal";
-
-  host.innerHTML =
-    '<div class="scope">' +
-      '<div class="scope__what"><b>' + esc(scopeTitle(sc)) + "</b><span>" + esc(sub) + "</span></div>" +
-      '<div class="scope__nums">' +
-        '<div><b data-cu="' + A.rev + '" data-cuk="scope">' + A.rev + "</b><span>Cards</span></div>" +
-        "<div><b>" + acc + "%</b><span>Correct</span></div>" +
-        "<div><b>" + fmtMins(A.ms) + "</b><span>Time</span></div>" +
+  const sc = state.scope, t = todayKey(), r = rangeOf(sc);
+  if (!host.querySelector(".pbar__seg")) {
+    host.innerHTML =
+      '<div class="seg pbar__seg" id="scopeSeg" role="group" aria-label="Range">' +
+        [["day", "Day"], ["week", "Week"], ["month", "Month"], ["year", "Year"], ["all", "All"]].map(x =>
+          '<button data-scope="' + x[0] + '" aria-pressed="false">' + x[1] + "</button>").join("") +
       "</div>" +
-    "</div>" +
-    '<div class="toolbar" style="margin-bottom:16px">' +
-      '<div class="seg" id="scopeSeg" role="group" aria-label="Range">' +
-        ["day", "week", "month", "year", "all"].map(x =>
-          '<button data-scope="' + x + '" aria-pressed="' + (sc.kind === x) + '">' +
-          x.charAt(0).toUpperCase() + x.slice(1) + "</button>").join("") +
-      "</div>" +
-    "</div>";
+      '<div class="pbar__step">' +
+        '<button class="pbar__key" data-pstep="-1" aria-label="Earlier">' + ICO_PREV + "</button>" +
+        '<div class="pbar__what" aria-live="polite"><span class="eyebrow"></span><b></b></div>' +
+        '<button class="pbar__key" data-pstep="1" aria-label="Later">' + ICO_NEXT2 + "</button>" +
+      "</div>";
+  }
+  host.querySelectorAll("[data-scope]").forEach(b => {
+    const on = b.dataset.scope === sc.kind;
+    if (b.getAttribute("aria-pressed") !== String(on)) b.setAttribute("aria-pressed", String(on));
+  });
+  const all = sc.kind === "all";
+  host.querySelector('[data-pstep="-1"]').disabled = all || r.from <= stats().first;
+  host.querySelector('[data-pstep="1"]').disabled = all || r.to >= t;
+  const what = host.querySelector(".pbar__what"), html = "<span class=\"eyebrow\">" + esc(periodRel(sc)) + "</span><b>" + esc(scopeTitle(sc)) + "</b>";
+  if (what.__html === html) return;
+  const first = what.__html === undefined;
+  what.__html = html;
+  if (first || !what.offsetWidth || !("animate" in what)) { what.innerHTML = html; return; }
+  if (what.__out) return;
+  what.__out = true;
+  const out = what.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 90, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" });
+  out.onfinish = () => {
+    what.__out = false;
+    what.innerHTML = what.__html;
+    out.cancel();
+    what.animate(reducedMotion() ? [{ opacity: 0 }, { opacity: 1 }]
+      : [{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }],
+      { duration: 220, easing: "cubic-bezier(.2,.7,.3,1)" });
+  };
+}
+/* one step earlier or later in the same kind of range; never past today */
+function stepScope(d) {
+  const sc = state.scope;
+  if (sc.kind === "all") return;
+  const k = sc.key || todayKey();
+  let n;
+  if (sc.kind === "day") n = shiftDay(k, d);
+  else if (sc.kind === "week") n = shiftDay(weekStartKey(k), 7 * d);
+  else if (sc.kind === "month") { const x = keyDate(monthStartKey(k)); x.setMonth(x.getMonth() + d); n = dkey(x); }
+  else n = (+k.slice(0, 4) + d) + "-01-01";
+  if (rangeOf({ kind: sc.kind, key: n }).from > todayKey()) return;
+  setScope(sc.kind, n);
 }
 
+/* A change against the last period. Up is said in --ok; down is said
+   plainly in --ink-3, never in red: the page is there to bring you back,
+   and a red arrow on a slow week is a reason to stay away. */
 function deltaChip(now, before, label, invert) {
-  if (!before) return now ? '<span class="metric__d">no comparison yet</span>' : "";
+  if (!before) return "";
   const diff = now - before;
   const pct = Math.round(diff / before * 100);
-  if (!pct) return '<span class="metric__d">same as ' + esc(label) + "</span>";
+  if (!pct) return '<span class="metric__d">level with ' + esc(label) + "</span>";
   const up = invert ? pct < 0 : pct > 0;
   const arrow = pct > 0
     ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V6M6 11l6-6 6 6"/></svg>'
     : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v13M6 13l6 6 6-6"/></svg>';
   return '<span class="metric__d ' + (up ? "is-up" : "is-down") + '">' + arrow +
-    Math.abs(pct) + "% vs " + esc(label) + "</span>";
+    Math.abs(pct) + "% " + (pct > 0 ? "over " : "under ") + esc(label) + "</span>";
 }
 
 /* accuracy is already a share, so its change is told in points: 75% to
    80% is five points, not "7% up" */
 function deltaPts(now, before, has, label) {
-  if (!has) return now ? '<span class="metric__d">no comparison yet</span>' : "";
+  if (!has) return "";
   const d = now - before;
-  if (!d) return '<span class="metric__d">same as ' + esc(label) + "</span>";
-  return deltaChip(100 + d, 100, label).replace(/\d+% vs/, Math.abs(d) + (Math.abs(d) === 1 ? " point" : " points") + " vs");
+  if (!d) return '<span class="metric__d">level with ' + esc(label) + "</span>";
+  return deltaChip(100 + d, 100, label).replace(/\d+% (over|under)/, Math.abs(d) + (Math.abs(d) === 1 ? " point " : " points ") + "$1");
+}
+/* days on target are counted, not measured: say how many more or fewer */
+function deltaDays(now, before, label) {
+  if (!before) return "";
+  const d = now - before;
+  if (!d) return '<span class="metric__d">level with ' + esc(label) + "</span>";
+  return '<span class="metric__d ' + (d > 0 ? "is-up" : "is-down") + '">' +
+    (d > 0 ? ICO_UP : ICO_DN) + plural(Math.abs(d), "day") + (d > 0 ? " more than " : " fewer than ") + esc(label) + "</span>";
 }
 
 /* Yesterday up to this time of day. A morning measured against a whole
@@ -12522,19 +12533,20 @@ function dayUntil(k, cut) {
   return out;
 }
 
+/* The period in four figures, the one that matters for turning up first:
+   how many of its days met the goal. A period still running is measured
+   against the same slice of the last one, and its cards are projected to
+   the end, so a Tuesday can already say where the week is heading. */
 function renderMetrics() {
   const host = $("#progMetrics");
   if (!host) return;
   const sc = state.scope, r = rangeOf(sc), pr = prevRange(sc);
-  const t = todayKey();
+  const t = todayKey(), g = goals();
 
-  /* A week that is two days old should not be measured against a finished one.
-     While a period is still running, compare it to the same slice of the last. */
   let prTo = pr.to, running = false;
   if (t >= r.from && t < r.to) {
     running = true;
-    const elapsed = daysBetween(r.from, t);
-    const cut = shiftDay(pr.from, elapsed);
+    const cut = shiftDay(pr.from, daysBetween(r.from, t));
     prTo = cut < pr.to ? cut : pr.to;
   }
   const today = sc.kind === "day" && sc.key === t;
@@ -12546,85 +12558,76 @@ function renderMetrics() {
   if (today) Object.assign(B, dayUntil(pr.from, Date.now() - 864e5));
   const acc = A.rev ? Math.round(A.ok / A.rev * 100) : 0;
   const pacc = B.rev ? Math.round(B.ok / B.rev * 100) : 0;
+  const lastDay = r.to < t ? r.to : t;
+  const sofar = r.from > t ? 0 : daysBetween(r.from, lastDay) + 1;
+  const R = 42, C = 2 * Math.PI * R;
 
-  /* Seconds per card is the one figure here that is a rate rather than a
-     total, and the only one that tells you whether a big day was a long
-     day or a fast one. */
-  const perCard = A.drillRev ? (A.drillMs + A.spellMs) / A.drillRev : 0;
-  const pPerCard = B.drillRev ? (B.drillMs + B.spellMs) / B.drillRev : 0;
-
+  let first;
+  if (sc.kind === "day") {
+    const D = dayStat(sc.key), p = Math.min(1, dayProgress(D));
+    first = { k: "Day goal", ring: p, v: goalMet(D) ? "Met" : Math.round(p * 100) + "<small>%</small>", cu: null,
+      d: '<span class="metric__d">' + plural(g.cards, "card") + " or " + g.mins + " min</span>" };
+  } else {
+    const p = sofar ? A.goalDays / sofar : 0;
+    first = { k: "Days on target", ring: p, v: A.goalDays + "<small>/" + sofar + "</small>", cu: null,
+      d: sc.kind === "all" ? '<span class="metric__d">' + plural(A.activeDays, "day") + " with some study</span>"
+        : deltaDays(A.goalDays, B.goalDays, label) };
+  }
+  const pace = running && sc.kind !== "day" && sofar && A.rev
+    ? '<span class="metric__p">On pace for ' + Math.round(A.rev / sofar * A.spanDays).toLocaleString("en") + "</span>" : "";
   const tiles = [
-    ["Cards reviewed", A.rev, deltaChip(A.rev, B.rev, label)],
-    ["Correct", acc + "<small>%</small>", deltaPts(acc, pacc, A.rev && B.rev, label)],
-    ["Time studied", fmtMins(A.ms), deltaChip(A.ms, B.ms, label)],
-    ["Seconds per card", perCard ? (perCard / 1000).toFixed(1) + "<small>s</small>" : "\u2014",
-      perCard && pPerCard ? deltaChip(Math.round(perCard), Math.round(pPerCard), label, true)
-                          : '<span class="metric__d">inside sessions</span>'],
-    ["Words learned", A.learned, '<span class="metric__d">reached box 4</span>'],
-    ["Distinct words", A.cards.size, '<span class="metric__d">across ' + plural(A.lessons.size, "lesson") + "</span>"],
-    ["Writing attempts", A.spN,
-      '<span class="metric__d">' + (A.spN ? Math.round(A.spOk / A.spN * 100) + "% clean" : "none yet") + "</span>"],
-    sc.kind === "day"
-      ? ["Sessions finished", A.sessions,
-         '<span class="metric__d">' + fmtMins(A.drillMs) + " reviewing, " + fmtMins(A.spellMs) + " writing</span>"]
-      : ["Days active", A.activeDays + '<small>/' + A.spanDays + "</small>",
-         '<span class="metric__d">' + A.goalDays + " hit the goal</span>"]
+    first,
+    { k: "Cards", v: A.rev, cu: A.rev, d: deltaChip(A.rev, B.rev, label) + pace },
+    { k: "Time", v: fmtMins(A.ms), cu: null, d: deltaChip(A.ms, B.ms, label) },
+    { k: "Correct", v: acc + "<small>%</small>", cu: null, d: deltaPts(acc, pacc, A.rev && B.rev, label) }
   ];
-
-  host.innerHTML = '<div class="metrics">' + tiles.map((t, i) =>
-    '<div class="metric"><div class="metric__k">' + t[0] + '</div><div class="metric__v"' +
-    (typeof t[1] === "number" ? ' data-cu="' + t[1] + '" data-cuk="m' + i + '"' : "") + ">" + t[1] + "</div>" +
-    (t[2] || "") + "</div>").join("") + "</div>";
+  host.innerHTML = '<div class="metrics pkpis">' + tiles.map((x, i) =>
+    '<div class="metric' + (x.ring != null ? " metric--ring" : "") + '">' +
+      (x.ring != null
+        ? '<div class="ring ring--kpi"><svg viewBox="0 0 100 100"><circle class="ring__track" cx="50" cy="50" r="' + R + '" stroke-width="11"/>' +
+          '<circle class="ring__fill' + (x.ring >= 1 ? " is-done" : "") + '" data-rk="kpi" data-c="' + C + '" data-p="' + x.ring + '" cx="50" cy="50" r="' + R +
+          '" stroke-width="11" stroke-dasharray="' + C + '" stroke-dashoffset="' + (C * (1 - x.ring)) + '"/></svg></div>'
+        : "") +
+      '<div class="metric__k">' + x.k + '</div><div class="metric__v"' +
+      (x.cu != null ? ' data-cu="' + x.cu + '" data-cuk="m' + i + '"' : "") + ">" + x.v + "</div>" +
+      (x.d || "") + "</div>").join("") + "</div>";
 }
 
-/* buckets the activity chart uses, one per scope */
-function buckets(sc) {
+/* The buckets the activity chart uses, one per scope: hours for a day,
+   days for a week or a month, months for a year or all time. Each one
+   carries all three readings, so switching the reading only moves bars. */
+function seriesBuckets(sc) {
   const S = stats(), r = rangeOf(sc), out = [];
   if (sc.kind === "day") {
-    const hrs = new Array(24).fill(0);
-    S.days.forEach(() => {});
+    const hrs = [];
+    for (let h = 0; h < 24; h++) hrs.push({ cards: 0, ok: 0, ms: 0 });
     state.events.forEach(e => {
-      if (!e || (e.k && e.k !== "r")) return;
-      if (dkey(e.t) !== sc.key) return;
-      hrs[new Date(e.t).getHours()]++;
+      if (!e || !e.t || S.voided.has(e.id) || dkey(e.t) !== sc.key) return;
+      const H = hrs[new Date(e.t).getHours()], kind = e.k || "r";
+      if (kind === "r") { H.cards++; if (e.r) H.ok++; }
+      else if (kind === "s" || kind === "v" || kind === "m") H.ms += e.ms || 0;
     });
-    for (let h = 0; h < 24; h++) out.push({ k: "", label: h % 3 === 0 ? pad2(h) : "", v: hrs[h], title: pad2(h) + ":00 · " + hrs[h] + " cards" });
-    return out;
+    hrs.forEach((H, h) => out.push({ k: "", label: h % 3 === 0 ? pad2(h) : "", cards: H.cards, mins: Math.round(H.ms / 60000),
+      acc: H.cards ? H.ok / H.cards * 100 : null, met: false, when: pad2(h) + ":00" }));
+    return { list: out, daily: false };
   }
   if (sc.kind === "year" || sc.kind === "all") {
     const map = new Map();
-    let from = r.from, to = r.to;
-    if (sc.kind === "all") { from = monthStartKey(S.first); to = todayKey(); }
-    let d = keyDate(monthStartKey(from));
-    const endD = keyDate(monthStartKey(to));
-    while (d <= endD) {
-      map.set(d.getFullYear() + "-" + pad2(d.getMonth() + 1), { y: d.getFullYear(), m: d.getMonth(), v: 0, ok: 0, rev: 0 });
-      d.setMonth(d.getMonth() + 1);
-    }
-    S.days.forEach((D, k) => {
-      const mk = k.slice(0, 7), b = map.get(mk);
-      if (b) { b.v += D.rev; b.ok += D.ok; b.rev += D.rev; }
-    });
-    map.forEach((b, mk) => out.push({
-      k: mk + "-01", label: MON3[b.m] + (map.size > 12 ? " " + String(b.y).slice(2) : ""),
-      v: b.v, ok: b.ok, rev: b.rev,
-      title: MONTHS[b.m] + " " + b.y + " · " + b.v + " cards"
-    }));
-    return out;
+    const from = sc.kind === "all" ? monthStartKey(S.first) : r.from;
+    const d = keyDate(monthStartKey(from)), endD = keyDate(monthStartKey(sc.kind === "all" ? todayKey() : r.to));
+    while (d <= endD) { map.set(d.getFullYear() + "-" + pad2(d.getMonth() + 1), { y: d.getFullYear(), m: d.getMonth(), cards: 0, ok: 0, ms: 0 }); d.setMonth(d.getMonth() + 1); }
+    S.days.forEach((D, k) => { const b = map.get(k.slice(0, 7)); if (b) { b.cards += D.rev; b.ok += D.ok; b.ms += D.ms; } });
+    map.forEach((b, mk) => out.push({ k: mk + "-01", pick: "month", label: MON3[b.m] + (map.size > 12 ? " " + String(b.y).slice(2) : ""),
+      cards: b.cards, mins: Math.round(b.ms / 60000), acc: b.cards ? b.ok / b.cards * 100 : null, met: false, when: MONTHS[b.m] + " " + b.y }));
+    return { list: out, daily: false };
   }
   eachDay(r.from, r.to, k => {
-    const D = S.days.get(k);
-    const d = keyDate(k);
-    out.push({
-      k: k,
-      label: sc.kind === "week" ? DOW1[d.getDay()] : String(d.getDate()),
-      v: D ? D.rev : 0, ok: D ? D.ok : 0, rev: D ? D.rev : 0,
-      sel: sc.kind === "day" && k === sc.key,
-      goal: goalMet(D),
-      title: niceDay(k) + " · " + (D ? D.rev : 0) + " cards"
-    });
+    const D = S.days.get(k), d = keyDate(k);
+    out.push({ k: k, pick: "day", label: sc.kind === "week" ? DOW1[d.getDay()] : String(d.getDate()),
+      cards: D ? D.rev : 0, mins: D ? Math.round(D.ms / 60000) : 0, acc: D && D.rev ? D.ok / D.rev * 100 : null,
+      met: goalMet(D), future: k > todayKey(), when: niceDay(k) });
   });
-  return out;
+  return { list: out, daily: true };
 }
 
 const ICO_DRILL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l13 8-13 8z"/></svg>';
@@ -12688,7 +12691,8 @@ const ICO_CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 function milesBlock() {
   const M = milestones(), t = todayKey(), weekAgo = shiftDay(t, -6);
   const fmt = (L, v) => L.k === "hours" ? (v < 10 ? (Math.floor(v * 10) / 10).toFixed(1) : Math.floor(v)) : v.toLocaleString("en");
-  const rows = M.rows.map(x => {
+  /* the four nearest ladders stay in view; the rest wait in the fold */
+  const rowHTML = x => {
     const L = x.L;
     if (!x.next) return '<div class="mile is-top"><div class="mile__top"><span class="mile__k">' + esc(L.label) + "</span>" +
       '<span class="mile__v"><b>' + fmt(L, x.cur) + "</b></span></div>" +
@@ -12701,7 +12705,9 @@ function milesBlock() {
       '<span class="mile__v"><b>' + fmt(L, x.cur) + "</b> / " + x.next.toLocaleString("en") + "</span></div>" +
       '<div class="meter"><i style="width:' + Math.max(2, Math.round(x.frac * 100)) + '%"></i></div>' +
       '<div class="mile__note">' + esc(leftTxt + " to go") + "</div></div>";
-  }).join("");
+  };
+  const rows = M.rows.slice(0, 4).map(rowHTML).join("");
+  const more = M.rows.slice(4).map(rowHTML).join("");
   const n = M.earned.length;
   const earned = n
     ? '<div class="earned">' + M.earned.map(e =>
@@ -12728,8 +12734,9 @@ function milesBlock() {
       '<div class="miles">' + rows + "</div>" +
       '<div class="fold' + (milesOpen ? " is-open" : "") + '">' +
         '<button type="button" class="fold__btn" data-miles="1" aria-expanded="' + milesOpen + '" aria-controls="milesEarned">' +
-          '<span class="eyebrow">Reached</span><span class="syncp__count">' + n + "</span>" + ICO_CHEV + "</button>" +
-        '<div class="fold__body" id="milesEarned"' + (milesOpen ? "" : " inert") + "><div>" + earned + "</div></div>" +
+          '<span class="eyebrow">' + (more ? "More ladders · reached" : "Reached") + '</span><span class="syncp__count">' + n + "</span>" + ICO_CHEV + "</button>" +
+        '<div class="fold__body" id="milesEarned"' + (milesOpen ? "" : " inert") + "><div>" +
+          (more ? '<div class="miles miles--more">' + more + "</div>" : "") + earned + "</div></div>" +
       "</div>" +
     "</div>" +
     '<div class="chart" style="margin-bottom:0">' +
@@ -12742,20 +12749,108 @@ function milesBlock() {
 const BOXNAMES = ["Untouched", "Box 1", "Box 2", "Box 3", "Box 4", "Box 5"];
 const BOXCOL = ["var(--rule)", "var(--heat-1)", "var(--heat-2)", "var(--heat-3)", "var(--heat-4)", "var(--ok)"];
 
+/* ---------- the activity chart: one chart, three readings ----------
+   Every bar is drawn at full height and scaled down to its value from
+   its foot, so switching Cards, Minutes and Correct moves the bars to
+   their new heights instead of drawing another chart; the scale's
+   numbers and the goal line follow. On a day range a bar that met the
+   daily goal is solid and one under it is lighter, so a glance says how
+   many days counted. A tap on a bar opens that day or month. */
+const SERIES = [["cards", "Cards"], ["mins", "Minutes"], ["acc", "Correct"]];
+function seriesChart(B, half) {
+  const list = B.list;
+  const W = chartW(half), PL = 34, PR = 6, PT = 12, PB = 24, ih = 150, H = ih + PT + PB, iw = W - PL - PR;
+  const bw = iw / list.length;
+  const barW = Math.max(2, Math.min(bw - Math.max(1, Math.min(7, bw * 0.26)), 40));
+  let s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Activity">';
+  [0, .5, 1].forEach((f, i) => {
+    const yy = PT + ih - f * ih;
+    s += '<line class="' + (f === 0 ? "axis" : "grid") + '" x1="' + PL + '" y1="' + yy + '" x2="' + (W - PR) + '" y2="' + yy + '"/>' +
+      '<text class="tick sc__t" data-f="' + f + '" x="' + (PL - 7) + '" y="' + (yy + 3.5) + '" text-anchor="end"></text>';
+  });
+  s += '<line class="goal sc__goal" x1="' + PL + '" y1="0" x2="' + (W - PR) + '" y2="0"/>';
+  const every = Math.ceil(list.length / Math.max(4, Math.floor(iw / 46)));
+  list.forEach((b, i) => {
+    const x = PL + i * bw;
+    s += '<g class="sc__g"' + (b.k && !b.future ? ' data-pick="' + b.k + '" data-pickkind="' + b.pick + '"' : "") + ">" +
+      '<rect class="bar-hit" x="' + x + '" y="' + PT + '" width="' + bw + '" height="' + ih + '"><title></title></rect>' +
+      '<rect class="sbar' + (b.met ? " is-met" : "") + '" style="--d:' + Math.round(i / list.length * 280) + 'ms" x="' + (x + (bw - barW) / 2) +
+        '" y="' + PT + '" width="' + barW + '" height="' + ih + '" rx="1.5"/></g>';
+    if (i % every === 0 || list.length <= 8) {
+      s += '<text class="tick" x="' + (x + bw / 2) + '" y="' + (PT + ih + 16) + '" text-anchor="middle">' + esc(b.label) + "</text>";
+    }
+  });
+  return s + "</svg>";
+}
+function paintSeries(host, anim) {
+  const B = host.__b, ser = state.pseries || "cards", g = goals();
+  if (!B) return;
+  const svg = host.querySelector("svg");
+  if (!svg) return;
+  const PT = 12, ih = 150;
+  const val = b => ser === "cards" ? b.cards : ser === "mins" ? b.mins : (b.acc == null ? 0 : b.acc);
+  const goal = !B.daily ? 0 : ser === "cards" ? g.cards : ser === "mins" ? g.mins : 0;
+  const top = ser === "acc" ? 100 : niceMax(Math.max(1, goal, ...B.list.map(val)));
+  host.classList.toggle("is-acc", ser === "acc");
+  svg.querySelectorAll(".sc__t").forEach(t => { const v = Math.round(top * +t.dataset.f); t.textContent = ser === "acc" ? v + "%" : v; });
+  const gl = svg.querySelector(".sc__goal");
+  gl.style.transform = "translateY(" + (PT + ih - (goal ? goal / top : 0) * ih) + "px)";
+  gl.style.opacity = goal ? "1" : "0";
+  const rects = svg.querySelectorAll(".sbar"), hits = svg.querySelectorAll(".bar-hit title");
+  B.list.forEach((b, i) => {
+    const v = val(b);
+    rects[i].style.transform = "scaleY(" + (v / top).toFixed(4) + ")";
+    hits[i].textContent = b.when + " · " + (ser === "cards" ? plural(b.cards, "card") : ser === "mins" ? b.mins + " min"
+      : b.acc == null ? "no reviews" : Math.round(b.acc) + "% correct");
+  });
+  const sum = host.querySelector(".sc__sum");
+  if (sum) {
+    const tc = B.list.reduce((a, b) => a + b.cards, 0), tm = B.list.reduce((a, b) => a + b.mins, 0);
+    const ok = B.list.reduce((a, b) => a + (b.acc == null ? 0 : b.acc / 100 * b.cards), 0);
+    sum.textContent = ser === "cards" ? plural(tc, "card") : ser === "mins" ? fmtMins(tm * 60000) : (tc ? Math.round(ok / tc * 100) : 0) + "% correct";
+  }
+  host.querySelectorAll(".sc__leg").forEach(x => { x.hidden = !goal; });
+  const gv = host.querySelector(".sc__gv");
+  if (gv) gv.textContent = ser === "mins" ? g.mins + " min" : plural(g.cards, "card");
+  if (anim) host.classList.remove("is-live"); else host.classList.add("is-live");
+}
+/* the first paint grows every bar from its foot, in turn */
+function growSeries(host) {
+  const rects = host.querySelectorAll(".sbar");
+  if (reducedMotion()) { paintSeries(host); return; }
+  rects.forEach(r => { r.style.transition = "none"; r.style.transform = "scaleY(0)"; });
+  host.getBoundingClientRect();
+  rects.forEach(r => { r.style.transition = ""; });
+  requestAnimationFrame(() => {
+    paintSeries(host, true);
+    clearTimeout(host.__live);
+    host.__live = setTimeout(() => host.classList.add("is-live"), 900);
+  });
+}
+
+/* ---------- the period's map ----------
+   A month is its calendar; a year, and all time, the grid of every day.
+   A week needs none: its seven bars are the chart, and the chain above
+   already shows the days as links. A day has the list of what you did.
+   Every day in a map opens. */
+function periodMap(sc, r) {
+  if (sc.kind === "month") return calMonth(monthStartKey(r.from));
+  if (sc.kind === "year") return yearHeat(r.from.slice(0, 4));
+  /* all time: every year on record, the latest first */
+  const first = +stats().first.slice(0, 4), last = +todayKey().slice(0, 4);
+  let out = "";
+  for (let y = last; y >= first; y--) out += (last > first ? '<div class="pyear"><span class="eyebrow">' + y + "</span></div>" : "") + yearHeat(y);
+  return out;
+}
+
 function renderCharts() {
   const host = $("#progCharts");
   if (!host) return;
-  const sc = state.scope, r = rangeOf(sc);
-  const S = stats();
-  const bars = buckets(sc);
-  const g = goals();
+  const sc = state.scope, r = rangeOf(sc), t = todayKey();
   const A = aggregate(r.from, r.to);
-  const goalLine = sc.kind === "day" ? 0 : (sc.kind === "year" || sc.kind === "all" ? 0 : g.cards);
-
-  const accPts = bars.map(b => ({
-    k: b.k, label: b.label,
-    v: b.rev ? (b.ok / b.rev) * 100 : null
-  }));
+  const B = seriesBuckets(sc);
+  const ser = state.pseries || "cards";
+  const wide = sc.kind === "year" || sc.kind === "all" || sc.kind === "week";
 
   /* lessons touched inside the range */
   const inRange = new Map();
@@ -12768,108 +12863,82 @@ function renderCharts() {
   });
   const top = Array.from(inRange.entries())
     .map(([id, v]) => ({ id, v, l: state.lessons.find(x => x.id === id) }))
-    .sort((a, b) => b.v.rev - a.v.rev).slice(0, 8);
+    .sort((a, b) => b.v.rev - a.v.rev).slice(0, 6);
   const topMax = top.length ? top[0].v.rev : 1;
 
-  const spread = boxSpread();
-  const totalW = spread.reduce((a, b) => a + b, 0) || 1;
-
-  const activityTitle = sc.kind === "day" ? "Cards by hour"
-    : sc.kind === "week" ? "Cards each day this week"
-    : sc.kind === "month" ? "Cards each day this month"
-    : "Cards each month";
-
+  const lastDay = r.to < t ? r.to : t;
+  const sofar = r.from > t ? 0 : daysBetween(r.from, lastDay) + 1;
+  const mapHead = sc.kind === "day"
+    ? '<div class="chart__head"><div><h3>What you did</h3></div>' +
+        '<div class="section-head__actions">' +
+          '<button class="btn btn--sm" data-logday="' + sc.key + '">Log time</button>' +
+          '<button class="btn btn--sm" data-restday="' + sc.key + '">' + (dayStat(sc.key).rest ? "Undo rest day" : "Mark rest day") + "</button>" +
+        "</div></div>"
+    : '<div class="chart__head"><div><h3>' + (sc.kind === "month" ? "Day by day" : sc.kind === "year" ? "Every day of " + r.from.slice(0, 4) : "Every day so far") + "</h3></div>" +
+        '<div class="section-head__actions"><span class="chip">' + A.goalDays + " of " + sofar + " on target</span></div></div>";
+  const map = sc.kind === "week" ? "" : '<div class="chart pmap">' + mapHead + (sc.kind === "day" ? dayJournal(sc.key) : periodMap(sc, r)) + "</div>";
+  const chart = '<div class="chart schart' + (B.daily ? "" : " is-flat") + '" id="progSeries">' +
+      '<div class="chart__head"><div><h3>' + (sc.kind === "day" ? "By the hour" : B.daily ? "Each day" : "Each month") + "</h3>" +
+        '<p class="sc__sum"></p></div>' +
+        '<div class="seg seg--sm" role="group" aria-label="Reading">' + SERIES.map(x =>
+          '<button data-series="' + x[0] + '" aria-pressed="' + (ser === x[0]) + '">' + x[1] + "</button>").join("") + "</div></div>" +
+      seriesChart(B, !wide) +
+      (B.daily ? '<div class="chart__legend sc__leg"><span><i style="background:var(--signal)"></i>goal met</span>' +
+        '<span><i style="background:var(--heat-2)"></i>under it</span>' +
+        '<span><i class="is-line"></i>goal · <b class="sc__gv"></b></span></div>' : "") +
+    "</div>";
   host.innerHTML =
+    (wide ? map + chart : '<div class="cols pov">' + map + chart + "</div>") +
     milesBlock() +
-    '<div class="chart">' +
-      '<div class="chart__head"><div><h3>' + activityTitle + (sc.kind === "day" ? "" : tipBtn("pbars")) + "</h3>" +
-        (sc.kind === "day" ? "" : tipBody("pbars", "Tap a bar to move the whole page to that " +
-          (sc.kind === "year" || sc.kind === "all" ? "month" : "day") + ".")) + "</div></div>" +
-      barChart(bars, { goalLine: goalLine, aria: activityTitle }) +
-      (goalLine ? '<div class="chart__legend"><span><i style="background:var(--signal)"></i>cards reviewed</span>' +
-        '<span><i style="background:var(--stress)"></i>daily goal · ' + g.cards + " cards</span></div>" : "") +
-    "</div>" +
-
-    (sc.kind === "day" ? '<div class="chart"><div class="chart__head"><div><h3>What you did</h3></div>' +
-      '<div class="section-head__actions">' +
-        '<button class="btn btn--sm" data-logday="' + sc.key + '">Log time</button>' +
-        '<button class="btn btn--sm" data-restday="' + sc.key + '">Mark rest day</button>' +
-      "</div></div>" + dayJournal(sc.key) + "</div>"
-      : '<div class="chart"><div class="chart__head"><div><h3>Accuracy</h3></div></div>' +
-        lineChart(accPts) + "</div>") +
-
-    '<div class="cols">' +
-      '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Where your words sit' + tipBtn("boxes") + "</h3>" +
-          tipBody("boxes", "Across the whole library, right now. Box 5 is solid.") + "</div></div>" +
-        '<div class="boxbar">' + spread.map((n, i) => n
-          ? '<div style="flex:' + n + ';background:' + BOXCOL[i] + ';color:' + (i === 0 ? "var(--ink-2)" : "#fff") +
-            '" title="' + BOXNAMES[i] + ": " + n + '">' + (n / totalW > .07 ? n : "") + "</div>"
-          : "").join("") + "</div>" +
-        '<div class="boxkey">' + spread.map((n, i) => n
-          ? '<span><i style="background:' + BOXCOL[i] + '"></i>' + BOXNAMES[i] + " · " + n + "</span>" : "").join("") + "</div>" +
-      "</div>" +
-      '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Where the time went</h3></div></div>' +
-        mixBar([
-          { label: "Reviewing", v: A.drillMs, c: MIXCOL.drill },
-          { label: "Writing", v: A.spellMs, c: MIXCOL.spell },
-          { label: "Reading", v: A.readMs, c: MIXCOL.read },
-          { label: "Card desk", v: A.deskMs, c: MIXCOL.desk },
-          { label: "By hand", v: A.manualMs, c: MIXCOL.hand }
-        ]) +
-        '<div class="pace">' +
-          "<span>Studied <b>" + fmtMins(A.ms) + "</b></span>" +
-          "<span>App open <b>" + fmtMins(A.appMs) + "</b></span>" +
-          (A.activeDays ? "<span>Per active day <b>" + Math.round(A.ms / A.activeDays / 60000) + "m</b></span>" : "") +
-        "</div>" +
-      "</div>" +
-    "</div>" +
-
     '<div class="chart" style="margin-top:16px">' +
       '<div class="chart__head"><div><h3>Lessons in this period</h3></div></div>' +
       (top.length ? '<div class="lb">' + top.map((x, i) =>
-        '<div class="lbrow"><span class="lbrow__n">' + pad2(i + 1) + "</span>" +
+        '<button class="lbrow" data-practice="' + esc(x.id) + '"' + (x.l ? "" : " disabled") + '><span class="lbrow__n">' + pad2(i + 1) + "</span>" +
         '<span class="lbrow__t">' + esc(x.l ? x.l.title : "Deleted lesson") + "</span>" +
         '<span class="lbrow__b"><i style="width:' + Math.round(x.v.rev / topMax * 100) + '%"></i></span>' +
-        '<span class="lbrow__v">' + x.v.rev + " · " + Math.round(x.v.ok / x.v.rev * 100) + "%</span></div>").join("") + "</div>"
+        '<span class="lbrow__v">' + x.v.rev + " · " + Math.round(x.v.ok / x.v.rev * 100) + "%</span></button>").join("") + "</div>"
         : '<div class="chart__empty">No lesson was reviewed in this period.</div>') +
-    "</div>" +
-
-    '<div class="chart">' +
-      '<div class="chart__head"><div><h3>Last thirty days</h3></div>' +
-        '<div class="section-head__actions"><button class="btn btn--sm" data-ptab="year">Open the year \u2192</button></div></div>' +
-      barChart((() => {
-        const out = [], t = todayKey();
-        for (let i = 29; i >= 0; i--) {
-          const k = shiftDay(t, -i), D = S.days.get(k), d = keyDate(k);
-          out.push({ k: k, label: d.getDate() === 1 || i === 29 ? MON3[d.getMonth()] : String(d.getDate()),
-                     v: D ? D.rev : 0, goal: goalMet(D),
-                     title: niceDay(k) + " · " + (D ? D.rev : 0) + " cards" });
-        }
-        return out;
-      })(), { goalLine: g.cards, h: 120, pick: "day", aria: "Cards over the last thirty days" }) +
     "</div>";
+
+  const sh = $("#progSeries");
+  if (sh) { sh.__b = B; growSeries(sh); }
 }
 
 function renderProgress() {
   if (!state.scope) state.scope = { kind: "week", key: todayKey() };
-  if (!state.cal) { const d = new Date(); state.cal = { y: d.getFullYear(), m: d.getMonth() }; }
   if (!PTABS.some(t => t.k === state.ptab)) state.ptab = "overview";
-  renderToday(); renderCal(); renderScopeBar(); renderPTabs();
+  renderChain(); renderPeriodBar(); renderMetrics(); renderPTabs();
 
-  /* The header above belongs to every tab. Only the two hosts below swap. */
-  const M = $("#progMetrics"), C = $("#progCharts");
-  if (state.ptab === "overview") { renderMetrics(); renderCharts(); progMotion(); return; }
-  if (M) M.innerHTML = "";
+  /* The chain, the period bar and the period's four figures belong to
+     every tab. Only the host below the tabs changes with the tab. */
+  const C = $("#progCharts");
   if (!C) return;
-  C.innerHTML =
+  if (state.ptab === "overview") renderCharts();
+  else C.innerHTML =
     state.ptab === "time"    ? renderTimeTab()
     : state.ptab === "words"   ? renderWordsTab()
     : state.ptab === "writing" ? renderWritingTab()
-    : state.ptab === "year"    ? renderYearTab()
     : "";
   progMotion();
+}
+/* A range, a step or a tab changes by fade-through: what it replaces
+   fades out in place (.1s, leaving curve), then the new blocks rise in.
+   Taps that land while it is fading out are folded into the one rebuild. */
+let pswap = null;
+function progSwap(hosts) {
+  pmo.swapped = hosts.slice();
+  hosts = hosts.map(q => $(q)).filter(h => h && h.offsetHeight);
+  pmo.mode = "swap";
+  if (!hosts.length || reducedMotion() || !("animate" in document.body)) { renderProgress(); return; }
+  if (pswap) return;
+  pswap = hosts.map(h => h.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }));
+  pswap[0].onfinish = () => {
+    const outs = pswap;
+    pswap = null;
+    pmo.mode = "swap";
+    renderProgress();
+    outs.forEach(a => a.cancel());
+  };
 }
 
 /* ---------- motion on the Progress page ----------
@@ -12910,13 +12979,15 @@ function progMotion() {
   });
 
   if (mode === "enter") renderPTabs();
-  const hosts = ["#progToday", "#progMetrics", "#progCharts"].map(q => $(q)).filter(Boolean);
-  hosts.forEach(h => h.classList.remove("is-grow", "is-lift"));
+  const hosts = ["#progChain", "#progMetrics", "#progCharts"].map(q => $(q)).filter(Boolean);
+  hosts.forEach(h => h.classList.remove("is-grow", "is-lift", "is-in"));
   if (!mode) return;
   hosts.forEach(h => h.offsetWidth);
   hosts.forEach(h => {
-    if (mode === "enter" || h.id !== "progToday") h.classList.add("is-grow");
-    if (mode === "swap" && h.id !== "progToday") h.classList.add("is-lift");
+    if (h.id === "progChain") { if (mode === "enter") h.classList.add("is-in"); return; }
+    if (mode === "swap" && pmo.swapped && pmo.swapped.indexOf("#" + h.id) < 0) return;
+    h.classList.add("is-grow");
+    if (mode === "swap") h.classList.add("is-lift");
   });
 }
 /* a figure counts up (or down) to its new value along the app's curve */
@@ -12933,11 +13004,11 @@ function countTo(el, from, to) {
 }
 function setPTab(k) {
   if (state.ptab === k) return;
-  pmo.mode = "swap";
   state.ptab = k;
   state.settings.ptab = k;
   writeProgress();
-  renderProgress();
+  renderPTabs();
+  progSwap(["#progCharts"]);
   const h = $("#progTabs");
   if (h) {
     const y = h.getBoundingClientRect().top + window.scrollY - 12;
@@ -12946,13 +13017,9 @@ function setPTab(k) {
 }
 
 function setScope(kind, key) {
-  pmo.mode = "swap";
   state.scope = { kind: kind, key: key || state.scope.key || todayKey() };
-  if (kind !== "all" && key) {
-    const d = keyDate(key);
-    state.cal = { y: d.getFullYear(), m: d.getMonth() };
-  }
-  renderProgress();
+  renderPeriodBar();
+  progSwap(["#progMetrics", "#progCharts"]);
 }
 
 /* ---------- log study time by hand ---------- */
@@ -14245,15 +14312,23 @@ function extraClick(e) {
   const mz = t.closest("[data-scope-month]");
   if (mz) { setScope("month", mz.dataset.scopeMonth); return true; }
   const sz = t.closest("[data-scope]");
-  if (sz) { setScope(sz.dataset.scope, state.scope.key); return true; }
-  const cz = t.closest("[data-cal]");
-  if (cz) {
-    const d = +cz.dataset.cal;
-    if (d === 0) { const n = new Date(); state.cal = { y: n.getFullYear(), m: n.getMonth() }; }
-    else { const n = new Date(state.cal.y, state.cal.m + d, 1); state.cal = { y: n.getFullYear(), m: n.getMonth() }; }
-    renderCal();
-    const gr = $("#progCal .cal__grid");
-    if (gr) { gr.style.setProperty("--sx", d > 0 ? "18px" : d < 0 ? "-18px" : "0px"); gr.classList.add("is-slide"); }
+  if (sz) {
+    if (sz.dataset.scope === state.scope.kind) return true;
+    /* the new range holds the day you were looking at: today while the
+       old range holds today, otherwise the day it started on */
+    const r = rangeOf(state.scope), tk = todayKey();
+    setScope(sz.dataset.scope, state.scope.kind === "all" || (tk >= r.from && tk <= r.to) ? tk : r.from);
+    return true;
+  }
+  const pst = t.closest("[data-pstep]");
+  if (pst) { stepScope(+pst.dataset.pstep); return true; }
+  const ser = t.closest("[data-series]");
+  if (ser) {
+    if ((state.pseries || "cards") === ser.dataset.series) return true;
+    state.pseries = ser.dataset.series;
+    ser.parentNode.querySelectorAll("[data-series]").forEach(b => b.setAttribute("aria-pressed", String(b === ser)));
+    const h = ser.closest(".schart");
+    if (h) paintSeries(h);
     return true;
   }
   const pk = t.closest("[data-pick]");
@@ -15950,16 +16025,15 @@ const MIXCOL = {
 
 /* ============================================================
    PROGRESS — tabs
-   Five pages of one instrument. The header above them (the ring,
-   the calendar, the range bar) belongs to all five: pick a week
-   in the calendar and every tab is talking about that week.
+   Four pages of one instrument. What sits above them (the chain, the
+   period bar, the period's four figures) belongs to all four: pick a
+   week and every tab is talking about that week.
    ============================================================ */
 const PTABS = [
   { k: "overview", label: "Overview" },
   { k: "time",     label: "Time" },
   { k: "words",    label: "Words" },
-  { k: "writing",  label: "Writing" },
-  { k: "year",     label: "Year" }
+  { k: "writing",  label: "Writing" }
 ];
 
 /* The tab row is built once. After that a tab change only flips
@@ -16330,9 +16404,16 @@ function renderWritingTab() {
   const sp = spellSpread();
   const total = sp["new"] + sp.shaky + sp.close + sp.solid;
 
-  /* per-day spelling attempts inside the range, from the log */
+  /* spelling attempts inside the range, from the log: by day, or by
+     month over a year or all time */
   const bars = [], accPts = [];
-  eachDay(r.from, r.to, k => {
+  if (sc.kind === "year" || sc.kind === "all") seriesBuckets(sc).list.forEach(b => {
+    const m = { n: 0, ok: 0 };
+    S.days.forEach((D, k) => { if (k.slice(0, 7) === b.k.slice(0, 7)) { m.n += D.spN; m.ok += D.spOk; } });
+    bars.push({ k: b.k, label: b.label, v: m.n, title: b.when + " · " + plural(m.n, "attempt") });
+    accPts.push({ k: b.k, label: b.label, v: m.n ? m.ok / m.n * 100 : null });
+  });
+  else eachDay(r.from, r.to, k => {
     const D = S.days.get(k), d = keyDate(k);
     const n = D ? D.spN : 0, ok = D ? D.spOk : 0;
     const label = sc.kind === "week" ? DOW1[d.getDay()]
@@ -16383,16 +16464,12 @@ function renderWritingTab() {
         tipBody("wattempts", "Only the Schreibprobe counts here; reviews are on the Overview tab.") + "</div>" +
         '<div class="section-head__actions"><span class="chip">' + A.spN + " attempts · " + fmtMins(A.spellMs) + "</span>" +
         '<button class="btn btn--sm" data-gospell="1">Practise writing</button></div></div>' +
-      (sc.kind === "day" || sc.kind === "week" || sc.kind === "month"
-        ? barChart(bars, { aria: "Spelling attempts" })
-        : '<div class="chart__empty">Pick a day, a week or a month to see this broken out.</div>') +
+      barChart(bars, { aria: "Spelling attempts", pick: sc.kind === "year" || sc.kind === "all" ? "month" : "day" }) +
     "</div>" +
 
     '<div class="chart">' +
       '<div class="chart__head"><div><h3>Spelling accuracy</h3></div></div>' +
-      (sc.kind === "day" || sc.kind === "week" || sc.kind === "month"
-        ? lineChart(accPts)
-        : '<div class="chart__empty">Pick a day, a week or a month to see this broken out.</div>') +
+      lineChart(accPts) +
     "</div>" +
 
     '<div class="cols">' +
@@ -16417,77 +16494,6 @@ function renderWritingTab() {
               '<span class="wrow__b"><i style="width:' + Math.min(100, (x.s.best / Math.max(1, streaks[0].s.best)) * 100) + '%;background:var(--ok)"></i></span>' +
               '<span class="wrow__v">' + x.s.best + " in a row</span></button>").join("") + "</div>"
           : '<div class="chart__empty">Type a word right twice running and it lands here.</div>') +
-      "</div>" +
-    "</div>"
-  );
-}
-
-/* ---------- YEAR ---------- */
-function renderYearTab() {
-  const sc = state.scope, r = rangeOf(sc), S = stats();
-  const year = r.from.slice(0, 4);
-  const Y = aggregate(year + "-01-01", year + "-12-31");
-  const st = streakInfo();
-
-  const months = [];
-  for (let m = 0; m < 12; m++) {
-    const from = year + "-" + pad2(m + 1) + "-01";
-    const to = monthEndKey(from);
-    const M = aggregate(from, to);
-    months.push({ m: m, from: from, A: M });
-  }
-  const mMax = Math.max(1, ...months.map(x => x.A.rev));
-
-  return (
-    '<div class="chart">' +
-      '<div class="chart__head"><div><h3>' + year + " at a glance</h3></div>" +
-        '<div class="section-head__actions"><span class="chip">' + Y.activeDays + " active days</span>" +
-        '<span class="chip">' + fmtMins(Y.ms) + "</span></div></div>" +
-      yearHeat(year) +
-      '<div class="chart__note">Current streak <b>' + plural(st.current, "day") +
-        "</b> · longest ever <b>" + plural(st.best, "day") + "</b>. Rest days you mark hold the chain rather than break it.</div>" +
-    "</div>" +
-
-    '<div class="chart">' +
-      '<div class="chart__head"><div><h3>Month by month' + tipBtn("months") + "</h3>" +
-        tipBody("months", "Tap a month to open it.") + "</div></div>" +
-      '<div class="wrows">' + months.map(x =>
-        '<button class="wrow" data-scope-month="' + x.from + '">' +
-          '<span class="wrow__n">' + pad2(x.m + 1) + "</span>" +
-          '<span class="wrow__w" style="font-family:var(--sans);font-size:13px;font-weight:600">' + MONTHS[x.m] + "</span>" +
-          '<span class="wrow__b"><i style="width:' + Math.round(x.A.rev / mMax * 100) + '%"></i></span>' +
-          '<span class="wrow__v">' + x.A.rev + " · " + fmtMins(x.A.ms) + "</span>" +
-          '<span class="wrow__id">' + x.A.activeDays + "d</span>" +
-        "</button>").join("") + "</div>" +
-    "</div>" +
-
-    '<div class="cols">' +
-      '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>The year in figures</h3></div></div>' +
-        krows([
-          { k: "Cards reviewed", v: Y.rev },
-          { k: "Correct", v: (Y.rev ? Math.round(Y.ok / Y.rev * 100) : 0) + "%" },
-          { k: "Time studied", note: fmtLong(Y.ms), v: fmtMins(Y.ms) },
-          { k: "App open", note: "including time not spent studying", v: fmtMins(Y.appMs) },
-          { k: "Distinct words touched", v: Y.words.size },
-          { k: "Words reaching box 4", v: Y.learned },
-          { k: "Days active", note: Y.goalDays + " hit the daily goal", v: Y.activeDays + " / " + Y.spanDays },
-          { k: "Busiest day", note: Y.best.k ? niceDay(Y.best.k) : "", v: Y.best.rev || "—" }
-        ]) +
-      "</div>" +
-      '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>All time</h3>' +
-          "<p>Since " + esc(niceDay(S.first)) + ".</p></div></div>" +
-        krows([
-          { k: "Cards reviewed", v: S.totalRev },
-          { k: "Correct", v: (S.totalRev ? Math.round(S.totalOk / S.totalRev * 100) : 0) + "%" },
-          { k: "Time studied", note: fmtLong(S.totalMs), v: fmtMins(S.totalMs) },
-          { k: "App open", note: fmtLong(S.totalAppMs), v: fmtMins(S.totalAppMs) },
-          { k: "Distinct words met", v: S.firstSeen.size },
-          { k: "Words reaching box 4", v: S.graduated },
-          { k: "Writing attempts", v: S.totalSp },
-          { k: "Days recorded", v: S.days.size }
-        ]) +
       "</div>" +
     "</div>"
   );
@@ -16585,8 +16591,6 @@ function spellTheTrouble() {
   state.filter.view = state.settings.libView === "list" ? "list" : "grid";
   state.filter.show = state.settings.libShow || "all";
   state.scope = { kind: "week", key: todayKey() };
-  const nowD = new Date();
-  state.cal = { y: nowD.getFullYear(), m: nowD.getMonth() };
   if (reattachOrphans()) saveLibrary();
 
   if (!state.settings.voice || typeof state.settings.voice !== "object") state.settings.voice = { uri: "", rate: .92 };
