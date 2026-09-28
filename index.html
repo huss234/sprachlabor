@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.37 · neural German, cached on device -->
+<!-- Sprachlabor — v3.38 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -720,36 +720,160 @@ ul,ol{margin:0;padding:0;list-style:none}
 }
 
 /* ============================================================
-   LESSON — masthead
+   LESSON — the bar, the head, the page, the words
    ============================================================ */
-.masthead{margin-bottom:30px}
-.crumb{display:flex;align-items:center;gap:8px;margin-bottom:20px}
-.crumb button{font-size:12px;font-weight:600;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
-.crumb button:hover{color:var(--signal)}
-.crumb svg{width:14px;height:14px}
-.masthead__rule{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-.masthead__rule .line{flex:1;height:1px;background:var(--rule)}
-.masthead h1{
-  font-family:var(--serif);font-size:clamp(34px,5.2vw,52px);font-weight:400;
-  letter-spacing:-.026em;line-height:1.05;margin-bottom:8px;
+/* the one bar that stays: back, the name once the title has scrolled
+   away, English, Listen, Aa, ⋮ */
+.lbar{
+  position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;
+  padding:10px 0;margin-bottom:10px;background:var(--paper);transition:box-shadow .2s var(--ease);
 }
-.masthead__stat{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.03em;white-space:nowrap;flex:none}
-.masthead__en{font-size:15px;color:var(--ink-2);margin-bottom:20px;display:flex;flex-wrap:wrap;column-gap:10px}
-.masthead__en span{color:var(--ink-3)}
-.masthead__meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.masthead__more{width:38px;padding:0;justify-content:center}
-.masthead__more svg{width:16px;height:16px}
+.lbar.is-past{box-shadow:0 1px 0 var(--rule)}
+.lbar__key{
+  flex:none;width:38px;height:38px;border-radius:var(--r-md);border:1px solid var(--rule);background:var(--surface);
+  display:grid;place-items:center;color:var(--ink-2);
+  transition:background .14s var(--ease),border-color .14s var(--ease),color .14s var(--ease),transform .1s var(--ease);
+}
+.lbar__key svg{width:16px;height:16px}
+.lbar__key .aaico{font-size:16px}
+@media (hover:hover){.lbar__key:hover{border-color:var(--ink-3);color:var(--ink)}}
+.lbar__key:active{transform:scale(.94)}
+.lbar__key[aria-expanded="true"],.lbar__key.is-on{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+.lbar__listen.is-on svg{width:12px;height:12px}
+.lbar__name{
+  flex:1;min-width:0;font-size:14px;font-weight:600;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  opacity:0;transform:translateY(4px);transition:opacity .2s var(--ease),transform .2s var(--ease);
+}
+.lbar.is-past .lbar__name{opacity:1;transform:none}
+.lbar__tools{display:flex;align-items:center;gap:6px;flex:none}
+.lbar__en{display:flex;align-items:center;gap:8px;margin-right:4px}
+.lbar__en .eyebrow{font-size:9.5px}
+.lbar .seg--sm button{height:36px}
+@media (max-width:560px){
+  .lbar{gap:6px}
+  .lbar__name{display:none}
+  .lbar__tools{flex:1;justify-content:flex-end;gap:5px}
+  .lbar__en{margin-right:auto}
+  .lbar__en .eyebrow{display:none}
+  .lbar .seg--sm button{padding:0 9px}
+}
 
-/* ---------- reader ---------- */
-.reader{max-width:var(--measure);margin-bottom:14px}
-.reader__bar{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
-  padding:10px 0 12px;margin-bottom:22px;border-bottom:1px solid var(--rule);
-  position:sticky;top:0;z-index:20;background:var(--paper);
+/* the head: what the file is, how well you know its words, and the ways in */
+.lhero{margin:10px 0 28px}
+.lhero__top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.lhero__title{font-family:var(--serif);font-size:clamp(38px,5.4vw,58px);font-weight:400;letter-spacing:-.026em;line-height:1.02}
+.lhero__sub{font-size:15px;color:var(--ink-2);margin-top:9px;display:flex;flex-wrap:wrap;column-gap:10px}
+.lhero__sub span{color:var(--ink-3)}
+.lhero__know{
+  display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"pct band" "pct keys";
+  column-gap:24px;row-gap:12px;align-items:center;margin-top:24px;padding:18px 22px;
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
 }
-.reader__bar .eyebrow{flex:none}
-.reader__tr{display:flex;align-items:center;gap:12px;min-width:0}
-.reader__aa{width:36px;height:36px;padding:0;justify-content:center}
+.lhero__pct{grid-area:pct;display:flex;align-items:baseline;gap:3px}
+.lhero__pct .hfig{font-size:56px;color:var(--known)}
+.lhero__pct span{font-size:12px;font-weight:600;color:var(--ink-3)}
+.lband{grid-area:band;display:flex;gap:3px;height:10px;align-self:end}
+.lband i{flex:0 1 0;min-width:0;border-radius:3px;transition:flex-grow .5s var(--ease)}
+.lband__hard{background:var(--hard)}
+.lband__learning{background:var(--learn)}
+.lband__known{background:var(--known)}
+.lkeys{grid-area:keys;display:flex;gap:8px;flex-wrap:wrap;align-self:start}
+.lkey{
+  display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px;border-radius:100px;
+  border:1px solid var(--rule);background:var(--surface-2);font-size:12px;font-weight:600;color:var(--ink-2);
+  transition:border-color .14s var(--ease),background .14s var(--ease),transform .1s var(--ease);
+}
+.lkey i{width:7px;height:7px;border-radius:100px;background:var(--c)}
+.lkey b{font-family:var(--mono);font-size:12px;color:var(--ink);font-variant-numeric:tabular-nums}
+.lkey--hard{--c:var(--hard)}
+.lkey--learning{--c:var(--learn)}
+.lkey--known{--c:var(--known)}
+@media (hover:hover){.lkey:not(:disabled):hover{border-color:var(--c);background:var(--surface)}}
+.lkey:not(:disabled):active{transform:scale(.97)}
+.lkey:disabled{opacity:.45;cursor:default}
+.lhero__acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.lhero__acts .btn{height:44px}
+@keyframes lbandin{from{transform:scaleX(0)}}
+.view.is-active .lband{animation:lbandin .6s var(--ease) calc(var(--out) + .2s) backwards;transform-origin:0 50%}
+@media (max-width:640px){
+  .lhero__know{column-gap:16px;padding:16px;grid-template-areas:"pct band" "keys keys"}
+  .lkeys{gap:6px}
+  .lkey{padding:0 11px}
+  .lhero__pct .hfig{font-size:44px}
+  .lhero__acts .btn--primary{flex:1;justify-content:center}
+}
+
+/* the passage on its own page. The page can take its own colours
+   (Paper, Sepia, Night); everything on it reads the same tokens, so
+   the words, the lines of English and the tables follow. */
+.lread{margin-bottom:34px}
+.lpage{
+  max-width:calc(var(--measure) + 90px);padding:34px 44px 38px;
+  background:var(--surface);color:var(--ink);border:1px solid var(--rule);border-radius:var(--r-lg);
+  transition:background-color .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease);
+}
+.lpage.is-full{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 44px}
+.lpage__en{border-left:1px solid var(--rule-2);padding-left:40px;min-width:0}
+.lpage__en .eyebrow{display:block;margin-bottom:12px}
+.lpage__en .md{font-size:16px;line-height:1.68;color:var(--ink-2);font-family:var(--sans)}
+@media (max-width:980px){
+  .lpage.is-full{display:block;max-width:calc(var(--measure) + 90px)}
+  .lpage__en{border-left:0;border-top:1px solid var(--rule-2);padding:24px 0 0;margin-top:28px}
+}
+@media (max-width:640px){.lpage{padding:22px 18px 26px}}
+:root[data-rpage="paper"] .lpage{
+  --surface:#FFFFFF;--surface-2:#F5F7F8;--ink:#14181B;--ink-2:#4A5359;--ink-3:#7C878E;--rule:#D3D9DD;--rule-2:#E4E9EC;
+  --signal:#1338BE;--signal-soft:#E7EBFA;--der:#1338BE;--die:#C0264C;--das:#17795E;
+  --hard:#C0264C;--learn:#B4620A;--known:#17795E;--ok:#17795E;
+}
+:root[data-rpage="sepia"] .lpage{
+  --surface:#F7F0E3;--surface-2:#EFE5D2;--ink:#2F271C;--ink-2:#5E503D;--ink-3:#8C7C63;--rule:#E3D5BC;--rule-2:#EBDFC9;
+  --signal:#1338BE;--signal-soft:#E8E2EC;--der:#1D4FA8;--die:#B0243F;--das:#2C6E3F;
+  --hard:#B0243F;--learn:#A45A07;--known:#2C6E3F;--ok:#2C6E3F;
+}
+:root[data-rpage="night"] .lpage{
+  --surface:#15181B;--surface-2:#1C2024;--ink:#DCE1E5;--ink-2:#A5AFB6;--ink-3:#78838A;--rule:#2B3237;--rule-2:#232A2E;
+  --signal:#7D9BFF;--signal-soft:#1B2338;--der:#7D9BFF;--die:#FF8FA8;--das:#5CCFA6;
+  --hard:#FF8FA8;--learn:#E5A159;--known:#5CCFA6;--ok:#5CCFA6;
+}
+:root[data-rpage="night"] .lpage .tok--vocab.is-open{color:#0B0E10}
+:root[data-theme="dark"]:is([data-rpage="paper"],[data-rpage="sepia"]) .lpage .tok--vocab.is-open{color:#fff}
+/* the sentence being read aloud */
+.sent.is-reading{background:var(--signal-soft);box-shadow:-8px 0 0 var(--signal-soft),8px 0 0 var(--signal-soft),-11px 0 0 var(--signal);transition:background .2s var(--ease),box-shadow .2s var(--ease)}
+
+/* the words: a list you can filter, or the flip cards */
+.lwords__head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.lwords__head h2{font-size:19px;font-weight:600;letter-spacing:-.018em}
+.lwords__tools{display:flex;gap:8px;align-items:center}
+.lwords__chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.lchip__dot{width:7px;height:7px;border-radius:100px;background:var(--c)}
+.lwlist{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));column-gap:28px;
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);padding:4px 12px;
+}
+.lw{
+  display:grid;grid-template-columns:8px minmax(0,auto) minmax(0,1fr) auto;align-items:center;gap:12px;
+  min-height:54px;padding:7px 6px 7px 8px;border-bottom:1px solid var(--rule-2);border-radius:var(--r-sm);cursor:pointer;
+  transition:background .14s var(--ease),transform .1s var(--ease);
+}
+.lw__dot{width:8px;height:8px;border-radius:100px;background:var(--c,var(--gap))}
+.lw[data-st="hard"]{--c:var(--hard)}
+.lw[data-st="learning"]{--c:var(--learn)}
+.lw[data-st="known"]{--c:var(--known)}
+.lw__word{font-family:var(--serif);font-size:calc(19px * var(--fs-card));line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.lw__tr{font-size:13px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (hover:hover){.lw:hover{background:var(--surface-2)}}
+.lw:active{transform:scale(.99)}
+.lw.is-open{background:var(--signal-soft)}
+.lw:focus-visible{outline:2px solid var(--signal);outline-offset:-2px}
+.lw__none{padding:34px 16px;text-align:center;color:var(--ink-3);font-size:13px;border:1px dashed var(--rule);border-radius:var(--r-lg);background:var(--surface-2)}
+@media (max-width:420px){.lw__word{max-width:150px}.lw{gap:10px}}
+@media (prefers-reduced-motion:reduce){
+  .view.is-active .lband{animation:none}
+  .lbar__key:active,.lkey:active,.lw:active{transform:none}
+}
+
 .sent{display:block;margin-bottom:2px;padding:2px 0;border-radius:3px;transition:background .15s var(--ease)}
 .sent:hover,.sent.is-said{background:var(--surface-2)}
 .de-text{
@@ -758,14 +882,22 @@ ul,ol{margin:0;padding:0;list-style:none}
 }
 .tok{border-radius:2px;transition:background .12s var(--ease),color .12s var(--ease)}
 .tok--vocab{
-  cursor:pointer;
-  background-image:linear-gradient(var(--signal),var(--signal));
-  background-size:100% 1px;background-repeat:no-repeat;background-position:0 1.16em;
+  cursor:pointer;--tokc:var(--signal);
+  /* a real underline, not a painted strip: a strip at a fixed depth fell
+     outside the word's box whenever the font's box was shorter, and the
+     line quietly vanished */
+  text-decoration:underline;text-decoration-color:var(--tokc);text-decoration-thickness:1px;
+  text-underline-offset:.2em;text-decoration-skip-ink:auto;
+  transition:background-color .12s var(--ease),color .12s var(--ease),text-decoration-color .2s var(--ease);
 }
 .tok--vocab:hover{background-color:var(--signal-soft);color:var(--signal)}
 .tok--vocab.is-open{background-color:var(--signal);color:#fff}
 :root[data-theme="dark"] .tok--vocab.is-open{color:#0B0E10}
-.tok--known{background-image:linear-gradient(var(--ok),var(--ok))}
+/* the underline says how well you know the word: red, amber, and none
+   once it is known, so the eye goes to what is still to learn */
+.tok--vocab[data-st="hard"]{--tokc:var(--hard);text-decoration-thickness:1.5px}
+.tok--vocab[data-st="learning"]{--tokc:var(--learn);text-decoration-thickness:1.5px}
+.tok--vocab[data-st="known"],.tok--known{--tokc:transparent}
 
 .sent--inline{display:inline;margin:0;padding:0}
 /* Room for the speaker at the end of each sentence, inside the line: the
@@ -778,12 +910,6 @@ ul,ol{margin:0;padding:0;list-style:none}
   padding:6px 0 12px 14px;border-left:2px solid var(--rule);margin:4px 0 14px;
   font-family:var(--sans);
 }
-.en-block{
-  max-width:var(--measure);padding:22px 24px;border-radius:var(--r-lg);
-  background:var(--surface);border:1px solid var(--rule);margin-bottom:14px;
-}
-.en-block .eyebrow{display:block;margin-bottom:10px}
-.en-block .md{font-size:16px;line-height:1.68;color:var(--ink-2);font-family:var(--sans)}
 [hidden]{display:none !important}
 
 /* ============================================================
@@ -807,15 +933,15 @@ ul,ol{margin:0;padding:0;list-style:none}
 .de-text .md-h5,.de-text .md-h6{
   font-size:.86em;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-3);font-weight:700;
 }
-.en-block .md-h{margin:1.3em 0 .45em}
-.en-block .md-h1{font-size:1.5em}
-.en-block .md-h2{font-size:1.28em}
-.en-block .md-h3{font-size:1.12em}
-.en-block .md-h4{font-size:1em}
-.en-block .md-h5,.en-block .md-h6{
+.lpage__en .md-h{margin:1.3em 0 .45em}
+.lpage__en .md-h1{font-size:1.5em}
+.lpage__en .md-h2{font-size:1.28em}
+.lpage__en .md-h3{font-size:1.12em}
+.lpage__en .md-h4{font-size:1em}
+.lpage__en .md-h5,.lpage__en .md-h6{
   font-size:.84em;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-3);font-weight:700;
 }
-.en-block .md-h:first-child{margin-top:0}
+.lpage__en .md-h:first-child{margin-top:0}
 
 .md-list{margin:0 0 1.05em;padding-left:1.35em;list-style:none;list-style-position:outside}
 .md-list--num{list-style:decimal}
@@ -942,7 +1068,7 @@ ul,ol{margin:0;padding:0;list-style:none}
    a highlight fighting the blue token underlines */
 .de-text strong{font-weight:500;color:var(--ink)}
 .de-text em{font-style:italic}
-.en-block strong{font-weight:600;color:var(--ink)}
+.lpage__en strong{font-weight:600;color:var(--ink)}
 
 /* ============================================================
    WORD SHEET — the card you get by tapping a word in the text
@@ -1367,7 +1493,7 @@ pre.spec b{color:var(--signal);font-weight:500}
   .rail__ind{transition:opacity .16s var(--ease) !important}
 }
 @media print{
-  .rail,.reader__bar,.section-head__actions,.page-head__actions,.fcard__hint{display:none !important}
+  .rail,.lbar,.section-head__actions,.page-head__actions,.fcard__hint{display:none !important}
   .shell{margin-left:0}
   .fcard__inner{transform:none !important}
   .fcard__face--back{transform:none;position:static}
@@ -3421,7 +3547,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 /* ---------- the passage ---------- */
 .de-text{font-size:calc(clamp(19px,2.1vw,22px) * var(--fs-read));line-height:var(--lh-read)}
 .en-line{font-size:calc(14.5px * var(--fs-read));line-height:calc(var(--lh-read) * .93)}
-.en-block .md{font-size:calc(16px * var(--fs-read));line-height:calc(var(--lh-read) * .98)}
+.lpage__en .md{font-size:calc(16px * var(--fs-read));line-height:calc(var(--lh-read) * .98)}
 .md-table{font-size:calc(14.5px * var(--fs-read))}
 .md-pre code{font-size:calc(13px * var(--fs-read))}
 /* the serif is the house voice for German, but a sans face is easier
@@ -3430,7 +3556,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 :root[data-readfont="sans"] .de-text .md-h{letter-spacing:-.02em}
 /* the blue rule under a word that owns a card can be turned off for
    people who read the underlines as noise — the words stay tappable */
-:root[data-v-underline="0"] .tok--vocab{background-image:none}
+:root[data-v-underline="0"] .tok--vocab{text-decoration:none}
 :root[data-v-underline="0"] .tok--vocab:hover{background-color:var(--signal-soft)}
 
 /* ---------- the card, wherever it appears ---------- */
@@ -6399,6 +6525,7 @@ function applyRoute() {
   if (!sameView && (view === "cards" || view === "spell")) pkEnter(node);
   /* stepping off the page closes whatever set was open, so coming back
      costs the desk and nothing else */
+  if (view !== "lesson") listen.stop();
   if (view !== "cards" && (state.cards.open || state.cards.q)) { state.cards.open = null; state.cards.q = ""; invalidate("cards"); }
   if (!drill.on && !spell.on) {
     const want = view === "lesson" ? { k: "v", id: id, tg: null }
@@ -6654,9 +6781,11 @@ function retheme(t) {
 const READ_SHOW = ["def", "say", "note", "ex", "exen", "pos", "src", "hint", "underline"];
 const READ_DEFAULTS = {
   text: 100, card: 100, line: 172, measure: 66,
-  font: "serif", sidecard: 1, widestudy: 1, fsauto: 0,
+  font: "serif", sidecard: 1, widestudy: 1, fsauto: 0, page: "auto",
   show: { def: 1, say: 1, note: 1, ex: 1, exen: 1, pos: 1, src: 1, hint: 1, underline: 1 }
 };
+/* the passage's page: the app's own colours, or a page of its own */
+const READ_PAGES = [["auto", "Auto"], ["paper", "Paper"], ["sepia", "Sepia"], ["night", "Night"]];
 const READ_RANGE = {
   text: { min: 80, max: 200, step: 5 },
   card: { min: 80, max: 200, step: 5 },
@@ -6670,6 +6799,7 @@ function readCfg() {
   READ_SHOW.forEach(k => { out.show[k] = out.show[k] ? 1 : 0; });
   ["text", "card", "line", "measure"].forEach(k => { out[k] = +out[k] || READ_DEFAULTS[k]; });
   out.font = out.font === "sans" ? "sans" : "serif";
+  out.page = READ_PAGES.some(p => p[0] === out.page) ? out.page : "auto";
   out.sidecard = out.sidecard ? 1 : 0;
   out.widestudy = out.widestudy ? 1 : 0;
   out.fsauto = out.fsauto ? 1 : 0;
@@ -6687,6 +6817,7 @@ function applyRead() {
   h.style.setProperty("--lh-read", (r.line / 100).toFixed(2));
   h.style.setProperty("--measure", r.measure >= 200 ? "100%" : r.measure + "ch");
   h.setAttribute("data-readfont", r.font);
+  h.setAttribute("data-rpage", r.page);
   h.setAttribute("data-sidecard", String(r.sidecard));
   h.setAttribute("data-widestudy", String(r.widestudy));
   READ_SHOW.forEach(k => h.setAttribute("data-v-" + k, String(r.show[k])));
@@ -6708,6 +6839,7 @@ function readTouched() {
 function setRead(k, v) {
   const r = readCfg();
   if (k === "font") r.font = v === "sans" ? "sans" : "serif";
+  else if (k === "page") r.page = READ_PAGES.some(p => p[0] === v) ? v : "auto";
   else r[k] = +v;
   readTouched();
 }
@@ -6725,7 +6857,7 @@ function resetRead(part) {
      the quick panel's Reset still puts back the whole set */
   if (part === "look" || part === "cards") {
     const r = readCfg();
-    if (part === "look") ["text", "card", "line", "measure", "font", "sidecard", "widestudy"].forEach(k => { r[k] = READ_DEFAULTS[k]; });
+    if (part === "look") ["text", "card", "line", "measure", "font", "page", "sidecard", "widestudy"].forEach(k => { r[k] = READ_DEFAULTS[k]; });
     READ_SHOW.forEach(k => { if ((k === "underline") === (part === "look")) r.show[k] = READ_DEFAULTS.show[k]; });
     readTouched();
     toast(part === "look" ? "Appearance back to its defaults" : "Cards show everything again");
@@ -6839,6 +6971,7 @@ function openReadPop() {
     rSlider("card", "Card text") +
     rSlider("line", "Line spacing") +
     rSeg("font", "Passage typeface", [["serif", "Serif"], ["sans", "Sans"]]) +
+    rSeg("page", "Page", READ_PAGES) +
     '<div class="rquick__foot">' +
       '<button class="btn btn--sm" data-readreset="1">Reset</button>' +
       '<button class="btn btn--sm" data-readmore="1">All settings</button>' +
@@ -6880,6 +7013,7 @@ function renderReadSettings() {
       '<div class="rsplit">' +
         rSeg("font", "Typeface", [["serif", "Serif"], ["sans", "Sans"]]) +
         rSeg("measure", "Line width", [[54, "Narrow"], [66, "Normal"], [78, "Wide"], [999, "Full"]]) +
+        rSeg("page", "Page", READ_PAGES) +
       "</div>" +
       '<div class="rswitches">' +
         rSwitch("underline", "Underline words that have a card") +
@@ -7629,9 +7763,9 @@ const sentSpeak = (() => {
     const size = node.offsetWidth || 25;
     /* scrolled out of the way: it goes, unless it is the stop button
        for the line currently being read */
-    if ((r.bottom < 46 || r.top > window.innerHeight - 8) && !busy()) { hide(); return; }
+    if ((r.bottom < 64 || r.top > window.innerHeight - 8) && !busy()) { hide(); return; }
     const x = Math.min(r.right + 8, window.innerWidth - size - 8);
-    const y = Math.min(Math.max(46, r.top + (r.height - size) / 2), window.innerHeight - size - 8);
+    const y = Math.min(Math.max(64, r.top + (r.height - size) / 2), window.innerHeight - size - 8);
     node.style.left = Math.round(x) + "px";
     node.style.top = Math.round(y) + "px";
   }
@@ -7836,6 +7970,7 @@ function refreshCard(lid, i) {
     popEl.setAttribute("data-st", st);
     $$(".stat button", popEl).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.set === st)));
   }
+  paintLessonTally(state.lessons.find(l => l.id === lid));
 }
 
 /* Delete one card, and only that card. Everything downstream is keyed by
@@ -7876,87 +8011,254 @@ async function deleteCard(lid, i) {
   return true;
 }
 
+/* ============================================================
+   THE LESSON PAGE
+   One slim bar that stays (back, the name once the title has gone,
+   English, Listen, Aa, ⋮); a head that says how well you know this
+   file's words and starts any part of it; the passage on its own
+   page, its words underlined by how well you know them; and the
+   words themselves as a list you can filter, or as the flip cards.
+   ============================================================ */
+const ICO_LISTEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3.5" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16" y="14" width="4.5" height="6.5" rx="1.6"/></svg>';
+const ICO_STOPSQ = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>';
+const LW_FILTS = [["all", "All"], ["hard", "Hard"], ["learning", "Learning"], ["known", "Known"]];
+const lw = { id: null, f: "all" };
+
+function lessonTally(lesson) {
+  const c = { hard: 0, learning: 0, known: 0, all: lesson.vocabulary.length };
+  lesson.vocabulary.forEach(v => { c[statusOf(lesson.id, v)]++; });
+  return c;
+}
+/* the passage and, on Page, the English beside it */
+function readerHTML(lesson, mode) {
+  const full = mode === "full" && lesson.paragraph.en;
+  return '<div class="lpage' + (full ? " is-full" : "") + '" id="lPage">' +
+      '<div class="de-text" id="readerText">' + richGerman(lesson, mode) + "</div>" +
+      (full ? '<aside class="lpage__en"><span class="eyebrow">English</span><div class="md">' + richEnglish(lesson.paragraph.en) + "</div></aside>" : "") +
+    "</div>";
+}
+/* one row per word: the word in its gender colour, the meaning, a
+   speaker; the row opens the word's card, its dot is its status */
+function lwRow(lesson, v, i) {
+  const st = statusOf(lesson.id, v);
+  return '<div class="lw" role="button" tabindex="0" data-lw="' + i + '" data-fc="' + esc(lesson.id) + "|" + i + '" data-st="' + st + '" style="--i:' + Math.min(i, 24) + '">' +
+      '<i class="lw__dot" aria-hidden="true"></i>' +
+      '<span class="lw__word">' + articleHTML(v) + "</span>" +
+      '<span class="lw__tr">' + esc(v.translation || v.definition || "—") + "</span>" +
+      sayBtn(v.word, v.word, "sm") +
+    "</div>";
+}
+function lwBodyHTML(lesson) {
+  const f = lw.f, cards = lesson.vocabulary;
+  const keep = cards.map((v, i) => [v, i]).filter(x => f === "all" || statusOf(lesson.id, x[0]) === f);
+  if (!keep.length) return '<div class="lw__none">No ' + esc(f === "learning" ? "words in learning" : f + " words") + " here.</div>";
+  if (state.settings.lwView === "cards") {
+    return '<div class="grid-cards" id="cardGrid">' + keep.map(x => cardHTML(lesson, x[0], x[1])).join("") + "</div>";
+  }
+  return '<div class="lwlist">' + keep.map(x => lwRow(lesson, x[0], x[1])).join("") + "</div>";
+}
+function lwChipsHTML(c) {
+  return LW_FILTS.map(k => '<button class="lchip" data-lwf="' + k[0] + '" aria-pressed="' + (lw.f === k[0]) + '"' +
+    (k[0] !== "all" ? ' style="--c:var(--' + (k[0] === "learning" ? "learn" : k[0]) + ')"' : "") + ">" +
+    (k[0] !== "all" ? '<i class="lchip__dot"></i>' : "") + "<span>" + k[1] + "</span><b>" + c[k[0]] + "</b></button>").join("");
+}
+
 function renderLesson(id) {
+  listen.stop();
   const lesson = state.lessons.find(l => l.id === id);
   const host = $("#lessonBody");
   if (!lesson) { host.innerHTML = ""; return; }
+  if (lw.id !== id) { lw.id = id; lw.f = "all"; }
 
   const isDeck = lesson.kind === "deck";
   const mode = state.settings.translation;
-  const pct = lessonScore(lesson);
   const cards = lesson.vocabulary;
-  const hard = cards.filter(v => statusOf(lesson.id, v) === "hard").length;
-  const known = cards.filter(v => statusOf(lesson.id, v) === "known").length;
-
-  const reader = isDeck ? "" : richGerman(lesson, mode);
+  const c = lessonTally(lesson);
+  const pct = c.all ? Math.round(c.known / c.all * 100) : 0;
+  const sub = [];
+  if (lesson.title && lesson.title !== fileName(lesson)) sub.push(esc(lesson.title));
+  if (lesson.titleEn) sub.push("<span>" + esc(lesson.titleEn) + "</span>");
+  const view = state.settings.lwView === "cards" ? "cards" : "list";
 
   host.innerHTML =
-    '<div class="crumb"><button data-nav="library">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>' +
-      "All files</button></div>" +
-
-    '<header class="masthead">' +
-      '<div class="masthead__rule">' +
-        '<span class="eyebrow">' + esc(lesson.level) + (lesson.topic ? " · " + esc(lesson.topic) : "") + "</span>" +
-        '<span class="line"></span>' +
-        '<span class="masthead__stat">' + known + "/" + cards.length + " known</span>" +
+    '<div class="lbar" id="lBar">' +
+      '<button class="lbar__key" data-nav="library" aria-label="Back to the Library">' + ICO_PREV + "</button>" +
+      '<div class="lbar__name" aria-hidden="true">' + esc(fileName(lesson)) + "</div>" +
+      '<div class="lbar__tools">' +
+        (isDeck ? "" :
+          '<div class="lbar__en"><span class="eyebrow">EN</span>' +
+            '<div class="seg seg--sm" data-tr-mode role="group" aria-label="English translation">' +
+              '<button data-tr="off" aria-pressed="' + (mode === "off") + '">Off</button>' +
+              '<button data-tr="inline" aria-pressed="' + (mode === "inline") + '">Lines</button>' +
+              '<button data-tr="full" aria-pressed="' + (mode === "full") + '">Page</button>' +
+            "</div></div>" +
+          (speech.ok ? '<button class="lbar__key lbar__listen" data-listen="1" aria-pressed="false" aria-label="Listen to the passage" title="Listen to the passage">' + ICO_LISTEN + "</button>" : "") +
+          '<button class="lbar__key" data-readpop="1" aria-expanded="false" aria-label="Text size and page" title="Text size and page">' + ICO_AA + "</button>") +
+        '<button class="lbar__key" data-lhmenu="' + esc(lesson.id) + '" aria-expanded="false" aria-label="More for this file">' + ICO_DOTS + "</button>" +
       "</div>" +
-      "<h1>" + esc(fileName(lesson)) + "</h1>" +
-      /* one quiet line under the name: the German title, then the English */
-      ((lesson.title && lesson.title !== fileName(lesson)) || lesson.titleEn
-        ? '<div class="masthead__en">' +
-            (lesson.title && lesson.title !== fileName(lesson) ? esc(lesson.title) : "") +
-            (lesson.titleEn ? "<span>" + esc(lesson.titleEn) + "</span>" : "") +
-          "</div>" : "") +
-      /* Study is the one action; Spell is the other way in. The rarer
-         ones (only the hard cards, the Cards view, export) sit behind
-         the dots so the row stays one line on a phone. */
-      '<div class="masthead__meta">' +
-        '<button class="btn btn--primary" data-drill="1">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l13 8-13 8z"/></svg>' +
-          "Study " + cards.length + " cards</button>" +
-        '<button class="btn" data-spfile="' + esc(lesson.id) + '">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 6.5l3 3"/></svg>' +
-          "Spell</button>" +
-        '<button class="btn masthead__more" data-lhmenu="' + esc(lesson.id) + '" aria-expanded="false" aria-label="More for this file">' + ICO_DOTS + "</button>" +
+    "</div>" +
+
+    '<header class="lhero">' +
+      '<div class="lhero__top"><span class="eyebrow">' + esc([lesson.level, lesson.topic].filter(Boolean).join(" · ") || (isDeck ? "Deck" : "Paragraph")) + "</span>" +
+        '<span class="eyebrow">' + (isDeck ? "Deck" : "Paragraph") + " · " + plural(c.all, "word") + "</span></div>" +
+      '<h1 class="lhero__title" id="lTitle">' + esc(fileName(lesson)) + "</h1>" +
+      (sub.length ? '<p class="lhero__sub">' + sub.join("") + "</p>" : "") +
+      '<div class="lhero__know">' +
+        '<div class="lhero__pct"><b class="hfig" data-lpct>' + pct + "</b><span>% known</span></div>" +
+        '<div class="lband" aria-hidden="true">' + ["hard", "learning", "known"].map(k =>
+          '<i class="lband__' + k + '" data-lband="' + k + '" style="flex-grow:' + c[k] + '"></i>').join("") + "</div>" +
+        '<div class="lkeys">' + ["hard", "learning", "known"].map(k =>
+          '<button class="lkey lkey--' + k + '" data-lstudy="' + k + '"' + (c[k] ? "" : " disabled") + ' title="Study the ' + STATUS_META[k].label.toLowerCase() + ' ones">' +
+            '<i></i><b data-lkey="' + k + '">' + c[k] + "</b><span>" + STATUS_META[k].label + "</span></button>").join("") + "</div>" +
+      "</div>" +
+      '<div class="lhero__acts">' +
+        '<button class="btn btn--primary" data-drill="1">' + ICO_DRILL + "Study " + plural(c.all, "card") + "</button>" +
+        '<button class="btn" data-spfile="' + esc(lesson.id) + '">' + ICO_PEN + "Spell</button>" +
       "</div>" +
     "</header>" +
 
-    (isDeck ? "" :
-    '<div class="reader">' +
-      '<div class="reader__bar">' +
-        '<div class="reader__tr">' +
-          '<span class="eyebrow">English</span>' +
-          '<div class="seg" data-tr-mode role="group" aria-label="English translation">' +
-            '<button data-tr="off"    aria-pressed="' + (mode === "off") + '">Hide</button>' +
-            '<button data-tr="inline" aria-pressed="' + (mode === "inline") + '">By line</button>' +
-            '<button data-tr="full"   aria-pressed="' + (mode === "full") + '">Full</button>' +
+    (isDeck ? "" : '<section class="lread" id="lRead">' + readerHTML(lesson, mode) + "</section>") +
+
+    '<section class="lwords" id="lWords">' +
+      '<div class="lwords__head">' +
+        '<h2>Words</h2>' +
+        '<div class="lwords__tools">' +
+          '<button class="btn btn--sm" data-flipall="1"' + (view === "cards" ? "" : " hidden") + ">Show every answer</button>" +
+          '<div class="seg seg--sm" role="group" aria-label="Show words as">' +
+            '<button data-lwview="list" aria-pressed="' + (view === "list") + '">List</button>' +
+            '<button data-lwview="cards" aria-pressed="' + (view === "cards") + '">Cards</button>' +
           "</div>" +
         "</div>" +
-        '<button class="btn reader__aa" data-readpop="1" aria-expanded="false" title="Text size and readability" aria-label="Text size">' +
-          ICO_AA + "</button>" +
       "</div>" +
-      '<div class="de-text" id="readerText">' + reader + "</div>" +
-    "</div>") +
+      '<div class="lchips lwords__chips" id="lwChips">' + lwChipsHTML(c) + "</div>" +
+      '<div id="lwBody">' + lwBodyHTML(lesson) + "</div>" +
+    "</section>";
 
-    (!isDeck && mode === "full" && lesson.paragraph.en
-      ? '<div class="en-block"><span class="eyebrow">English</span><div class="md">' +
-        richEnglish(lesson.paragraph.en) + "</div></div>"
-      : "") +
-
-    '<div class="section-head">' +
-      "<h2>Cards</h2>" +
-      '<div class="section-head__actions">' +
-        '<button class="btn btn--sm" data-readpop="1" aria-expanded="false" title="Text size and what a card shows">' +
-          ICO_AA + "Reading</button>" +
-        '<button class="btn btn--sm" data-flipall="1">Reveal all</button>' +
-        '<button class="btn btn--sm" data-flipall="0">Hide all</button>' +
-      "</div>" +
-    "</div>" +
-    '<div class="grid-cards" id="cardGrid">' +
-      cards.map((v, i) => cardHTML(lesson, v, i)).join("") +
-    "</div>";
+  lbarWatch();
 }
+
+/* after a word changes status: the band, the keys, the chips and the figure follow */
+function paintLessonTally(lesson) {
+  if (!lesson || state.view !== "lesson" || state.currentId !== lesson.id) return;
+  const c = lessonTally(lesson);
+  $$("[data-lband]").forEach(b => { b.style.flexGrow = c[b.dataset.lband]; });
+  $$("[data-lkey]").forEach(b => { const k = b.dataset.lkey; b.textContent = c[k]; b.closest("button").disabled = !c[k]; });
+  $$("#lwChips [data-lwf] b").forEach(b => { b.textContent = c[b.parentNode.dataset.lwf]; });
+  const p = $("[data-lpct]");
+  if (p) {
+    const to = c.all ? Math.round(c.known / c.all * 100) : 0, from = +p.textContent;
+    if (from !== to) { if (reducedMotion()) p.textContent = to; else countTo(p, from, to); }
+  }
+}
+
+/* The name comes into the bar once the title has scrolled away, and the
+   bar takes a hairline, so it reads as a bar only when it needs to. */
+let lbarIO = null;
+function lbarWatch() {
+  const t = $("#lTitle"), bar = $("#lBar");
+  if (lbarIO) { lbarIO.disconnect(); lbarIO = null; }
+  if (!t || !bar || !("IntersectionObserver" in window)) return;
+  lbarIO = new IntersectionObserver(es => es.forEach(e => bar.classList.toggle("is-past", !e.isIntersecting && e.boundingClientRect.top < 0)),
+    { rootMargin: "-60px 0px 0px 0px" });
+  lbarIO.observe(t);
+}
+
+/* A part of the page changes by fade-through: out in .1s on the leaving
+   curve, then the new content rises in. */
+function lessonSwap(node, build, stagger) {
+  if (!node) return;
+  if (!node.offsetHeight || reducedMotion() || !("animate" in node)) { build(); return; }
+  node.__want = build;
+  if (node.__out) return;
+  node.__out = node.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" });
+  node.__out.onfinish = () => {
+    const out = node.__out;
+    node.__out = null;
+    node.__want();
+    out.cancel();
+    const kids = stagger ? Array.prototype.slice.call(node.querySelectorAll(stagger), 0, 24) : [node];
+    kids.forEach((k, i) => k.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }],
+      { duration: 260, delay: i * 14, easing: "cubic-bezier(.2,.7,.3,1)", fill: "backwards" }));
+  };
+}
+function lwRefresh() {
+  const lesson = state.lessons.find(l => l.id === state.currentId);
+  const body = $("#lwBody");
+  if (!lesson || !body) return;
+  lessonSwap(body, () => { body.innerHTML = lwBodyHTML(lesson); }, ".lw, .fcard");
+}
+
+/* ---------- Listen: the passage read aloud, a sentence at a time ----------
+   Each sentence is lit while it is read and kept in view; a tap on a
+   sentence jumps there, a second tap on Listen stops. It reads through
+   the same engine as every speaker in the app, one line per call, and
+   moves on when that line has finished. */
+const listen = {
+  on: false, i: 0, sents: [], cur: null, tick: 0, fast: 0,
+  btn() { return $(".lbar__listen"); },
+  paint() {
+    const b = this.btn();
+    if (!b) return;
+    b.classList.toggle("is-on", this.on);
+    b.setAttribute("aria-pressed", String(this.on));
+    b.innerHTML = this.on ? ICO_STOPSQ : ICO_LISTEN;
+    b.setAttribute("aria-label", this.on ? "Stop listening" : "Listen to the passage");
+  },
+  start(from) {
+    this.sents = $$("#readerText .sent").filter(s => speech.clean(s.textContent));
+    if (!this.sents.length) return;
+    this.on = true; this.fast = 0;
+    let i = from ? this.sents.indexOf(from) : -1;
+    if (i < 0) {
+      /* from the first sentence on screen, or the top */
+      const top = ($("#lBar") || { offsetHeight: 0 }).offsetHeight + 8;
+      i = this.sents.findIndex(s => s.getBoundingClientRect().bottom > top);
+      if (i < 0 || this.sents[i].getBoundingClientRect().top > innerHeight) i = 0;
+    }
+    this.i = i;
+    this.paint();
+    this.play();
+  },
+  play() {
+    if (!this.on) return;
+    if (this.i >= this.sents.length) { this.stop(); return; }
+    const s = this.sents[this.i];
+    if (this.cur) this.cur.classList.remove("is-reading");
+    this.cur = s;
+    s.classList.add("is-reading");
+    const r = s.getBoundingClientRect(), top = ($("#lBar") || { offsetHeight: 0 }).offsetHeight + 12;
+    if (r.top < top || r.bottom > innerHeight - 90) {
+      window.scrollBy({ top: r.top - top - Math.max(0, (innerHeight - top - r.height) / 3), behavior: reducedMotion() ? "auto" : "smooth" });
+    }
+    const probe = document.createElement("i");
+    this.probe = probe;
+    const t0 = Date.now();
+    speech.say(s.textContent, probe);
+    clearInterval(this.tick);
+    this.tick = setInterval(() => {
+      if (!this.on || this.probe !== probe) { clearInterval(this.tick); return; }
+      if (probe.classList.contains("is-playing")) return;
+      clearInterval(this.tick);
+      /* a line that ends at once is a line that failed: two and we stop */
+      if (Date.now() - t0 < 250 && ++this.fast >= 2) { this.stop(); return; }
+      this.i++;
+      this.play();
+    }, 120);
+  },
+  jump(s) { if (this.on) { const i = this.sents.indexOf(s); if (i >= 0) { this.i = i; this.play(); } } },
+  stop() {
+    if (!this.on && !this.cur) return;
+    this.on = false;
+    clearInterval(this.tick);
+    this.probe = null;
+    if (this.cur) this.cur.classList.remove("is-reading");
+    this.cur = null;
+    speech.stop();
+    this.paint();
+  },
+  toggle() { if (this.on) this.stop(); else this.start(); }
+};
+document.addEventListener("visibilitychange", () => { if (document.hidden) listen.stop(); });
 
 /* ---------- word sheet ----------
    Tapping a word in the text opens the same card the grid shows, but
@@ -7968,7 +8270,7 @@ function closePop() {
   const node = popEl;
   popEl = null;
   document.body.classList.remove("has-sheet");
-  $$(".tok--vocab.is-open").forEach(t => t.classList.remove("is-open"));
+  $$(".tok--vocab.is-open, .lw.is-open").forEach(t => t.classList.remove("is-open"));
   if (!node) return;
   node.classList.add("is-closing");
   const drop = () => node.remove();
@@ -7979,7 +8281,8 @@ function closePop() {
 function openPop(tok, lesson, v, i) {
   bumpView(v);
   if (popEl) { popEl.remove(); popEl = null; }
-  $$(".tok--vocab.is-open").forEach(t => t.classList.remove("is-open"));
+  listen.stop();
+  $$(".tok--vocab.is-open, .lw.is-open").forEach(t => t.classList.remove("is-open"));
   tok.classList.add("is-open");
   const st = statusOf(lesson.id, v);
   popEl = el("div", "pop");
@@ -9664,8 +9967,10 @@ document.addEventListener("click", e => {
   if (tr) {
     state.settings.translation = tr.dataset.tr;
     saveProgress();
-    $$("#trSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tr === tr.dataset.tr)));
-    if (state.view === "lesson" && state.currentId) renderLesson(state.currentId);
+    $$("#trSeg button, [data-tr-mode] button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tr === tr.dataset.tr)));
+    const lsn = state.view === "lesson" && state.lessons.find(l => l.id === state.currentId);
+    const rd = $("#lRead");
+    if (lsn && rd) { listen.stop(); closePop(); lessonSwap(rd, () => { rd.innerHTML = readerHTML(lsn, state.settings.translation); }); }
     return;
   }
 
@@ -9675,6 +9980,41 @@ document.addEventListener("click", e => {
     if (sb) { sb.value = ""; sb.focus(); }
     if (xb) xb.hidden = true;
     renderLibrary(); return;
+  }
+
+  /* the lesson page's own controls */
+  const lwf = t.closest("[data-lwf]");
+  if (lwf) {
+    if (lw.f === lwf.dataset.lwf) return;
+    lw.f = lwf.dataset.lwf;
+    $$("#lwChips [data-lwf]").forEach(b => b.setAttribute("aria-pressed", String(b === lwf)));
+    closePop(); lwRefresh(); return;
+  }
+  const lwv = t.closest("[data-lwview]");
+  if (lwv) {
+    const v = lwv.dataset.lwview === "cards" ? "cards" : "list";
+    if ((state.settings.lwView === "cards" ? "cards" : "list") === v) return;
+    state.settings.lwView = v; saveProgress();
+    $$("[data-lwview]").forEach(b => b.setAttribute("aria-pressed", String(b === lwv)));
+    const fa = $("#lWords [data-flipall]");
+    if (fa) { fa.hidden = v !== "cards"; fa.dataset.flipall = "1"; fa.textContent = "Show every answer"; }
+    closePop(); lwRefresh(); return;
+  }
+  const lst = t.closest("[data-lstudy]");
+  if (lst) {
+    const lesson = state.lessons.find(l => l.id === state.currentId);
+    if (lesson) startDrill(lesson, lst.dataset.lstudy);
+    return;
+  }
+  if (t.closest("[data-listen]")) { closePop(); listen.toggle(); return; }
+  const lwr = t.closest("[data-lw]");
+  if (lwr) {
+    const lesson = state.lessons.find(l => l.id === state.currentId);
+    if (lesson) {
+      if (lwr.classList.contains("is-open")) closePop();
+      else openPop(lwr, lesson, lesson.vocabulary[+lwr.dataset.lw], +lwr.dataset.lw);
+    }
+    return;
   }
 
   /* word token → the card, as a sheet */
@@ -9688,6 +10028,7 @@ document.addEventListener("click", e => {
     return;
   }
   if (t.closest(".pop__close")) { closePop(); return; }
+  if (listen.on) { const js = t.closest("#readerText .sent"); if (js) { listen.jump(js); return; } }
   /* anything outside the sheet dismisses it, then goes on to do its
      own job — tapping the next word should not cost two taps */
   if (popEl && !t.closest(".pop")) closePop();
@@ -9811,6 +10152,8 @@ document.addEventListener("change", e => {
 });
 
 document.addEventListener("keydown", e => {
+  /* a word row is a button in all but name: Enter and Space open it */
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("[data-lw]")) { e.preventDefault(); e.target.click(); return; }
   /* A focused speaker button owns its own Enter and Space — otherwise
      the drill below would flip the card out from under it. */
   if ((e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("[data-tts], [data-exgo]")) return;
@@ -11024,7 +11367,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.37";
+const APP_VERSION = "3.38";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -14173,6 +14516,7 @@ function extraClick(e) {
   if (spk) {
     e.preventDefault(); e.stopPropagation();
     clock.bump();
+    listen.stop();
     speech.say(spk.dataset.tts, spk);
     return true;
   }
