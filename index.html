@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.20 · neural German, cached on device -->
+<!-- Sprachlabor — v3.21 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -2245,7 +2245,7 @@ pre.spec b{color:var(--signal);font-weight:500}
   .setnav__ind{display:none}
   .setnav .setnav__list button.is-lit{background:var(--signal-soft);color:var(--signal)}
   .setnav button.is-lit .mo{transition-duration:.3s;transition-delay:0s}
-  #view-settings.is-hold{--out:.26s}
+  #view-settings.is-warm .set__body,#view-settings.is-warm .setsec{display:block}
   /* menu and section fade through too; the back button leads the section in */
   #view-settings.is-active:not(.is-menu) .setback{animation:lift .34s var(--ease) var(--out) backwards}
   .about__facts div{grid-template-columns:minmax(0,1fr);gap:3px}
@@ -5861,6 +5861,22 @@ function tabOf(view) { return view === "cards" || view === "spell" ? "practice" 
    the section swap inside it does not play a second transition */
 let setFlip = false;
 
+/* A phone lays a settings section out for the first time on the tap that
+   opens it, and that first layout (text shaping, mostly) holds the tap
+   for a few hundred ms. Doing it once while the menu sits idle leaves the
+   tap only a cheap relayout. One task, so nothing is ever painted. */
+let setWarm = false;
+function warmSettings() {
+  if (setWarm) return;
+  const run = () => {
+    const sv = $("#view-settings");
+    if (setWarm || !sv || !sv.classList.contains("is-active") || !sv.classList.contains("is-menu")) return;
+    setWarm = true;
+    sv.classList.add("is-warm"); void sv.offsetHeight; sv.classList.remove("is-warm");
+  };
+  setTimeout(() => "requestIdleCallback" in window ? requestIdleCallback(run, { timeout: 600 }) : run(), 500);
+}
+
 /* ---------- leaving ----------
    A screen or settings section that is replaced does not vanish in one
    frame: it is pinned where it stands (fixed, clipped to the window, out
@@ -5943,16 +5959,15 @@ function applyRoute() {
          fades out before the other rises in */
       if (sv.classList.contains("is-active") && matchMedia("(max-width:860px)").matches) {
         setFlip = true;
-        const hold = !menu && setNavTap ? .16 : 0;
-        sv.classList.toggle("is-hold", !!hold);
         if (menu) leave($(".set__body", sv));
         /* the list first: pinning the header first would pull the list up before it is measured */
-        else { leave($(".setnav", sv), hold); leave($(".page-head", sv), hold); }
+        else { leave($(".setnav", sv)); leave($(".page-head", sv)); }
       }
       /* back at the menu nothing is open, so no row is lit */
       if (menu && matchMedia("(max-width:860px)").matches) $$("#setNav button.is-lit").forEach(b => b.classList.remove("is-lit"));
       sv.classList.toggle("is-menu", menu); window.scrollTo(0, 0);
     }
+    if (menu && matchMedia("(max-width:860px)").matches) warmSettings();
     state.setFromMenu = setNavTap && !menu;
   }
   setNavTap = false;
@@ -5982,7 +5997,6 @@ function applyRoute() {
        back and hidden for one style pass, so its entrance plays again */
     if (leaving.has(node)) { settle(node); getComputedStyle(node).display; }
     if (active && node) leave(active);
-    if (node) node.classList.remove("is-hold");
     if (active) active.classList.remove("is-active");
     if (node) node.classList.add("is-active");
   }
@@ -10032,7 +10046,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.20";
+const APP_VERSION = "3.21";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -12900,7 +12914,7 @@ function extraClick(e) {
   const sn = t.closest("#setNav button");
   if (sn) {
     setNavTap = $("#view-settings").classList.contains("is-menu") && window.matchMedia("(max-width:860px)").matches;
-    /* a phone lights the row you tapped; the menu holds for a beat so you see it */
+    /* a phone lights the row you tapped as the menu fades out */
     if (setNavTap) sn.classList.add("is-lit");
     go("settings", sn.dataset.sect); return true;
   }
