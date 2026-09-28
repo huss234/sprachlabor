@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.33 · neural German, cached on device -->
+<!-- Sprachlabor — v3.34 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -219,7 +219,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .view.is-active > .wrap > :nth-child(2){animation-delay:calc(var(--out) + 40ms)}
 .view.is-active > .wrap > :nth-child(3){animation-delay:calc(var(--out) + 2 * 40ms)}
 .view.is-active > .wrap > :nth-child(4){animation-delay:calc(var(--out) + 3 * 40ms)}
-.view.is-active > .wrap > :is(.appbar,.practab,.set){animation:none}
+.view.is-active > .wrap > :is(.appbar,.page-head--prac,.set){animation:none}
 /* Library's blocks rise one by one, like the screen header above them */
 #view-library.is-active > .wrap > .lib{animation:none}
 #view-library.is-active .lib > *{animation:lift .34s var(--ease) backwards;animation-delay:calc(var(--out) + 40ms + var(--i, 0) * 45ms)}
@@ -487,15 +487,17 @@ ul,ol{margin:0;padding:0;list-style:none}
 .seg--ico svg{width:16px;height:16px}
 /* Practice switch: a .seg whose selected fill is one thumb that slides.
    Cards and Spelling are two screens behind one tab; each carries the
-   switch, and practab() carries the thumb across from the other side. */
+   switch in its header, where a title would stand (the lit side already
+   names the screen), and practab() carries the thumb across from the
+   other side. */
 .practab{
-  position:relative;display:inline-grid;grid-template-columns:1fr 1fr;margin-bottom:22px;
+  position:relative;display:inline-grid;grid-template-columns:1fr 1fr;
   border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);overflow:hidden;
 }
 .practab__thumb{position:absolute;top:0;bottom:0;left:0;width:50%;background:var(--ink);pointer-events:none}
 #view-spell .practab__thumb{transform:translateX(100%)}
 .practab button{
-  position:relative;height:36px;padding:0 20px;font-size:12px;font-weight:600;color:var(--ink-2);
+  position:relative;height:38px;padding:0 20px;font-size:12px;font-weight:600;color:var(--ink-2);
   transition:color .16s var(--ease),background .14s var(--ease),transform .1s var(--ease);
   touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
@@ -4446,14 +4448,11 @@ button.wrow:active{transform:scale(.99)}
   <!-- ══════════════════ CARDS ══════════════════ -->
   <section class="view" id="view-cards">
     <div class="wrap">
-      <div class="practab" role="group" aria-label="Practice">
-        <i class="practab__thumb" aria-hidden="true"></i>
-        <button data-practab="cards" aria-pressed="true">Cards</button>
-        <button data-practab="spell" aria-pressed="false">Spelling</button>
-      </div>
-      <header class="page-head">
-        <div>
-          <h1>Cards</h1>
+      <header class="page-head page-head--prac">
+        <div class="practab" role="group" aria-label="Practice">
+          <i class="practab__thumb" aria-hidden="true"></i>
+          <button data-practab="cards" aria-pressed="true">Cards</button>
+          <button data-practab="spell" aria-pressed="false">Spelling</button>
         </div>
       </header>
 
@@ -4494,14 +4493,11 @@ button.wrow:active{transform:scale(.99)}
   <!-- ═════════════════ SPELLING ═════════════════ -->
   <section class="view" id="view-spell">
     <div class="wrap">
-      <div class="practab" role="group" aria-label="Practice">
-        <i class="practab__thumb" aria-hidden="true"></i>
-        <button data-practab="cards" aria-pressed="false">Cards</button>
-        <button data-practab="spell" aria-pressed="true">Spelling</button>
-      </div>
-      <header class="page-head">
-        <div>
-          <h1>Spelling</h1>
+      <header class="page-head page-head--prac">
+        <div class="practab" role="group" aria-label="Practice">
+          <i class="practab__thumb" aria-hidden="true"></i>
+          <button data-practab="cards" aria-pressed="false">Cards</button>
+          <button data-practab="spell" aria-pressed="true">Spelling</button>
         </div>
       </header>
 
@@ -10894,7 +10890,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.33";
+const APP_VERSION = "3.34";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
