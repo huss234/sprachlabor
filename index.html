@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.34 · neural German, cached on device -->
+<!-- Sprachlabor — v3.35 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -502,6 +502,12 @@ ul,ol{margin:0;padding:0;list-style:none}
   touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
 .practab button[aria-pressed="true"]{color:var(--paper)}
+/* in the header it is the header: the full width of the screen, a title's
+   weight, and no rule under it, since its own border already closes it */
+.page-head--prac{border-bottom:0;padding-bottom:0}
+.page-head--prac .practab{display:grid;width:100%}
+.page-head--prac .practab button{height:46px;font-size:14.5px;letter-spacing:-.005em}
+@media (max-width:720px){.page-head--prac .practab button{height:44px;font-size:14px}}
 @media (hover:hover){.practab button[aria-pressed="false"]:hover{background:var(--surface-2);color:var(--ink)}}
 .practab button:active{transform:scale(.97)}
 
@@ -10890,7 +10896,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.34";
+const APP_VERSION = "3.35";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
