@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.9 · neural German, cached on device -->
+<!-- Sprachlabor — v3.10 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -1414,7 +1414,7 @@ pre.spec b{color:var(--signal);font-weight:500}
 
 /* ============================================================
    HOME — a dashboard. The instrument at the top is the one place
-   the app goes dark: graphite, graph paper, a dial with sixty ticks
+   the app goes dark: graphite, a dial of two rings, seven small rings
    and one yellow needle colour, the way a Braun panel reads. Under
    it the page returns to paper: figures, the file you had open, the
    cards by status, and a shelf you can swipe.
@@ -1424,86 +1424,104 @@ pre.spec b{color:var(--signal);font-weight:500}
 
 /* --- the instrument --- */
 .hhero{
-  position:relative;overflow:hidden;isolation:isolate;
+  position:relative;overflow:hidden;
   background:var(--ink);color:var(--paper);border-radius:var(--r-lg);
-  padding:20px 24px 18px;
+  padding:22px 26px 20px;
+  --dim:color-mix(in srgb,currentColor 58%,transparent);
+  --faint:color-mix(in srgb,currentColor 12%,transparent);
+  --hair:color-mix(in srgb,currentColor 11%,transparent);
 }
 :root[data-theme="dark"] .hhero{background:var(--surface-2);color:var(--ink);border:1px solid var(--rule)}
-/* graph paper, fading out from behind the dial */
-.hhero::before{
-  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background-image:
-    linear-gradient(to right,color-mix(in srgb,currentColor 7%,transparent) 1px,transparent 1px),
-    linear-gradient(to bottom,color-mix(in srgb,currentColor 7%,transparent) 1px,transparent 1px);
-  background-size:22px 22px;background-position:-1px -1px;
-  -webkit-mask-image:radial-gradient(120% 90% at 16% 42%,#000 0%,transparent 72%);
-          mask-image:radial-gradient(120% 90% at 16% 42%,#000 0%,transparent 72%);
-}
-.hhero__top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-.hhero__hi{font-family:var(--serif);font-size:22px;font-weight:500;letter-spacing:-.01em;line-height:1.1}
-.hhero__date{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;opacity:.55;flex:none}
-.hhero__main{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,.8fr);gap:30px;align-items:center;margin-top:16px}
-/* the readout: what is left of today and what the run is heading for */
-.hfacts{align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding-left:26px;border-left:1px solid color-mix(in srgb,currentColor 14%,transparent)}
-.hfacts div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid color-mix(in srgb,currentColor 9%,transparent)}
-.hfacts div:last-child{border-bottom:none}
-.hfacts dt{font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
-.hfacts dd{margin:0;font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.hfacts dd small{font-size:10.5px;font-weight:500;opacity:.6;margin-left:3px}
-.hfacts dd.is-y{color:var(--stress)}
-.hhero__line{font-size:13px;line-height:1.5;opacity:.72;margin-top:16px;max-width:60ch}
-.hhero__foot{margin-top:16px;padding-top:14px;border-top:1px solid color-mix(in srgb,currentColor 14%,transparent)}
-.hhero__lab{display:flex;justify-content:space-between;gap:10px;margin-bottom:9px;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
-.hhero__lab span{opacity:.55}
-.hhero__lab b{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.02em;text-transform:none;opacity:.8}
+.hhero__top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.hhero__hi{font-family:var(--serif);font-size:24px;font-weight:500;letter-spacing:-.012em;line-height:1.15}
+.hhero__line{font-size:13px;line-height:1.5;color:var(--dim);margin-top:4px;max-width:52ch}
+.hhero__date{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);flex:none;padding-top:7px}
+.hhero__main{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,.85fr);gap:34px;align-items:center;margin-top:22px}
+.hhero__foot{margin-top:22px;padding-top:16px;border-top:1px solid var(--hair)}
+.hhero__lab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.hhero__lab span{font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.hhero__lab b{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--dim)}
+.hhero__lab b em{font-style:normal;color:currentColor;color:var(--paper)}
+:root[data-theme="dark"] .hhero__lab b em{color:var(--ink)}
 
-/* the dial: sixty ticks light up to today's cards; two arcs, cards and minutes */
-.hdial{position:relative;width:176px;height:176px;flex:none}
-.hdial svg{width:100%;height:100%;overflow:visible}
-.hdial__t{stroke:currentColor;stroke-width:1.5;stroke-linecap:round;opacity:.2;transition:opacity .22s var(--ease) calc(var(--i) * 13ms)}
-.hdial__t.is-long{stroke-width:2.2}
-.hdial__t.on{opacity:1}
+/* one number, set big in the UI face with even figures */
+.hfig{font-family:var(--sans);font-weight:600;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.045em;line-height:.9}
+
+/* the dial: two rings of one weight, cards outside, minutes inside */
+.hdialw{display:flex;flex-direction:column;align-items:center;gap:14px}
+.hdial{position:relative;width:170px;height:170px;flex:none}
+.hdial svg{width:100%;height:100%;transform:rotate(-90deg)}
 .harc{fill:none;stroke:currentColor;stroke-linecap:round;stroke-dasharray:1 1;transition:stroke-dashoffset 1.1s var(--ease) .12s}
 .harc.is-zero{opacity:0}
 .htrack{fill:none;stroke:currentColor;opacity:.13}
-.hdial .harc--cards{stroke:currentColor}
+.hdial .htrack{opacity:.09}
 .harc--mins{stroke:var(--stress)}
 .hdial__mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.hdial__mid b{font-family:var(--mono);font-size:42px;font-weight:600;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
-.hdial__mid span{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:6px}
-.hdial__mid em{font-style:normal;font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--stress);margin-top:7px}
-:root:not([data-theme="dark"]) .hdial__mid em{color:var(--stress)}
-.hdial__done{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:18px;height:18px;border-radius:100px;background:var(--stress);color:var(--stress-ink);display:grid;place-items:center}
-.hdial__done svg{width:11px;height:11px}
+.hdial__mid b{font-size:46px}
+.hdial__mid span{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:8px}
+.hdial__mid span.is-met{color:var(--stress)}
+.hkey{display:flex;gap:16px;font-size:12px;color:var(--dim);white-space:nowrap}
+.hkey span{display:inline-flex;align-items:center;gap:7px}
+.hkey em{font-style:normal}
+.hkey i{width:8px;height:8px;border-radius:100px;background:currentColor;flex:none}
+.hkey b{font-weight:600;font-variant-numeric:tabular-nums;color:var(--paper)}
+:root[data-theme="dark"] .hkey b{color:var(--ink)}
+.hkey span:first-child i{background:var(--paper)}
+:root[data-theme="dark"] .hkey span:first-child i{background:var(--ink)}
+.hkey span:last-child i{background:var(--stress)}
 
 .hside{min-width:0}
 .hstreak{display:flex;align-items:flex-end;gap:14px}
-.hstreak > b{font-family:var(--mono);font-size:clamp(48px,8vw,68px);font-weight:600;letter-spacing:-.06em;line-height:.82;font-variant-numeric:tabular-nums}
-.hstreak span{display:block;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
-.hstreak small{display:block;font-size:12px;opacity:.72;margin-top:5px;line-height:1.35}
-.hstreak.is-hot > b{color:var(--stress)}
+.hstreak .hfig{font-size:clamp(56px,8vw,76px)}
+.hstreak.is-hot .hfig{color:var(--stress)}
+.hstreak__t{padding-bottom:5px}
+.hstreak__t span{display:block;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.hstreak__t small{display:block;font-size:12.5px;color:var(--dim);margin-top:5px;line-height:1.35}
 
-/* the week, as seven gauges */
-.hweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;margin-top:20px;max-width:360px}
-.hweek__d{display:flex;flex-direction:column;align-items:center;gap:6px}
-.hweek__bar{position:relative;width:100%;height:48px;border-radius:4px;overflow:hidden;background:color-mix(in srgb,currentColor 10%,transparent)}
-.hweek__bar i{position:absolute;left:0;right:0;bottom:0;height:100%;border-radius:4px;background:currentColor;opacity:.85;transform-origin:50% 100%;transition:transform .6s var(--ease) calc(.25s + var(--i) * 55ms)}
-.hweek__d.is-met .hweek__bar i{background:var(--stress);opacity:1}
-.hweek__d.is-rest .hweek__bar{background:repeating-linear-gradient(135deg,color-mix(in srgb,currentColor 16%,transparent) 0 2px,transparent 2px 5px)}
-.hweek__d b{font-family:var(--mono);font-size:10px;font-weight:600;opacity:.5}
-.hweek__d.is-today b{opacity:1;color:var(--stress)}
-.hweek__d.is-today .hweek__bar{box-shadow:inset 0 0 0 1px color-mix(in srgb,currentColor 45%,transparent)}
-.hweek__d.is-future{opacity:.45}
+/* the week: seven small rings in the dial's language */
+.hweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:22px;max-width:400px}
+.hweek__d{display:flex;flex-direction:column;align-items:center;gap:7px}
+.hweek__r{position:relative;width:28px;height:28px}
+.hweek__r svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hweek__r .harc{transition-delay:calc(.3s + var(--i) * 60ms)}
+.hweek__r .htrack{opacity:.16}
+.hweek__d.is-met .hweek__r::after{
+  content:"";position:absolute;inset:0;border-radius:100px;background:var(--stress);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12'/%3E%3C/svg%3E") center/100% no-repeat;
+  transition:transform .4s var(--ease) calc(.5s + var(--i) * 60ms),opacity .3s var(--ease) calc(.5s + var(--i) * 60ms);
+}
+.hweek__d.is-met .hweek__r::before{
+  content:"";position:absolute;left:50%;top:50%;width:10px;height:6px;z-index:1;
+  border-left:2px solid var(--stress-ink);border-bottom:2px solid var(--stress-ink);
+  transform:translate(-50%,-65%) rotate(-45deg);
+}
+.hweek__d.is-met .htrack,.hweek__d.is-met .harc{opacity:0}
+.hweek__d.is-rest .htrack{stroke-dasharray:2 3;opacity:.35}
+.hweek__d b{font-size:10.5px;font-weight:600;color:var(--dim)}
+.hweek__d.is-today b{color:var(--stress)}
+.hweek__d.is-today .hweek__r .htrack{opacity:.3}
+.hweek__d.is-future{opacity:.4}
 
-/* thirty days as a spectrum: height is the work, strength is the heat level */
-.hmonth{display:flex;align-items:flex-end;gap:3px;height:38px}
-.hmonth i{flex:1;min-width:0;height:100%;border-radius:2px;background:currentColor;transform-origin:50% 100%;transition:transform .5s var(--ease) calc(var(--i) * 16ms)}
-.hmonth i.l0{opacity:.14}
-.hmonth i.l1{opacity:.38}
-.hmonth i.l2{opacity:.56}
-.hmonth i.l3{opacity:.76}
-.hmonth i.l4{opacity:1}
-.hmonth i.is-today{background:var(--stress);opacity:1}
+/* the readout: what is left of today and what the run is heading for */
+.hfacts{align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding-left:28px;border-left:1px solid var(--hair)}
+.hfacts div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--hair)}
+.hfacts div:last-child{border-bottom:none}
+.hfacts dt{font-size:12.5px;color:var(--dim)}
+.hfacts dd{margin:0;font-size:17px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.hfacts dd small{font-size:11.5px;font-weight:500;color:var(--dim);margin-left:4px;letter-spacing:0}
+.hfacts dd.is-y{color:var(--stress)}
+
+/* thirty days as an even strip of cells; strength is the heat level */
+.hheat{display:grid;grid-template-columns:repeat(30,minmax(0,1fr));gap:4px}
+.hheat i{height:14px;border-radius:3px;background:currentColor;transition:opacity .35s var(--ease) calc(.2s + var(--i) * 14ms)}
+.hheat i.l0{opacity:.1}
+.hheat i.l1{opacity:.32}
+.hheat i.l2{opacity:.52}
+.hheat i.l3{opacity:.74}
+.hheat i.l4{opacity:1}
+.hheat i.is-today{background:var(--stress);opacity:1}
+.hheat i.is-today.l0{background:transparent;box-shadow:inset 0 0 0 1.5px var(--stress)}
+.hheat__ends{display:flex;justify-content:space-between;margin-top:7px;font-size:10.5px;color:var(--dim)}
 
 /* --- figures --- */
 .hkpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
@@ -1623,9 +1641,9 @@ pre.spec b{color:var(--signal);font-weight:500}
 .hhome.is-enter .hkpi{animation:lift .34s var(--ease) backwards;animation-delay:calc(70ms + var(--i) * 45ms)}
 .hhome.is-enter .hbook{animation:lift .34s var(--ease) backwards;animation-delay:calc(210ms + var(--i) * 45ms)}
 .hhome.is-enter .hbar i,.hhome.is-enter .hmix i{animation:growx .6s var(--ease) backwards;animation-delay:calc(.2s + var(--i) * 90ms)}
-.hhome.is-arriving .hdial__t.on{opacity:.2}
 .hhome.is-arriving .harc{stroke-dashoffset:1 !important}
-.hhome.is-arriving .hweek__bar i,.hhome.is-arriving .hmonth i{transform:scaleY(0) !important}
+.hhome.is-arriving .hheat i{opacity:0 !important}
+.hhome.is-arriving .hweek__d.is-met .hweek__r::after{transform:scale(.4);opacity:0}
 
 @media (max-width:860px){
   .hhero__main{grid-template-columns:auto minmax(0,1fr)}
@@ -1634,12 +1652,19 @@ pre.spec b{color:var(--signal);font-weight:500}
   .hgrid{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:520px){
-  .hhero{padding:18px 18px 16px}
-  .hhero__main{gap:18px}
-  .hdial{width:136px;height:136px}
-  .hdial__mid b{font-size:34px}
-  .hweek{gap:5px;margin-top:16px}
-  .hweek__bar{height:40px}
+  .hhero{padding:20px 18px 18px}
+  .hhero__main{gap:20px;margin-top:18px}
+  .hdial{width:132px;height:132px}
+  .hdial__mid b{font-size:38px}
+  .hkey{gap:12px;font-size:11.5px}
+  .hstreak{gap:10px}
+  .hstreak .hfig{font-size:58px}
+  /* the week takes its own row under the dial and the streak */
+  .hside{display:contents}
+  .hweek{grid-column:1 / -1;max-width:none;margin-top:2px;padding-top:16px;border-top:1px solid var(--hair)}
+  .hweek__r{width:26px;height:26px}
+  .hheat{gap:3px}
+  .hheat i{height:12px}
   .hshelf{grid-auto-columns:72%}
   .hkpis{gap:10px}
   .hkpi{padding:13px 14px 12px}
@@ -1648,6 +1673,7 @@ pre.spec b{color:var(--signal);font-weight:500}
 @media (max-width:380px){
   .hhero__main{grid-template-columns:minmax(0,1fr);justify-items:center}
   .hside{width:100%}
+  .hweek{max-width:none}
 }
 @media (prefers-reduced-motion:reduce){
   .hhome.is-enter > *,.hhome.is-enter .hkpi,.hhome.is-enter .hbook{animation-name:fade}
@@ -9779,7 +9805,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.9";
+const APP_VERSION = "3.10";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -11930,24 +11956,18 @@ function renderHome(enter) {
     : st.current ? "Your " + st.current + "-day streak is waiting for today. One card keeps it going."
     : "One card starts a streak. " + plural(g.cards, "card") + " or " + g.mins + " min meets the goal.";
 
-  /* the dial: sixty ticks, lit up to the share of today's cards */
-  const lit = Math.round(pc * 60);
-  let ticks = "";
-  for (let i = 0; i < 60; i++) {
-    const a = i / 60 * Math.PI * 2 - Math.PI / 2, long = i % 5 === 0;
-    const r1 = 98, r2 = long ? 90 : 93;
-    ticks += '<line class="hdial__t' + (long ? " is-long" : "") + (i < lit ? " on" : "") + '" style="--i:' + i + '" x1="' + (100 + r1 * Math.cos(a)).toFixed(2) +
-      '" y1="' + (100 + r1 * Math.sin(a)).toFixed(2) + '" x2="' + (100 + r2 * Math.cos(a)).toFixed(2) + '" y2="' + (100 + r2 * Math.sin(a)).toFixed(2) + '"/>';
-  }
-  const dial = '<div class="hdial" role="img" aria-label="' + esc(D.rev + " of " + g.cards + " cards and " + mins + " of " + g.mins + " minutes today") + '">' +
-    '<svg viewBox="0 0 200 200">' + ticks +
-      '<g transform="translate(100 100) rotate(-90) scale(1.6) translate(-50 -50)">' + hArc(42, 4.6, pc, "harc--cards") + hArc(34, 2.6, pm, "harc--mins") + "</g>" +
-    "</svg>" +
-    (met ? '<span class="hdial__done" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' : "") +
-    '<div class="hdial__mid"><b data-hcu="' + D.rev + '">' + D.rev + "</b><span>of " + g.cards + " cards</span><em>" + mins + " / " + g.mins + " min</em></div>" +
+  /* the dial: cards outside, minutes inside, one weight; the number is the cards */
+  const dial = '<div class="hdialw">' +
+    '<div class="hdial" role="img" aria-label="' + esc(D.rev + " of " + g.cards + " cards and " + mins + " of " + g.mins + " minutes today") + '">' +
+      '<svg viewBox="0 0 100 100">' + hArc(45, 7, pc, "") + hArc(35.5, 7, pm, "harc--mins") + "</svg>" +
+      '<div class="hdial__mid"><b class="hfig" data-hcu="' + D.rev + '">' + D.rev + "</b>" +
+        (met ? '<span class="is-met">Goal met</span>' : "<span>Cards today</span>") + "</div>" +
+    "</div>" +
+    '<div class="hkey"><span><i></i><em><b>' + D.rev + "</b> / " + g.cards + " cards</em></span>" +
+      "<span><i></i><em><b>" + mins + "</b> / " + g.mins + " min</em></span></div>" +
   "</div>";
 
-  /* the week as seven gauges */
+  /* the week as seven small rings */
   const ws = weekStart(), wk0 = weekStartKey(t);
   let week = "", daysSoFar = 0;
   for (let i = 0; i < 7; i++) {
@@ -11959,32 +11979,30 @@ function renderHome(enter) {
     if (Dd && Dd.rest && !isActive(Dd)) cls.push("is-rest");
     if (k === t) cls.push("is-today");
     if (k > t) cls.push("is-future");
-    week += '<div class="' + cls.join(" ") + '" title="' + esc(niceDay(k) + " · " + (Dd ? plural(Dd.rev, "card") : "nothing yet")) + '">' +
-      '<span class="hweek__bar"><i style="--i:' + i + ";transform:scaleY(" + (h ? Math.max(.06, h) : 0).toFixed(3) + ')"></i></span>' +
+    week += '<div class="' + cls.join(" ") + '" style="--i:' + i + '" title="' + esc(niceDay(k) + " · " + (Dd ? plural(Dd.rev, "card") : "nothing yet")) + '">' +
+      '<span class="hweek__r"><svg viewBox="0 0 100 100">' + hArc(40, 16, h, "") + "</svg></span>" +
       "<b>" + DOW1[(ws + i) % 7] + "</b></div>";
   }
 
-  /* thirty days, as a spectrum */
-  const days30 = [];
-  for (let i = 29; i >= 0; i--) { const k = shiftDay(t, -i); days30.push({ k: k, D: S.days.get(k) }); }
-  const top = Math.max(1, ...days30.map(x => x.D ? work(x.D) : 0));
-  const active30 = days30.filter(x => isActive(x.D)).length;
-  const month = days30.map((x, i) => {
-    const w = x.D ? work(x.D) : 0;
-    return '<i class="l' + heatLevel(x.D) + (x.k === t && isActive(x.D) ? " is-today" : "") + '" style="--i:' + i + ";transform:scaleY(" +
-      (w ? Math.max(.1, w / top) : .06).toFixed(3) + ')" title="' + esc(niceDay(x.k) + " · " + (x.D ? plural(x.D.rev, "card") : "nothing")) + '"></i>';
-  }).join("");
+  /* thirty days, one even cell each */
+  let heat = "", active30 = 0;
+  for (let i = 29; i >= 0; i--) {
+    const k = shiftDay(t, -i), Dd = S.days.get(k);
+    if (isActive(Dd)) active30++;
+    heat += '<i class="l' + heatLevel(Dd) + (i === 0 ? " is-today" : "") + '" style="--i:' + (29 - i) + '" title="' +
+      esc(niceDay(k) + " · " + (Dd ? plural(Dd.rev, "card") : "nothing")) + '"></i>';
+  }
 
   const hero =
     '<section class="hhero" style="--k:0" aria-label="Today">' +
-      '<div class="hhero__top"><span class="hhero__hi" lang="de">' + homeHello() + ".</span>" +
+      '<div class="hhero__top"><div><div class="hhero__hi" lang="de">' + homeHello() + ".</div>" +
+        '<p class="hhero__line">' + esc(line) + "</p></div>" +
         '<span class="hhero__date">' + DOW3[now.getDay()] + " · " + now.getDate() + " " + MON3[now.getMonth()] + "</span></div>" +
       '<div class="hhero__main">' + dial +
         '<div class="hside">' +
-          '<div class="hstreak' + (st.current >= 3 ? " is-hot" : "") + '"><b data-hcu="' + st.current + '">' + st.current + "</b>" +
-            "<div><span>Day streak</span><small>" +
-              (st.best ? "Best " + plural(st.best, "day") : "Your first run starts here") +
-              (nextRun && st.current ? "<br>" + plural(nextRun - st.current, "day") + " to " + nextRun : "") +
+          '<div class="hstreak' + (st.current >= 3 ? " is-hot" : "") + '"><b class="hfig" data-hcu="' + st.current + '">' + st.current + "</b>" +
+            '<div class="hstreak__t"><span>Day streak</span><small>' +
+              (st.best > st.current ? "Best " + plural(st.best, "day") : st.current ? "Your longest yet" : "Starts with one card") +
             "</small></div></div>" +
           '<div class="hweek">' + week + "</div>" +
         "</div>" +
@@ -11995,9 +12013,9 @@ function renderHome(enter) {
           "<div><dt>Next milestone</dt><dd>" + (nextRun ? nextRun + "<small>days</small>" : "—") + "</dd></div>" +
         "</dl>" +
       "</div>" +
-      '<p class="hhero__line">' + esc(line) + "</p>" +
-      '<div class="hhero__foot"><div class="hhero__lab"><span>Last 30 days</span><b>' + active30 + " of 30 days</b></div>" +
-        '<div class="hmonth">' + month + "</div></div>" +
+      '<div class="hhero__foot"><div class="hhero__lab"><span>Last 30 days</span><b><em>' + active30 + "</em> of 30 days studied</b></div>" +
+        '<div class="hheat">' + heat + "</div>" +
+        '<div class="hheat__ends"><span>' + esc(niceDay(shiftDay(t, -29))) + "</span><span>Today</span></div></div>" +
     "</section>";
 
   /* four figures, each a way into Progress */
