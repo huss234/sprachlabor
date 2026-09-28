@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.35 · neural German, cached on device -->
+<!-- Sprachlabor — v3.36 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -1460,6 +1460,24 @@ pre.spec b{color:var(--signal);font-weight:500}
 .picker svg{width:15px;height:15px;flex:none;color:var(--ink-3)}
 .picker button[aria-pressed="true"] svg{color:var(--signal)}
 .picker .pk-depth{display:inline-block;flex:none}
+/* the scope sheet (askScope): the same list, in groups whose labels stay
+   on top while it scrolls, a count on every row and a tick on the chosen */
+.modal--scope:focus{outline:none}
+.picker__find{display:flex;margin-bottom:10px}
+.picker__find input{width:100%}
+.picker--scope{max-height:min(52vh,420px);overscroll-behavior:contain}
+.picker--scope button{padding:11px 12px;min-height:44px}
+.picker__grp{
+  position:sticky;top:0;z-index:1;padding:10px 12px 6px;background:var(--surface-2);
+  border-bottom:1px solid var(--rule-2);font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.picker__name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.picker__n{font:600 11.5px var(--mono);color:var(--ink-3);font-variant-numeric:tabular-nums}
+.picker__tick{display:grid;width:15px;opacity:0;transform:scale(.6);transition:opacity .16s var(--ease),transform .16s var(--ease)}
+.picker__tick svg{color:var(--signal)}
+.picker button[aria-pressed="true"] .picker__tick{opacity:1;transform:none}
+.picker button[aria-pressed="true"] .picker__n{color:var(--signal)}
 
 .radios{display:flex;flex-direction:column;gap:2px}
 .radios label{
@@ -3153,7 +3171,18 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
    ============================================================ */
 .pk{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}
 .pk__head{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--rule-2)}
-.pk__head .selectbox{flex:0 1 auto;min-width:0;max-width:100%}
+.pk__scope{
+  display:inline-flex;align-items:center;gap:10px;flex:0 1 auto;min-width:0;max-width:100%;
+  height:38px;padding:0 12px 0 14px;border:1px solid var(--rule);border-radius:var(--r-md);
+  background:var(--surface-2);font:500 13.5px var(--sans);color:var(--ink);cursor:pointer;
+  transition:border-color .15s var(--ease),background .15s var(--ease),transform .1s var(--ease);
+}
+.pk__scope span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk__scope svg{width:14px;height:14px;flex:none;color:var(--ink-3);transition:transform .22s var(--ease)}
+.pk__scope[aria-expanded="true"]{border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft);background:var(--surface)}
+.pk__scope[aria-expanded="true"] svg{transform:rotate(180deg)}
+.pk__scope:active{transform:translateY(1px)}
+@media (hover:hover){.pk__scope:hover{border-color:var(--ink-3)}}
 .pk__body{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr)}
 .pk__sets{padding:18px 14px 14px}
 .pk__band{position:relative;height:8px;margin:0 12px 14px;border-radius:100px;background:var(--rule-2);overflow:hidden}
@@ -4465,7 +4494,7 @@ button.wrow:active{transform:scale(.99)}
       <div class="pk" id="cardPick">
         <div class="pk__head">
           <span class="eyebrow">From</span>
-          <select class="selectbox" id="cardScope" aria-label="Which files"></select>
+          <button type="button" class="pk__scope" id="cardScope" data-pkscope="cards" aria-haspopup="dialog" aria-label="Which files"><span></span></button>
         </div>
         <div class="pk__body">
           <div class="pk__sets">
@@ -4483,12 +4512,10 @@ button.wrow:active{transform:scale(.99)}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
             <input type="search" id="cardSearch" placeholder="Search words, translations and definitions" autocomplete="off">
           </label>
-          <select class="selectbox" id="cardSort" aria-label="Sort cards">
-            <option value="file">File order</option>
-            <option value="weak">Weakest first</option>
-            <option value="az">A – Z</option>
-            <option value="za">Z – A</option>
-          </select>
+          <button type="button" class="btn" id="cardSort" aria-haspopup="menu" aria-expanded="false" aria-label="Sort cards">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M3.5 16.5L7 20l3.5-3.5M13 6h8M13 12h6M13 18h4"/></svg>
+            <span id="cardSortLabel">File order</span>
+          </button>
           <button class="btn" data-readpop="1" title="Text size and what a card shows"><span class="aaico">Aa</span>Reading</button>
         </div>
         <div id="cardBody"></div>
@@ -8386,25 +8413,109 @@ function countByStatus(pool) {
   pool.forEach(e => { c[statusOf(e.lid, e.v)]++; if (isBlank(e.v)) c.gaps++; });
   return c;
 }
-function scopeOptions() {
-  const opts = ['<option value="all">All files — the whole library</option>'];
-  opts.push('<option value="kind:paragraph">Paragraph files only</option>');
-  opts.push('<option value="kind:deck">Deck files only</option>');
-  const folders = state.folders.slice().sort((a, b) => pathLabel(a.id).localeCompare(pathLabel(b.id)));
-  if (folders.length) {
-    opts.push('<optgroup label="Folders">');
-    folders.forEach(f => { opts.push('<option value="f:' + esc(f.id) + '">' + esc(pathLabel(f.id)) + "</option>"); });
-    opts.push("</optgroup>");
+/* ---------- where a set is drawn from ----------
+   The scope is chosen in the app's own sheet, never the browser's list:
+   the whole library and the two kinds first, then the folder tree, then
+   every file, each with the number of cards it holds, the current one
+   lit. A long library gets a search line on top. */
+function scopeValid(sc) {
+  if (!sc || sc === "all" || sc === "kind:paragraph" || sc === "kind:deck") return true;
+  if (sc.slice(0, 2) === "f:") return !!folderById(sc.slice(2));
+  if (sc.slice(0, 2) === "l:") return state.lessons.some(l => l.id === sc.slice(2));
+  return false;
+}
+function scopePaint(btn, sc) {
+  const t = btn.querySelector("span");
+  if (!btn.querySelector("svg")) btn.insertAdjacentHTML("beforeend", ICO_CHEV);
+  const lbl = scopeLabel(sc);
+  if (t.textContent !== lbl) t.textContent = lbl;
+}
+/* one count per row: cards (or, for spelling, askable words) held once each */
+function scopeCount(sc, keep) {
+  const seen = new Set();
+  lessonsInScope(sc).forEach(l => (l.vocabulary || []).forEach(v => { if (!keep || keep(v)) seen.add(v.id || cardId(v.word)); }));
+  return seen.size;
+}
+function askScope(o) {
+  const cur = o.current || "all";
+  const row = (sc, icon, name, depth) =>
+    '<button data-pick="' + esc(sc) + '" aria-pressed="' + (sc === cur) + '" data-q="' + esc(name.toLowerCase()) + '">' +
+      (depth ? '<span class="pk-depth" style="width:' + (depth * 15) + 'px"></span>' : "") +
+      icon + '<span class="picker__name">' + esc(name) + "</span>" +
+      '<b class="picker__n">' + scopeCount(sc, o.keep) + "</b>" +
+      '<i class="picker__tick" aria-hidden="true">' + ICON_OK + "</i></button>";
+  const rows = ['<p class="picker__grp">Everything</p>',
+    row("all", ICO_HOME, "The whole library", 0),
+    row("kind:paragraph", ICO_READ, "Paragraph files", 0),
+    row("kind:deck", ICO_CARDS, "Deck files", 0)];
+  if (state.folders.length) {
+    rows.push('<p class="picker__grp">Folders</p>');
+    const add = (id, depth) => childFolders(id).forEach(f => { rows.push(row("f:" + f.id, ICO_FOLDER, f.name, depth)); add(f.id, depth + 1); });
+    add(null, 0);
   }
   if (state.lessons.length) {
-    opts.push('<optgroup label="Files">');
-    state.lessons.slice().sort((a, b) => fileName(a).localeCompare(fileName(b))).forEach(l => {
-      opts.push('<option value="l:' + esc(l.id) + '">' + esc(fileName(l)) +
-        (l.kind === "deck" ? " · deck" : " · paragraph") + "</option>");
-    });
-    opts.push("</optgroup>");
+    rows.push('<p class="picker__grp">Files</p>');
+    state.lessons.slice().sort((a, b) => fileName(a).localeCompare(fileName(b))).forEach(l => rows.push(row("l:" + l.id, ICO_DOC, fileName(l), 0)));
   }
-  return opts.join("");
+  const many = state.lessons.length + state.folders.length > 8;
+  return openModal({
+    title: "Study from",
+    still: true,
+    body: (many ? '<label class="search picker__find">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>' +
+        '<input type="search" placeholder="Find a folder or file" autocomplete="off" aria-label="Find a folder or file"></label>' : "") +
+      '<div class="picker picker--scope">' + rows.join("") + "</div>",
+    foot: '<button class="btn" data-mx="1">Cancel</button>',
+    onOpen: n => {
+      n.querySelector(".modal").classList.add("modal--scope");
+      n.querySelector("[data-mx]").addEventListener("click", () => closeModal(undefined));
+      n.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => closeModal(b.dataset.pick)));
+      const find = n.querySelector(".picker__find input");
+      if (find) find.addEventListener("input", () => {
+        const q = find.value.trim().toLowerCase();
+        let grp = null, shown = 0;
+        n.querySelectorAll(".picker--scope > *").forEach(x => {
+          if (x.matches(".picker__grp")) { if (grp) grp.hidden = !shown; grp = x; shown = 0; return; }
+          x.hidden = !!q && x.dataset.q.indexOf(q) === -1;
+          if (!x.hidden) shown++;
+        });
+        if (grp) grp.hidden = !shown;
+      });
+      const here = n.querySelector('.picker [aria-pressed="true"]');
+      setTimeout(() => {
+        const list = n.querySelector(".picker--scope");
+        if (here && list) list.scrollTop = here.offsetTop - list.clientHeight / 2 + here.offsetHeight / 2;
+        n.querySelector(".modal").focus({ preventScroll: true });
+      }, 40);
+    }
+  });
+}
+function pickScope(kind, btn) {
+  const spell = kind === "spell";
+  btn.setAttribute("aria-expanded", "true");
+  askScope({ current: spell ? spellCfg().scope : state.cards.scope, keep: spell ? spUsable : null }).then(v => {
+    btn.setAttribute("aria-expanded", "false");
+    if (v === undefined) return;
+    if (spell) {
+      if (spellCfg().scope === v) return;
+      setSpellCfg("scope", v);
+      paintSpellDesk();
+    } else {
+      if (state.cards.scope === v) return;
+      state.cards.scope = v; state.cards.limit = 60;
+      renderCards();
+    }
+  });
+}
+const CARD_SORTS = [["file", "File order"], ["weak", "Weakest first"], ["az", "A – Z"], ["za", "Z – A"]];
+function cardSortMenu(anchor) {
+  openMenu(anchor, CARD_SORTS.map(x => ({ id: x[0], label: x[1], icon: x[0] === (state.cards.sort || "file") ? ICON_OK : ICO_BLANK,
+    run: () => {
+      if ((state.cards.sort || "file") === x[0]) return;
+      state.cards.sort = x[0];
+      $("#cardSortLabel").textContent = x[1];
+      renderCardsGrid();
+    } })));
 }
 /* The sets. Each is a filter over the scope; one is chosen at a time and
    the column beside the list starts it, spells it or opens it. */
@@ -8642,12 +8753,10 @@ function renderCardsGrid() {
 function renderCards() {
   const sel = $("#cardScope");
   if (!sel) return;
-  const opts = scopeOptions();
-  if (sel.__opts !== opts) { sel.innerHTML = opts; sel.__opts = opts; }
-  if (!sel.querySelector('option[value="' + CSS.escape(state.cards.scope) + '"]')) state.cards.scope = "all";
-  sel.value = state.cards.scope;
-  const srt = $("#cardSort");
-  if (srt) srt.value = state.cards.sort || "file";
+  if (!scopeValid(state.cards.scope)) state.cards.scope = "all";
+  scopePaint(sel, state.cards.scope);
+  const srt = $("#cardSortLabel");
+  if (srt) srt.textContent = (CARD_SORTS.find(x => x[0] === (state.cards.sort || "file")) || CARD_SORTS[0])[1];
   const box = $("#cardSearch");
   if (box && box.value !== state.cards.q) box.value = state.cards.q;
   paintTally();
@@ -9486,6 +9595,8 @@ document.addEventListener("click", e => {
     state.cards.limit = 60;
     paintTally(); renderCardsGrid(); return;
   }
+  const pks = t.closest("[data-pkscope]");
+  if (pks) { pickScope(pks.dataset.pkscope, pks); return; }
   const cbr = t.closest("[data-cbrowse]");
   if (cbr || t.closest("[data-cclose]")) {
     const open = cbr ? !state.cards.open : false;
@@ -9680,11 +9791,6 @@ document.addEventListener("change", e => {
   if (c) { setReadShow(c.dataset.readshow, c.checked); return; }
   const so = e.target.closest && e.target.closest("[data-spopt]");
   if (so) { setSpellCfg(so.dataset.spopt, so.checked ? 1 : 0); return; }
-  if (e.target && e.target.id === "spellScope") {
-    setSpellCfg("scope", e.target.value);
-    painted.spell = "";
-    paintSpellDesk();
-  }
 });
 
 document.addEventListener("keydown", e => {
@@ -10896,7 +11002,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.35";
+const APP_VERSION = "3.36";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -11490,7 +11596,7 @@ function openModal(opts) {
     modalResolve = resolve;
     const scrim = el("div", "scrim");
     scrim.innerHTML =
-      '<div class="modal" role="dialog" aria-modal="true">' +
+      '<div class="modal" role="dialog" aria-modal="true" tabindex="-1">' +
         '<div class="modal__head"><h3>' + esc(opts.title) + "</h3>" +
           (opts.desc ? "<p>" + opts.desc + "</p>" : "") + "</div>" +
         (opts.body ? '<div class="modal__body">' + opts.body + "</div>" : "") +
@@ -11500,7 +11606,7 @@ function openModal(opts) {
     document.body.appendChild(scrim);
     modalNode = scrim;
     if (opts.onOpen) opts.onOpen(scrim);
-    const first = scrim.querySelector("input, button.btn--primary, .modal__foot button");
+    const first = !opts.still && scrim.querySelector("input, button.btn--primary, .modal__foot button");
     if (first) setTimeout(() => { first.focus(); if (first.select) first.select(); }, 30);
   });
 }
@@ -14019,6 +14125,9 @@ function extraClick(e) {
   /* the dots beside Study on a lesson */
   const lhm = t.closest("[data-lhmenu]");
   if (lhm) { e.stopPropagation(); if (menuNode && menuFrom === lhm) closeMenu(); else lessonHeadMenu(lhm, lhm.dataset.lhmenu); return true; }
+  /* the sort of an open set on Cards */
+  const csort = t.closest("#cardSort");
+  if (csort) { e.stopPropagation(); if (menuNode && menuFrom === csort) closeMenu(); else cardSortMenu(csort); return true; }
   /* and so does the details segment of the sync control */
   const smo = t.closest("#syncMore");
   if (smo) {
@@ -14546,7 +14655,7 @@ function renderSpell() {
       '<div class="pk" id="spellPick">' +
         '<div class="pk__head">' +
           '<span class="eyebrow">From</span>' +
-          '<select class="selectbox" id="spellScope" aria-label="Which files"></select>' +
+          '<button type="button" class="pk__scope" id="spellScope" data-pkscope="spell" aria-haspopup="dialog" aria-label="Which files"><span></span></button>' +
         "</div>" +
         '<div class="pk__body">' +
           '<div class="pk__sets">' +
@@ -14595,10 +14704,8 @@ function paintSpellDesk() {
   const cfg = spellCfg();
   const sel = $("#spellScope");
   if (!sel) return;
-  const opts = scopeOptions();
-  if (sel.__opts !== opts) { sel.innerHTML = opts; sel.__opts = opts; }
-  if (!sel.querySelector('option[value="' + CSS.escape(cfg.scope) + '"]')) { cfg.scope = "all"; state.settings.spell = cfg; }
-  sel.value = cfg.scope;
+  if (!scopeValid(cfg.scope)) { cfg.scope = "all"; state.settings.spell = cfg; }
+  scopePaint(sel, cfg.scope);
 
   const pool = spellPool();
   const c = spellCounts(pool);
@@ -15445,8 +15552,9 @@ function spellFromLauncher(deck) {
   const where = cfg.scope === "all" ? "" : " · " + spellScopeLabel();
   startSpelling(slice, d.name + where, one);
 }
-function spellScopeLabel() {
-  const sc = spellCfg().scope || "all";
+function spellScopeLabel() { return scopeLabel(spellCfg().scope); }
+function scopeLabel(scope) {
+  const sc = scope || "all";
   if (sc === "all") return "The whole library";
   if (sc === "kind:paragraph") return "Paragraph files";
   if (sc === "kind:deck") return "Deck files";
@@ -16508,13 +16616,7 @@ function spellTheTrouble() {
       paintTally(); renderCardsGrid();
     }, 130);
   });
-  $("#cardScope").addEventListener("change", e => {
-    state.cards.scope = e.target.value; state.cards.limit = 60;
-    paintTally(); renderCardsGrid();
-  });
-  $("#cardSort").addEventListener("change", e => {
-    state.cards.sort = e.target.value; renderCardsGrid();
-  });
+
 
   /* file intake */
   const dz = $("#dropZone");
