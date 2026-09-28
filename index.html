@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.18 · neural German, cached on device -->
+<!-- Sprachlabor — v3.19 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -2107,6 +2107,49 @@ pre.spec b{color:var(--signal);font-weight:500}
 .setnav__dot.is-bad{background:var(--die)}
 .setnav__dot.is-busy{background:var(--warn)}
 .setnav__dot.is-wait{background:var(--warn)}
+/* The list answers like the tab bar. One --signal-soft plate travels
+   from row to row by its edges (setPlate(), the rail's own movePlate()),
+   and each icon has a rest shape and a lit shape that share one path
+   structure, so the icon changes shape when its row lights (420ms, 60ms
+   after the plate sets off) and goes back in 260ms. A wide screen lights
+   the open section; a phone lights the row you tap, for a beat, before
+   the section opens. */
+.setnav__ind{
+  position:absolute;inset:0;background:var(--signal-soft);pointer-events:none;
+  clip-path:inset(0 100% 100% 0);opacity:0;transition:opacity .16s var(--ease);
+}
+.setnav__ind.is-on{opacity:1}
+.setnav__ind.is-on ~ .setnav__group button[aria-current="true"]{background:none}
+.setnav .setnav__list button.is-lit .setnav__ico{background:var(--signal);color:var(--surface)}
+.setnav .mo{transition:d .26s var(--ease),transform .26s var(--ease)}
+.setnav button.is-lit .mo{transition:d .42s var(--ease) .06s,transform .42s var(--ease) .06s}
+/* Appearance: the dark half turns over to the other side */
+.setnav .mo--half{transform-box:view-box;transform-origin:12px 12px}
+.setnav button.is-lit .mo--half{transform:rotate(180deg)}
+/* Cards: the front card tips off the stack, the back one squares up */
+.setnav .mo--front{transform-box:fill-box;transform-origin:0 100%}
+.setnav button.is-lit .mo--front{transform:rotate(-6deg)}
+.setnav button.is-lit .mo--back{d:path("M8.5 2.8h10.5a2 2 0 0 1 2 2V15.5")}
+/* Studying: the hands go once round the clock */
+.setnav .mo--hands{transform-box:view-box;transform-origin:12px 12px}
+.setnav button.is-lit .mo--hands{transform:rotate(360deg)}
+/* Voice: the sound waves open out */
+.setnav button.is-lit .mo--waves{d:path("M16.2 8.2a5.2 5.2 0 0 1 0 7.6M19.2 5.2a10 10 0 0 1 0 13.6")}
+/* Add lessons: the arrow lifts out of the tray */
+.setnav button.is-lit .mo--up{transform:translateY(-2px)}
+/* Your files: the lid lifts and the level rises */
+.setnav button.is-lit .mo--lid{transform:translateY(-1.6px)}
+.setnav button.is-lit .mo--level{d:path("M4.5 10c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3")}
+/* Sync: the two arrows go half way round, onto each other's place */
+.setnav .mo--sync{transform-box:view-box;transform-origin:12px 12px}
+.setnav button.is-lit .mo--sync{transform:rotate(180deg)}
+/* Reference: the book opens */
+.setnav .mo--pl,.setnav .mo--pr{transform-box:view-box;transform-origin:12px 20px}
+.setnav button.is-lit .mo--pl{transform:rotate(-7deg)}
+.setnav button.is-lit .mo--pr{transform:rotate(7deg)}
+/* About: the i stands up */
+.setnav button.is-lit .mo--stem{d:path("M12 10v6.5")}
+.setnav button.is-lit .mo--dot{d:path("M12 6.4v.1")}
 /* the way back to the menu — only a phone needs it */
 .setback{
   display:none;align-items:center;gap:3px;height:34px;padding:0 12px 0 4px;margin:0 0 14px -4px;
@@ -2198,6 +2241,12 @@ pre.spec b{color:var(--signal);font-weight:500}
   .setnav button[aria-current="true"] .setnav__txt small{color:var(--ink-3);opacity:1}
   .setnav button:hover{background:none}
   .setnav button:active{background:var(--surface-2)}
+  /* a phone has no plate: the row you tap lights on its own, and its
+     icon changes shape straight away, while the menu holds for a beat */
+  .setnav__ind{display:none}
+  .setnav .setnav__list button.is-lit{background:var(--signal-soft);color:var(--signal)}
+  .setnav button.is-lit .mo{transition-duration:.3s;transition-delay:0s}
+  #view-settings.is-hold{--out:.26s}
   /* menu and section fade through too; the back button leads the section in */
   #view-settings.is-active:not(.is-menu) .setback{animation:lift .34s var(--ease) var(--out) backwards}
   .about__facts div{grid-template-columns:minmax(0,1fr);gap:3px}
@@ -4204,28 +4253,29 @@ button.wrow:active{transform:scale(.99)}
 
       <div class="set">
         <nav class="setnav" id="setNav" aria-label="Settings sections">
+          <i class="setnav__ind" id="setInd" aria-hidden="true"></i>
           <div class="setnav__group">
             <div class="setnav__label">Preferences</div>
             <div class="setnav__list">
-              <button data-sect="look" aria-current="true"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor" stroke="none"/></svg></span><span class="setnav__txt">Appearance<small>Theme, text size, layout</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
-              <button data-sect="cards"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="12.5" height="13.5" rx="1.8"/><path d="M8 3.5h10.7a1.8 1.8 0 0 1 1.8 1.8V16.5"/></svg></span><span class="setnav__txt">Cards<small>What each card shows</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
-              <button data-sect="study"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="setnav__txt">Studying<small>Lessons, sessions, goals</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
-              <button data-sect="voice"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.2 6.3a8 8 0 0 1 0 11.4"/></svg></span><span class="setnav__txt">Voice<small>The German voice</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+              <button data-sect="look" aria-current="true"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path class="mo mo--half" d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor" stroke="none"/></svg></span><span class="setnav__txt">Appearance<small>Theme, text size, layout</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+              <button data-sect="cards"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect class="mo mo--front" x="3.5" y="7" width="12.5" height="13.5" rx="1.8"/><path class="mo mo--back" d="M8 3.5h10.7a1.8 1.8 0 0 1 1.8 1.8V16.5"/></svg></span><span class="setnav__txt">Cards<small>What each card shows</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+              <button data-sect="study"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path class="mo mo--hands" d="M12 7.5V12l3 2"/></svg></span><span class="setnav__txt">Studying<small>Lessons, sessions, goals</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+              <button data-sect="voice"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path class="mo mo--waves" d="M15.5 9a4 4 0 0 1 0 6M18.2 6.3a8 8 0 0 1 0 11.4"/></svg></span><span class="setnav__txt">Voice<small>The German voice</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
             </div>
           </div>
           <div class="setnav__group">
             <div class="setnav__label">Your data</div>
             <div class="setnav__list">
-              <button data-sect="data"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg></span><span class="setnav__txt">Add lessons<small>Prompts and import</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
-              <button data-sect="files"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg></span><span class="setnav__txt">Your files<small>Export, reset, delete</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
-              <button data-sect="sync"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.1-5.1M4 13a8 8 0 0 0 14.1 5.1"/><path d="M4 4v5h5M20 20v-5h-5"/></svg></span><span class="setnav__txt">Sync<small>Two devices, one library</small></span><i class="setnav__dot" id="navSyncDot"></i><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+              <button data-sect="data"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path class="mo mo--up" d="M12 15V4M8 8l4-4 4 4"/><path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg></span><span class="setnav__txt">Add lessons<small>Prompts and import</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+              <button data-sect="files"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse class="mo mo--lid" cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"/><path class="mo mo--level" d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg></span><span class="setnav__txt">Your files<small>Export, reset, delete</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+              <button data-sect="sync"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><g class="mo mo--sync"><path d="M20 11a8 8 0 0 0-14.1-5.1M4 13a8 8 0 0 0 14.1 5.1"/><path d="M4 4v5h5M20 20v-5h-5"/></g></svg></span><span class="setnav__txt">Sync<small>Two devices, one library</small></span><i class="setnav__dot" id="navSyncDot"></i><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
             </div>
           </div>
           <div class="setnav__group">
             <div class="setnav__label">Help</div>
             <div class="setnav__list">
-              <button data-sect="reference"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg></span><span class="setnav__txt">Reference<small>File format, sound key</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
-              <button data-sect="about"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/></svg></span><span class="setnav__txt">About<small>Version, what it does</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+              <button data-sect="reference"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path class="mo mo--pl" d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path class="mo mo--pr" d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg></span><span class="setnav__txt">Reference<small>File format, sound key</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+              <button data-sect="about"><span class="setnav__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path class="mo mo--stem" d="M12 11v5.5"/><path class="mo mo--dot" d="M12 7.6v.1"/></svg></span><span class="setnav__txt">About<small>Version, what it does</small></span><svg class="setnav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
             </div>
           </div>
         </nav>
@@ -5838,7 +5888,7 @@ let setFlip = false;
    It is the real node, not a copy, so no id is doubled; its own inline
    style comes back once it has gone. */
 const leaving = new Map();
-function leave(el) {
+function leave(el, hold) {
   if (!el) return;
   settle(el);
   if (!el.getClientRects().length) return;
@@ -5851,7 +5901,7 @@ function leave(el) {
   s.top = r.top + "px"; s.left = r.left + "px"; s.width = r.width + "px";
   s.height = Math.min(r.height, innerHeight - r.top) + "px";
   s.overflow = "hidden"; s.pointerEvents = "none";
-  s.animation = "leave .1s cubic-bezier(.4,0,1,1) forwards";
+  s.animation = "leave .1s cubic-bezier(.4,0,1,1) " + (hold || 0) + "s forwards";
   el.inert = true;
   rec.end = e => { if (e.target === el) settle(el); };
   el.addEventListener("animationend", rec.end);
@@ -5912,10 +5962,14 @@ function applyRoute() {
          fades out before the other rises in */
       if (sv.classList.contains("is-active") && matchMedia("(max-width:860px)").matches) {
         setFlip = true;
+        const hold = !menu && setNavTap ? .16 : 0;
+        sv.classList.toggle("is-hold", !!hold);
         if (menu) leave($(".set__body", sv));
         /* the list first: pinning the header first would pull the list up before it is measured */
-        else { leave($(".setnav", sv)); leave($(".page-head", sv)); }
+        else { leave($(".setnav", sv), hold); leave($(".page-head", sv), hold); }
       }
+      /* back at the menu nothing is open, so no row is lit */
+      if (menu && matchMedia("(max-width:860px)").matches) $$("#setNav button.is-lit").forEach(b => b.classList.remove("is-lit"));
       sv.classList.toggle("is-menu", menu); window.scrollTo(0, 0);
     }
     state.setFromMenu = setNavTap && !menu;
@@ -5947,6 +6001,7 @@ function applyRoute() {
        back and hidden for one style pass, so its entrance plays again */
     if (leaving.has(node)) { settle(node); getComputedStyle(node).display; }
     if (active && node) leave(active);
+    if (node) node.classList.remove("is-hold");
     if (active) active.classList.remove("is-active");
     if (node) node.classList.add("is-active");
   }
@@ -6040,53 +6095,64 @@ function easeAt(x) {
   return 3 * t * (1 - t) * (1 - t) * .7 + 3 * t * t * (1 - t) + t * t * t;
 }
 function plateBox(b) { return { l: b.offsetLeft, t: b.offsetTop, r: b.offsetLeft + b.offsetWidth, b: b.offsetTop + b.offsetHeight }; }
-function plateAt(p) {
-  const A = plate.from, B = plate.to;
+function plateAt(p, st) {
+  st = st || plate;
+  const A = st.from, B = st.to;
   const lead = easeAt(p / (1 - PLATE_LAG)), trail = easeAt((p - PLATE_LAG) / (1 - PLATE_LAG));
-  const near = plate.fwd ? trail : lead, far = plate.fwd ? lead : trail;
+  const near = st.fwd ? trail : lead, far = st.fwd ? lead : trail;
   return { l: A.l + (B.l - A.l) * near, t: A.t + (B.t - A.t) * near,
            r: A.r + (B.r - A.r) * far,  b: A.b + (B.b - A.b) * far };
 }
-function plateClip(x, rail) {
+function plateClip(x, rail, round) {
   const f = n => Math.round(n * 10) / 10 + "px";
-  return "inset(" + f(x.t) + " " + f(rail.clientWidth - x.r) + " " + f(rail.clientHeight - x.b) + " " + f(x.l) + " round 10px)";
+  return "inset(" + f(x.t) + " " + f(rail.clientWidth - x.r) + " " + f(rail.clientHeight - x.b) + " " + f(x.l) + " round " + (round || "10px") + ")";
 }
-function railPlate(btn, still) {
-  const ind = $("#railInd");
+function railPlate(btn, still) { movePlate(plate, $("#railInd"), btn, still); }
+/* The same travelling plate, for any host: the rail, and the Settings
+   list (st.round gives a row its corners, so the first and last rows of
+   a card keep the card's curve) */
+function movePlate(st, ind, btn, still) {
   if (!ind) return;
   const rail = ind.parentNode;
-  if (!btn) { ind.classList.remove("is-on"); plate.at = null; return; }
+  if (!btn) { ind.classList.remove("is-on"); st.at = null; return; }
   if (!btn.offsetWidth) {
     /* the rail hidden: the observer places it later. The tab alone hidden
        (Settings on the bottom bar): no tab is lit, so no plate */
-    if (rail.offsetWidth) { ind.classList.remove("is-on"); plate.at = btn; }
+    if (rail.offsetWidth) { ind.classList.remove("is-on"); st.at = btn; }
     return;
   }
   let from = null;
-  if (plate.anim) {
+  if (st.anim) {
     /* a tap mid-travel sets off from wherever the plate is now */
-    if (plate.anim.playState === "running") from = plateAt(Math.min(1, plate.anim.currentTime / PLATE_MS));
-    plate.anim.cancel(); plate.anim = null;
+    if (st.anim.playState === "running") from = plateAt(Math.min(1, st.anim.currentTime / PLATE_MS), st);
+    st.anim.cancel(); st.anim = null;
   }
-  const to = plateBox(btn);
-  if (!from && plate.at && plate.at !== btn && plate.at.offsetWidth) from = plateBox(plate.at);
+  const to = plateBox(btn), round = st.round ? st.round(btn) : "10px";
+  if (!from && st.at && st.at !== btn && st.at.offsetWidth) from = plateBox(st.at);
   const moving = !still && from && ind.classList.contains("is-on") && !reducedMotion() && "animate" in ind;
-  plate.at = btn;
-  ind.style.clipPath = plateClip(to, rail);
+  st.at = btn;
+  ind.style.clipPath = plateClip(to, rail, round);
   ind.classList.add("is-on");
   if (!moving) return;
-  plate.from = from; plate.to = to;
-  plate.fwd = (to.l + to.t) >= (from.l + from.t);
+  st.from = from; st.to = to;
+  st.fwd = (to.l + to.t) >= (from.l + from.t);
   const frames = [];
-  for (let k = 0; k <= 24; k++) frames.push({ clipPath: plateClip(plateAt(k / 24), rail) });
-  plate.anim = ind.animate(frames, { duration: PLATE_MS, easing: "linear" });
-  plate.anim.onfinish = () => { plate.anim = null; };
+  for (let k = 0; k <= 24; k++) frames.push({ clipPath: plateClip(plateAt(k / 24, st), rail, round) });
+  st.anim = ind.animate(frames, { duration: PLATE_MS, easing: "linear" });
+  st.anim.onfinish = () => { st.anim = null; };
 }
+/* the Settings list's plate: 13px is the card's --r-lg inside its hairline */
+const setPlateSt = { at: null, from: null, to: null, fwd: true, anim: null,
+  round: b => { const first = !b.previousElementSibling, last = !b.nextElementSibling, c = n => n ? "13px" : "0";
+    return c(first) + " " + c(first) + " " + c(last) + " " + c(last); } };
+function setPlate(btn, still) { movePlate(setPlateSt, $("#setInd"), btn, still); }
 /* the rail moves from the side to the bottom at 860px, and hides in
    print and full screen: put the plate back on its tab, without travel */
 if ("ResizeObserver" in window) {
   const rail = document.querySelector(".rail");
   if (rail) new ResizeObserver(() => { if (plate.at) railPlate(plate.at, true); }).observe(rail);
+  const sn = document.querySelector("#setNav");
+  if (sn) new ResizeObserver(() => { if (setPlateSt.at) setPlate(setPlateSt.at, true); }).observe(sn);
 }
 
 /* the Practice switch: the screen that just opened shows its own switch,
@@ -9989,7 +10055,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.18";
+const APP_VERSION = "3.19";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -10065,6 +10131,17 @@ function renderSyncStatus() {
     "</div>";
 }
 
+/* which row of the section list is lit: the open section on a wide
+   screen; on a phone only the row just tapped, cleared back at the menu */
+function litNav(sect) {
+  if (matchMedia("(max-width:860px)").matches) return;
+  $$("#setNav button").forEach(b => b.classList.toggle("is-lit", b.dataset.sect === sect));
+}
+matchMedia("(max-width:860px)").addEventListener("change", e => {
+  if (e.matches) $$("#setNav button.is-lit").forEach(b => b.classList.remove("is-lit"));
+  else litNav(state.setSection);
+});
+
 function setSection(sect) {
   sect = setSect(sect) || "look";
   /* Merely looking at Settings used to write the section back to disk,
@@ -10075,6 +10152,8 @@ function setSection(sect) {
   state.settings.settingsSection = sect;
   if (moved) { invalidate("settings"); writeProgress(); }
   $$("#setNav button").forEach(b => b.setAttribute("aria-current", String(b.dataset.sect === sect)));
+  litNav(sect);
+  setPlate($('#setNav button[data-sect="' + sect + '"]'));
   const aboutWas = !!$('.setsec.is-on[data-sec="about"]');
   /* the section you leave fades out first, then the new one rises in
      (on a phone the whole page is already fading through) */
@@ -12844,6 +12923,8 @@ function extraClick(e) {
   const sn = t.closest("#setNav button");
   if (sn) {
     setNavTap = $("#view-settings").classList.contains("is-menu") && window.matchMedia("(max-width:860px)").matches;
+    /* a phone lights the row you tapped; the menu holds for a beat so you see it */
+    if (setNavTap) sn.classList.add("is-lit");
     go("settings", sn.dataset.sect); return true;
   }
   /* back to the settings menu: undo the tap if that is how we got here */
