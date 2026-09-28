@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.7 · neural German, cached on device -->
+<!-- Sprachlabor — v3.8 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -188,8 +188,8 @@ ul,ol{margin:0;padding:0;list-style:none}
 /* Library: the middle volume is drawn out of the row, the leaning one stands up */
 .rail__btn[aria-current="true"] .mo--lib2{d:path("M11 2h4v16h-4z")}
 .rail__btn[aria-current="true"] .mo--lib3{d:path("M19.2 4l0 16")}
-/* Lesson: the lines of text trade lengths, the way the eye runs along them */
-.rail__btn[aria-current="true"] .mo--read{d:path("M7.5 9h9M7.5 12h5")}
+/* Home: the door stands open */
+.rail__btn[aria-current="true"] .mo--door{d:path("M9.8 20v-7h4.4V20")}
 /* Practice: the front card turns off the stack and a tick writes itself on it */
 .rail .mo--front{transform-box:fill-box;transform-origin:0 100%}
 .rail__btn[aria-current="true"] .mo--front{transform:rotate(-6deg)}
@@ -216,6 +216,10 @@ ul,ol{margin:0;padding:0;list-style:none}
 .view{display:none;padding:34px 0 96px}
 .view.is-active{display:block;animation:rise .16s var(--ease) both}
 @keyframes rise{from{opacity:0}to{opacity:1}}
+/* a file is a page inside Library: it slides in from the side it lives on,
+   and the shelf slides back the other way (setpage / setmenu below) */
+.view.is-active.is-push{animation:setpage .26s var(--ease) backwards}
+.view.is-active.is-back{animation:setmenu .2s var(--ease) backwards}
 
 .page-head{
   display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
@@ -1202,7 +1206,7 @@ pre.spec b{color:var(--signal);font-weight:500}
 .rail__badge.is-bad{background:var(--die)}
 .rail__badge.is-busy{background:var(--warn);animation:pulse 1s var(--ease) infinite}
 .rail__badge.is-wait{background:var(--warn)}
-/* the badge rides on the Library tab, next to the sync control it reports
+/* the badge rides on the Home tab, next to the sync control it reports
    on; it stays quiet until GitHub is connected, and its ring takes the
    colour of whatever is behind it */
 .rail__badge:not([class*="is-"]){opacity:0}
@@ -1277,9 +1281,10 @@ pre.spec b{color:var(--signal);font-weight:500}
 .rcard{
   display:flex;align-items:center;gap:11px;padding:10px 12px;text-align:left;
   background:var(--surface-2);border:1px solid transparent;border-radius:var(--r-md);
-  transition:border-color .16s var(--ease),background .16s var(--ease);
+  transition:border-color .16s var(--ease),background .16s var(--ease),transform .1s var(--ease);
 }
 .rcard:hover{background:var(--surface);border-color:var(--rule)}
+.rcard:active{transform:scale(.97)}
 .rcard__ico{width:17px;height:17px;flex:none;color:var(--ink-3)}
 .rcard:hover .rcard__ico{color:var(--signal)}
 .rcard__body{flex:1;min-width:0}
@@ -1406,6 +1411,42 @@ pre.spec b{color:var(--signal);font-weight:500}
 }
 .menu [aria-checked="true"] .menu__sw{background:var(--signal)}
 .menu [aria-checked="true"] .menu__sw::after{transform:translateX(13px)}
+
+/* ============================================================
+   HOME — today in one sentence, then the way back into the work.
+   Built from the Progress and Library parts; only the glue is new.
+   ============================================================ */
+.home-head .eyebrow{display:block;margin-bottom:8px}
+.home-head h1{font-family:var(--serif);font-weight:500;letter-spacing:-.012em}
+.hstats{margin-bottom:16px}
+.hstats b i{font-style:normal}
+.hstats b small{font-size:12px;font-weight:500;color:var(--ink-3);letter-spacing:0;margin-left:4px}
+.hstats .meter{display:block;flex:none;margin-top:11px}
+.hitem{
+  background:var(--surface-2);border:1px solid var(--rule-2);border-radius:var(--r-md);padding:14px 16px;
+  transition:opacity .16s cubic-bezier(.4,0,1,1),transform .16s cubic-bezier(.4,0,1,1);
+}
+.hitem + .hitem{margin-top:10px}
+.hitem.is-leaving{opacity:0;transform:translateY(4px) scale(.985)}
+.hitem__top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.hitem__when{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);flex:none}
+.hitem__name{font-size:15px;font-weight:600;letter-spacing:-.01em;margin-top:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hitem > .hitem__name:first-child{margin-top:0}
+.hitem__note{font-size:13px;color:var(--ink-2);line-height:1.5;margin-top:6px}
+.hitem__meta{display:flex;align-items:center;gap:10px;margin-top:11px}
+.hitem__meta > span:last-child{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);flex:none}
+.hitem__acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.hcards .mixbar{height:10px;margin-bottom:14px}
+.hcards .pickup__p,.hweak .pickup__p{width:auto;min-width:32px}
+.hcards .pickup button:disabled{opacity:.45;cursor:default;transform:none;background:var(--surface)}
+.hcards .pickup button:disabled .pickup__go{color:var(--ink-3)}
+.hdot{width:9px;height:9px;border-radius:100px;flex:none}
+.hcards__foot{display:flex;justify-content:flex-end;margin-top:12px}
+.hweak{margin-bottom:26px}
+@media (prefers-reduced-motion:reduce){
+  .hitem.is-leaving{transform:none}
+  .rcard:active{transform:none}
+}
 
 /* ============================================================
    PROGRESS — the calendar is the range picker for the numbers
@@ -3621,16 +3662,16 @@ button.wrow:active{transform:scale(.99)}
 <nav class="rail" aria-label="Main">
   <div class="rail__mark" aria-hidden="true">S</div>
   <i class="rail__ind" id="railInd" aria-hidden="true"></i>
-  <button class="rail__btn" data-nav="library" aria-current="true">
+  <button class="rail__btn" data-nav="home" aria-current="true">
     <span class="rail__ico">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h5v16H4z"/><path class="mo mo--lib2" d="M11 4h4v16h-4z"/><path class="mo mo--lib3" d="M17.5 4.6l3.2 15.1"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.2L12 4l8 6.2V20H4z"/><path class="mo mo--door" d="M10 20v-4.5h4V20"/></svg>
       <i class="rail__badge" id="railSync" aria-hidden="true"></i>
     </span>
-    <span>Library</span>
+    <span>Home</span>
   </button>
-  <button class="rail__btn" data-nav="lesson">
-    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10H4zM8 19.5h8M12 15.5v4"/><path class="mo mo--read" d="M7.5 9h5M7.5 12h9"/></svg></span>
-    <span>Lesson</span>
+  <button class="rail__btn" data-nav="library">
+    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h5v16H4z"/><path class="mo mo--lib2" d="M11 4h4v16h-4z"/><path class="mo mo--lib3" d="M17.5 4.6l3.2 15.1"/></svg></span>
+    <span>Library</span>
   </button>
   <button class="rail__btn" data-nav="practice">
     <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path class="mo mo--back" d="M7 4.5h11a2 2 0 0 1 2 2V16"/><g class="mo mo--front"><rect x="3" y="7" width="14" height="12" rx="1.6"/><path class="mo--pen" d="M7 13.3l2.3 2.2 4.2-4.6" pathLength="1"/></g></svg></span>
@@ -3651,8 +3692,13 @@ button.wrow:active{transform:scale(.99)}
 
 <main class="shell">
 
+  <!-- ══════════════════ HOME ══════════════════ -->
+  <section class="view is-active" id="view-home">
+    <div class="wrap" id="homeWrap"><div id="homeBody"></div></div>
+  </section>
+
   <!-- ══════════════════ LIBRARY ══════════════════ -->
-  <section class="view is-active" id="view-library">
+  <section class="view" id="view-library">
     <div class="wrap">
       <div class="appbar">
         <div class="appbar__brand"><span class="appbar__mark" aria-hidden="true">S</span>Sprachlabor</div>
@@ -4369,7 +4415,7 @@ const state = {
     showClock: false,    // the running clock — the pill and the session readout. Off: the counting never depended on it
     ptab: "overview"
   },
-  view: "library",
+  view: null,            // set by the first route; nothing is on screen before it
   currentId: null,
   cwd: null,             // folder currently open in the library
   cal: null,             // month shown in the calendar
@@ -4389,7 +4435,7 @@ const state = {
    ago is then a class swap and nothing else, which is why it now lands
    on the same frame as the tap. */
 var painted = Object.create(null);
-var ALL_VIEWS = ["library", "lesson", "cards", "spell", "progress", "settings"];
+var ALL_VIEWS = ["home", "library", "lesson", "cards", "spell", "progress", "settings"];
 function invalidate() {
   const list = arguments.length ? Array.prototype.slice.call(arguments) : ALL_VIEWS;
   list.forEach(v => { delete painted[v]; });
@@ -5454,8 +5500,9 @@ let setNavTap = false;
 /* Cards and Spelling share the Practice tab, which opens whichever of
    the two was used last on this device */
 function practiceView() { return state.settings.practice === "spell" ? "spell" : "cards"; }
-/* the tab that stands for a screen; Settings has none, it lives in the menu */
-function tabOf(view) { return view === "cards" || view === "spell" ? "practice" : view; }
+/* the tab that stands for a screen; Settings has none, it lives in the menu,
+   and a file is a page inside Library */
+function tabOf(view) { return view === "cards" || view === "spell" ? "practice" : view === "lesson" ? "library" : view; }
 
 function go(view, id) {
   if (view === "practice") view = practiceView();
@@ -5474,7 +5521,7 @@ function go(view, id) {
 function applyRoute() {
   const raw = location.hash.replace(/^#\/?/, "");
   const parts = raw.split("/");
-  let view = parts[0] || "library";
+  let view = parts[0] || "home";
   let id = parts[1] ? decodeURIComponent(parts[1]) : null;
 
   if (view === "lesson") {
@@ -5501,7 +5548,7 @@ function applyRoute() {
   if (view === "cards" && id) state.cards.scope = id;
   if (view === "practice") view = practiceView();
   if (view === "cards" || view === "spell") state.settings.practice = view;
-  if (!["library", "lesson", "cards", "spell", "progress", "settings"].includes(view)) view = "library";
+  if (!["home", "library", "lesson", "cards", "spell", "progress", "settings"].includes(view)) view = "home";
 
   /* Two screens are studying rather than browsing: a passage, and the card
      desk. Both are timed. Leaving either books the time; arriving starts
@@ -5520,6 +5567,20 @@ function applyRoute() {
     if (active) active.classList.remove("is-active");
     if (node) node.classList.add("is-active");
   }
+  /* Home and Library share the one app bar; it moves to whichever of the two is showing */
+  const bar = $(".appbar"), wrap = node && node.firstElementChild;
+  if (bar && wrap && (view === "home" || view === "library") && bar.parentNode !== wrap) wrap.insertBefore(bar, wrap.firstChild);
+  /* A file slides in from the side it lives on, and the shelf slides back.
+     The class stays until the next swap: taking it off at animationend
+     would hand the view back to its fade, which would play a second time.
+     Both slides fill backwards only, so no transform is left behind. */
+  if (node && !sameView) {
+    if (active && active !== node) active.classList.remove("is-push", "is-back");
+    node.classList.remove("is-push", "is-back");
+    const dir = view === "lesson" && (prevView === "library" || prevView === "home") ? "is-push"
+      : view === "library" && prevView === "lesson" ? "is-back" : "";
+    if (dir) { node.offsetWidth; node.classList.add(dir); }
+  }
   let tab = null;
   $$(".rail__btn[data-nav]").forEach(b => {
     const on = b.dataset.nav === tabOf(view);
@@ -5531,12 +5592,14 @@ function applyRoute() {
   closeMenu();
 
   /* 2 — the body, only if it is actually out of date. */
-  const key = view + "|" + (view === "lesson" ? (id || "") : view === "settings" ? state.setSection
+  if (view === "home" && !sameView) homeVisit++;
+  const key = view + "|" + (view === "home" ? homeVisit : view === "lesson" ? (id || "") : view === "settings" ? state.setSection
     : view === "cards" ? state.cards.scope : view === "library" ? (state.cwd || "")
     : view === "spell" ? (spellCfg().scope + "\u0000" + spellCfg().deck + "\u0000" + libRev) : "");
   if (view === "progress" && !sameView) pmo.mode = "enter";
   if (painted[view] !== key) {
     painted[view] = key;
+    if (view === "home")     renderHome(!sameView);
     if (view === "library")  renderLibrary();
     if (view === "cards")    renderCards();
     if (view === "lesson")   { noteRecent(id); renderLesson(id); }
@@ -7144,6 +7207,7 @@ function startSession(entries, title, lid) {
   drill.counts = { hard: 0, learning: 0, known: 0 };
   drill.title = title || "Review";
   drill.lid = lid || null;
+  drill.pbase = 0; drill.resumed = false;
   drill.node = el("div", "drill");
   document.body.appendChild(drill.node);
   document.body.style.overflow = "hidden";
@@ -7160,6 +7224,7 @@ function startDrill(lesson, only) {
 function endDrill() {
   speech.stop();
   if (!drill.on) return;
+  notePending("dr", drill.entries.slice(drill.i), drill.title, drill.lid, drill.i, drill.pbase, drill.resumed);
   drill.on = false;
   /* full screen belongs to the session, so it ends with it */
   if (fullscreen.on()) fullscreen.exit();
@@ -7172,7 +7237,48 @@ function endDrill() {
   if (state.view === "cards") renderCards();
   if (state.view === "library") renderLibrary();
   if (state.view === "progress") renderProgress();
+  if (state.view === "home") renderHome();
   resumeViewClock();
+}
+
+/* ---------- the run you left early ----------
+   Leaving a review or a spelling run before its end keeps the cards
+   still to come, on this device only, so Home can offer them back.
+   A card is kept as its file, its place and its word, and found again
+   by the word when an edit has moved it. A run you open and close
+   without rating anything leaves the older one where it was. */
+function notePending(k, left, title, lid, done, base, resumed) {
+  if (left.length && done > 0) {
+    state.settings.pending = { k: k, t: title, lid: lid || null, n: (base || 0) + done + left.length,
+      left: left.slice(0, 400).map(e => [e.lid, e.i, e.v.word]), at: Date.now() };
+  } else if (!left.length && resumed) state.settings.pending = null;
+  else return;
+  writeProgress();
+}
+function pendingRun() {
+  const p = state.settings.pending;
+  return p && Array.isArray(p.left) && p.left.length ? p : null;
+}
+function resumePending() {
+  const p = pendingRun();
+  if (!p) return;
+  const entries = [];
+  p.left.forEach(r => {
+    const l = state.lessons.find(x => x.id === r[0]);
+    if (!l) return;
+    const i = l.vocabulary[r[1]] && l.vocabulary[r[1]].word === r[2] ? r[1] : l.vocabulary.findIndex(v => v.word === r[2]);
+    if (i >= 0) entries.push({ lid: l.id, i: i, v: l.vocabulary[i], src: fileName(l) });
+  });
+  if (!entries.length) {
+    state.settings.pending = null;
+    writeProgress();
+    if (state.view === "home") renderHome();
+    toast("Those cards have left the library, so there is nothing to resume", true);
+    return;
+  }
+  const base = Math.max(0, (p.n || 0) - p.left.length);
+  if (p.k === "sp") { startSpelling(entries, p.t, p.lid, true); if (spell.on) { spell.pbase = base; spell.resumed = true; } }
+  else { startSession(entries, p.t, p.lid); if (drill.on) { drill.pbase = base; drill.resumed = true; } }
 }
 
 const ICO_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -7939,6 +8045,9 @@ function readFiles(files) {
     try {
       addLessons(all);
       renderData();
+      /* the menu imports from Home and Library too, so the shelf you are on fills in */
+      if (state.view === "library") renderLibrary();
+      if (state.view === "home") renderHome();
     } catch (e) { toast(e.message || "That file isn’t a lesson", true); }
   });
 }
@@ -8077,6 +8186,18 @@ document.addEventListener("click", e => {
   if (rvf) {
     const l = state.lessons.find(x => x.id === rvf.dataset.reviewfile);
     if (l) startDrill(l, rvf.dataset.only || null);
+    return;
+  }
+
+  /* Home */
+  if (t.closest("[data-hresume]")) { resumePending(); return; }
+  if (t.closest("[data-himport]")) { $("#filePick").click(); return; }
+  const hdrop = t.closest("[data-hdrop]");
+  if (hdrop) { dropPending(hdrop.closest(".hitem")); return; }
+  const hst = t.closest("[data-hst]");
+  if (hst) {
+    const want = hst.dataset.hst;
+    startSession(homeCards().list.filter(x => statusOf(x.lid, x.v) === want), HOME_ST.find(x => x[0] === want)[1] + " cards");
     return;
   }
 
@@ -8629,7 +8750,7 @@ function mergeProgRec(cur, inc) {
 /* The settings that belong to this device and travel only to its own
    file on GitHub: what it looks like, how it reads, which voice. Where
    you last were in the app is not a setting, and neither is the token. */
-const DEV_SKIP = ["github", "deviceId", "lastSync", "cwd", "settingsSection", "practice", "ptab", "recent", "expanded"];
+const DEV_SKIP = ["github", "deviceId", "lastSync", "cwd", "settingsSection", "practice", "ptab", "recent", "expanded", "pending"];
 function devSettings() {
   const o = {};
   Object.keys(state.settings).forEach(k => { if (DEV_SKIP.indexOf(k) < 0) o[k] = state.settings[k]; });
@@ -9165,6 +9286,7 @@ const Sync = {
 
 /* what the screen does after something arrived from the other device */
 function afterRemote() {
+  if (state.view === "home") renderHome();
   if (state.view === "library") renderLibrary();
   if (state.view === "lesson" && !drill.on) renderLesson(state.currentId);
   if (state.view === "progress") renderProgress();
@@ -9449,7 +9571,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.7";
+const APP_VERSION = "3.8";
 
 function renderAbout() {
   const ver = $("#aboutVer"), facts = $("#aboutFacts");
@@ -11531,6 +11653,162 @@ function shelfLabel(text, n) {
     (n == null ? "" : "<b>" + n + "</b>") + '<span class="line"></span></div>';
 }
 
+/* ============================================================
+   HOME — the first screen. It answers three things in order: how
+   today stands, what was left half done, and where the cards are
+   weakest. Nothing on it is new data; it is the rest of the app,
+   gathered, and every part of it is a way into another screen.
+   ============================================================ */
+let homeVisit = 0;
+const HOME_ST = [["hard", "Hard", "var(--hard)"], ["learning", "Learning", "var(--learn)"], ["known", "Known", "var(--known)"]];
+function homeHello() {
+  const h = new Date().getHours();
+  return h >= 5 && h < 11 ? "Guten Morgen" : h >= 11 && h < 18 ? "Guten Tag" : "Guten Abend";
+}
+/* every card in the library once, the way the Cards pool counts them */
+function homeCards() {
+  const c = { hard: 0, learning: 0, known: 0, all: 0 }, seen = Object.create(null), list = [];
+  state.lessons.forEach(l => l.vocabulary.forEach((v, i) => {
+    const id = v.id || cardId(v.word);
+    if (id) { if (seen[id]) return; seen[id] = 1; }
+    const st = statusOf(l.id, v);
+    if (c[st] != null) c[st]++;
+    c.all++;
+    list.push({ lid: l.id, i: i, v: v, src: fileName(l) });
+  }));
+  return { c: c, list: list };
+}
+function homeStat(n, of, label, p) {
+  return "<div><b><i data-hcu=\"" + n + "\">" + n + "</i>" + (of != null ? "<small>/ " + of + "</small>" : "") + "</b>" +
+    "<span>" + label + "</span>" +
+    (p != null ? '<span class="meter"><i class="' + (p >= 1 ? "is-full" : "") + '" style="width:' + Math.round(Math.min(1, p) * 100) + '%"></i></span>' : "") +
+    "</div>";
+}
+function renderHome(enter) {
+  const host = $("#homeBody");
+  if (!host) return;
+  const D = dayStat(todayKey()), g = goals(), st = streakInfo();
+  const liveMs = liveTodayMs(), mins = Math.round(liveMs / 60000);
+  const met = D.rev >= g.cards || liveMs >= g.mins * 60000;
+  const cardsLeft = Math.max(0, g.cards - D.rev);
+  const minsLeft = Math.max(1, Math.ceil((g.mins * 60000 - liveMs) / 60000));
+  const P = pendingRun(), last = recentLessons(1)[0] || null, weak = weakestList(3), H = homeCards(), now = new Date();
+  const kind = P && P.k === "sp" ? "spelling" : "review";
+  const nextRun = LADDERS[0].steps.find(n => n > st.current) || st.current || 1;
+
+  /* the one sentence about today, and the one button that acts on it */
+  const line = met
+    ? "Today’s goal is met" + (st.current > 1 ? ", and your streak stands at " + plural(st.current, "day") : "") + ". Anything more is extra."
+    : st.today ? plural(cardsLeft, "card") + " or " + minsLeft + " min to go. Today already counts toward your streak."
+    : st.rest ? "Today is a rest day. Your streak is held, and nothing is lost by resting."
+    : st.current ? "Your " + st.current + "-day streak is waiting for today. One card keeps it going."
+    : "One card starts a streak. " + plural(g.cards, "card") + " or " + g.mins + " min meets the goal.";
+  const cta = P
+    ? '<button class="btn btn--primary" data-hresume="1">' + ICO_DRILL + "Resume " + kind + "</button>"
+    : !state.lessons.length
+      ? '<button class="btn btn--primary" data-himport="1">' + MI.up + "Import lessons</button>"
+      : weak[0]
+        ? '<button class="btn btn--primary" data-practice="' + esc(weak[0].l.id) + '" title="' + esc(weak[0].l.title) + '">' + ICO_DRILL +
+            (met ? "Keep going" : st.today ? "Continue" : "Start a review") + "</button>"
+        : last ? '<button class="btn btn--primary" data-open="' + esc(last.id) + '">' + MI.open + "Read on</button>" : "";
+
+  let pick = "";
+  if (P) {
+    const done = Math.max(0, (P.n || 0) - P.left.length);
+    pick += '<div class="hitem">' +
+      '<div class="hitem__top"><span class="eyebrow">Unfinished ' + kind + '</span><span class="hitem__when">' + esc(timeAgo(P.at)) + "</span></div>" +
+      '<div class="hitem__name">' + esc(P.t || "Review") + "</div>" +
+      '<div class="hitem__meta"><span class="meter"><i style="width:' + Math.round(done / Math.max(1, P.n) * 100) + '%"></i></span>' +
+        "<span>" + plural(P.left.length, "card") + " left</span></div>" +
+      '<div class="hitem__acts"><button class="btn btn--sm" data-hresume="1">' + ICO_DRILL + "Resume</button>" +
+        '<button class="btn btn--sm btn--ghost" data-hdrop="1">Let it go</button></div></div>';
+  }
+  if (last) {
+    const pct = lessonScore(last), n = last.vocabulary.length;
+    pick += '<div class="hitem">' +
+      '<div class="hitem__top"><span class="eyebrow">Last opened</span><span class="hitem__when">' + esc(last.level) + "</span></div>" +
+      '<div class="hitem__name">' + esc(fileName(last)) + "</div>" +
+      '<div class="hitem__meta"><span class="meter"><i class="' + (pct === 100 ? "is-full" : "") + '" style="width:' + pct + '%"></i></span>' +
+        "<span>" + pct + "% known</span></div>" +
+      '<div class="hitem__acts"><button class="btn btn--sm" data-open="' + esc(last.id) + '">' + MI.open + "Open</button>" +
+        (n ? '<button class="btn btn--sm btn--ghost" data-reviewfile="' + esc(last.id) + '">Study ' + plural(n, "card") + "</button>" : "") +
+      "</div></div>";
+  }
+  if (!pick) {
+    pick = '<div class="hitem"><div class="hitem__name">Nothing open yet</div>' +
+      '<p class="hitem__note">Open a file in the Library and it waits for you here.</p>' +
+      '<div class="hitem__acts"><button class="btn btn--sm" data-nav="library">Go to the Library</button></div></div>';
+  }
+
+  const cards = H.c.all
+    ? '<div class="mixbar">' + HOME_ST.map(x => H.c[x[0]] ? '<div style="flex:' + H.c[x[0]] + ";background:" + x[2] + '"></div>' : "").join("") + "</div>" +
+      '<div class="pickup">' + HOME_ST.map(x =>
+        '<button data-hst="' + x[0] + '"' + (H.c[x[0]] ? "" : " disabled") + ' title="Review every ' + x[1].toLowerCase() + ' card">' +
+          '<i class="hdot" style="background:' + x[2] + '"></i>' +
+          '<span class="pickup__t">' + x[1] + "</span>" +
+          '<span class="pickup__p">' + H.c[x[0]] + "</span>" +
+          '<span class="pickup__go">' + ICO_DRILL + "</span>" +
+        "</button>").join("") + "</div>" +
+      '<div class="hcards__foot"><button class="btn btn--sm btn--ghost" data-nav="practice">Open the card desk</button></div>'
+    : '<p class="hitem__note">Cards arrive with every file you import.</p>';
+
+  const rec = recentLessons(5).slice(1);
+  const body = !state.lessons.length
+    ? '<div class="empty"><h3>Nothing to study yet</h3>' +
+        "<p>Import a paragraph file or a deck file and this page fills in: today’s goal, the file you had open and the cards that need you most.</p>" +
+        '<div class="empty__acts"><button class="btn" data-goto="settings/data">How files are made</button></div></div>'
+    : '<div class="cols">' +
+        '<div class="panel hpick"><h3>Pick up</h3><p>Where you left off, one tap from carrying on.</p>' + pick + "</div>" +
+        '<div class="panel hcards"><h3>Your cards</h3><p>' + plural(H.c.all, "card") + " across " + plural(state.lessons.length, "file") +
+          ". Tap a row to review those cards.</p>" + cards + "</div>" +
+      "</div>" +
+      (rec.length ? shelfLabel("Recently opened", rec.length) + '<div class="recent">' + rec.map(recentCard).join("") + "</div>" : "") +
+      (weak.length ? shelfLabel("Weakest files") +
+        '<div class="pickup hweak">' + weak.map(x =>
+          '<button data-practice="' + esc(x.l.id) + '">' +
+            '<span class="pickup__t">' + esc(fileName(x.l)) + "</span>" +
+            '<span class="pickup__m"><i style="width:' + x.pct + '%"></i></span>' +
+            '<span class="pickup__p">' + x.pct + "%</span>" +
+            '<span class="pickup__go">' + ICO_DRILL + "</span>" +
+          "</button>").join("") + "</div>" : "");
+
+  host.innerHTML =
+    '<header class="page-head home-head">' +
+      '<div><span class="eyebrow">' + DOW3[now.getDay()] + " · " + now.getDate() + " " + MONTHS[now.getMonth()] + "</span>" +
+        "<h1 lang=\"de\">" + homeHello() + ".</h1><p>" + esc(line) + "</p></div>" +
+      (cta ? '<div class="page-head__actions">' + cta + "</div>" : "") +
+    "</header>" +
+    '<div class="stats hstats">' +
+      homeStat(st.current, null, "Day streak", st.current / nextRun) +
+      homeStat(D.rev, g.cards, "Cards today", D.rev / g.cards) +
+      homeStat(mins, g.mins, "Minutes today", liveMs / (g.mins * 60000)) +
+      homeStat(H.c.known, H.c.all, "Words known", H.c.all ? H.c.known / H.c.all : 0) +
+    "</div>" + body;
+
+  /* arriving draws the page: blocks rise in turn, meters run out, figures count up */
+  host.classList.remove("is-lift", "is-grow");
+  if (!enter) return;
+  host.offsetWidth;
+  host.classList.add("is-lift", "is-grow");
+  if (!reducedMotion()) host.querySelectorAll("[data-hcu]").forEach(n => { if (+n.dataset.hcu) countTo(n, 0, +n.dataset.hcu); });
+}
+/* "Let it go": the block fades out, then what sat under it glides up into its place */
+function dropPending(item) {
+  state.settings.pending = null;
+  writeProgress();
+  toast("Let go. Every card keeps the rating you gave it.");
+  if (!item || reducedMotion()) { renderHome(); return; }
+  const next = item.nextElementSibling, y0 = next ? next.getBoundingClientRect().top : 0;
+  item.classList.add("is-leaving");
+  setTimeout(() => {
+    renderHome();
+    const now = next && $("#homeBody .hpick .hitem");
+    if (!now || !("animate" in now)) return;
+    const dy = y0 - now.getBoundingClientRect().top;
+    if (dy) now.animate([{ transform: "translateY(" + dy + "px)" }, { transform: "none" }], { duration: 260, easing: "cubic-bezier(.2,.7,.3,1)" });
+  }, 170);
+}
+
 function renderLibrary() {
   const layout = $("#libLayout");
   if (!layout) return;
@@ -11675,6 +11953,7 @@ const MI = {
   rename: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
   move:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V6a1 1 0 0 1 1-1h4l2 2.5h8a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M12 16v-5M9.5 13.5L12 11l2.5 2.5"/></svg>',
   add:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  up:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>',
   down:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v11M8 11l4 4 4-4M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>',
   trash:  ICO_TRASH,
   sync:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.1-5.1M4 13a8 8 0 0 0 14.1 5.1"/><path d="M4 4v5h5M20 20v-5h-5"/></svg>',
@@ -11685,9 +11964,11 @@ const MI = {
 /* the menu behind the dots in the app bar */
 function appMenu(anchor) {
   const items = [];
-  if (ghReady()) items.push({ id: "sync", label: "Sync now", icon: MI.sync, meta: Sync.busy ? "syncing" : timeAgo(state.settings.lastSync), run: () => syncNow(true) });
-  else items.push({ id: "sync", label: "Connect GitHub", icon: MI.sync, run: () => go("settings", "sync") });
+  /* syncing lives on the pill beside the dots; the menu only offers to set it up */
+  if (!ghReady()) items.push({ id: "sync", label: "Connect GitHub", icon: MI.sync, run: () => go("settings", "sync") });
   items.push(
+    /* the picker opens straight from the menu; the tap is the gesture it needs */
+    { id: "import", label: "Import lessons", icon: MI.up, meta: ".json", run: () => $("#filePick").click() },
     { id: "theme", label: "Dark mode", icon: MI.moon, on: () => state.settings.theme === "dark",
       run: () => setTheme(state.settings.theme === "dark" ? "light" : "dark") },
     "-",
@@ -12589,7 +12870,7 @@ function spCountView(e) {
   invalidate("library", "lesson", "cards", "progress");
 }
 
-function startSpelling(entries, title, lid) {
+function startSpelling(entries, title, lid, whole) {
   const cfg = spellCfg();
   if (!entries || !entries.length) { toast("No words match that filter", true); return; }
   const usable = entries.filter(e => spUsable(e.v));
@@ -12601,7 +12882,7 @@ function startSpelling(entries, title, lid) {
   if (skipped) toast(skipped + (skipped === 1 ? " card was" : " cards were") + " left out — nothing on them to ask from");
 
   let queue = spellOrder(usable);
-  if (cfg.len) queue = queue.slice(0, cfg.len);
+  if (cfg.len && !whole) queue = queue.slice(0, cfg.len);
 
   clock.end();
   closePop(); closeReadPop();
@@ -12615,6 +12896,7 @@ function startSpelling(entries, title, lid) {
   spell.misses = [];
   spell.title = title || "Spelling";
   spell.lid = lid || null;
+  spell.pbase = 0; spell.resumed = false;
   spell.node = el("div", "spell");
   document.body.appendChild(spell.node);
   document.body.style.overflow = "hidden";
@@ -12626,6 +12908,8 @@ function startSpelling(entries, title, lid) {
 function endSpelling() {
   speech.stop();
   if (!spell.on) return;
+  const spAt = Math.min(spell.entries.length, spell.i + (spell.phase === "marked" ? 1 : 0));
+  notePending("sp", spell.entries.slice(spAt), spell.title, spell.lid, spAt, spell.pbase, spell.resumed);
   spell.on = false;
   spKeyboardWatch(false);
   if (fullscreen.on()) fullscreen.exit();
@@ -12637,6 +12921,7 @@ function endSpelling() {
   invalidate("spell");
   if (state.view === "spell")    { painted.spell = "spell|"; renderSpell(); }
   if (state.view === "lesson")   renderLesson(state.currentId);
+  if (state.view === "home")     renderHome();
   if (state.view === "cards")    renderCards();
   if (state.view === "library")  renderLibrary();
   if (state.view === "progress") renderProgress();
