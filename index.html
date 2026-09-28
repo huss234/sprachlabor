@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.15 · neural German, cached on device -->
+<!-- Sprachlabor — v3.16 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -196,12 +196,10 @@ ul,ol{margin:0;padding:0;list-style:none}
 .rail__btn[aria-current="true"] .mo--pen{stroke-dashoffset:0;transition:stroke-dashoffset .5s var(--ease) .16s}
 /* Progress: uneven bars settle into a rising run */
 .rail__btn[aria-current="true"] .mo--bars{d:path("M4 20V15M9.3 20V11.5M14.7 20V8M20 20V4.5")}
+/* Settings: the gear turns a sixth of a revolution, onto its next tooth */
+.rail .mo--gear{transform-box:fill-box;transform-origin:50% 50%}
+.rail__btn[aria-current="true"] .mo--gear{transform:rotate(60deg)}
 .rail__spacer{flex:1}
-.rail__word{
-  writing-mode:vertical-rl;transform:rotate(180deg);
-  font-size:10px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;
-  color:var(--ink-3);opacity:.65;margin-bottom:12px;user-select:none;
-}
 
 /* ============================================================
    SHELL
@@ -1193,7 +1191,7 @@ pre.spec b{color:var(--signal);font-weight:500}
     justify-content:space-around;padding:0 8px;border-right:none;border-top:1px solid var(--rule);
     padding-bottom:env(safe-area-inset-bottom);
   }
-  .rail__mark,.rail__word,.rail__spacer{display:none}
+  .rail__mark,.rail__spacer{display:none}
   .rail__btn{width:auto;flex:1;max-width:88px;padding:8px 0 6px}
   .shell{margin-left:0;padding-bottom:64px}
   .wrap{padding:0 20px}
@@ -2196,7 +2194,8 @@ pre.spec b{color:var(--signal);font-weight:500}
   .rail__btn span{font-size:8.5px;letter-spacing:.06em}
   .rail__ico{width:20px;height:20px}
   .rail__ico svg{width:18px;height:18px}
-  .rail__sep,#themeBtn{display:none}
+  /* the bottom bar keeps its four tabs; Settings is in the ⋮ menu there */
+  .rail__sep,.rail__btn[data-nav="settings"]{display:none}
   .shell{padding-bottom:66px}
   .scope{padding:13px 15px}
   .scope__nums{gap:16px}
@@ -3983,11 +3982,10 @@ button.wrow:active{transform:scale(.99)}
   </button>
   <div class="rail__spacer"></div>
   <div class="rail__sep" aria-hidden="true"></div>
-  <button class="rail__btn" id="themeBtn" title="Switch between light and dark">
-    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></span>
-    <span>Theme</span>
+  <button class="rail__btn" data-nav="settings">
+    <span class="rail__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><g class="mo mo--gear"><circle cx="12" cy="12" r="3.1"/><path d="M19.4 14.6a1.5 1.5 0 0 0 .3 1.7l.1.1a1.8 1.8 0 1 1-2.6 2.6l-.1-.1a1.5 1.5 0 0 0-1.7-.3 1.5 1.5 0 0 0-.9 1.4v.2a1.8 1.8 0 1 1-3.6 0V20a1.5 1.5 0 0 0-1-1.4 1.5 1.5 0 0 0-1.7.3l-.1.1a1.8 1.8 0 1 1-2.6-2.6l.1-.1a1.5 1.5 0 0 0 .3-1.7 1.5 1.5 0 0 0-1.4-.9H4a1.8 1.8 0 1 1 0-3.6h.2a1.5 1.5 0 0 0 1.3-1 1.5 1.5 0 0 0-.3-1.7l-.1-.1a1.8 1.8 0 1 1 2.6-2.6l.1.1a1.5 1.5 0 0 0 1.7.3H9.7a1.5 1.5 0 0 0 .9-1.4V4a1.8 1.8 0 1 1 3.6 0v.2a1.5 1.5 0 0 0 .9 1.4 1.5 1.5 0 0 0 1.7-.3l.1-.1a1.8 1.8 0 1 1 2.6 2.6l-.1.1a1.5 1.5 0 0 0-.3 1.7v.1a1.5 1.5 0 0 0 1.4.9h.2a1.8 1.8 0 1 1 0 3.6H20a1.5 1.5 0 0 0-1.4.9z"/></g></svg></span>
+    <span>Settings</span>
   </button>
-  <div class="rail__word">Sprachlabor</div>
 </nav>
 
 <main class="shell">
@@ -5962,7 +5960,12 @@ function railPlate(btn, still) {
   if (!ind) return;
   const rail = ind.parentNode;
   if (!btn) { ind.classList.remove("is-on"); plate.at = null; return; }
-  if (!btn.offsetWidth) return;              // rail hidden; the observer places it later
+  if (!btn.offsetWidth) {
+    /* the rail hidden: the observer places it later. The tab alone hidden
+       (Settings on the bottom bar): no tab is lit, so no plate */
+    if (rail.offsetWidth) { ind.classList.remove("is-on"); plate.at = btn; }
+    return;
+  }
   let from = null;
   if (plate.anim) {
     /* a tap mid-travel sets off from wherever the plate is now */
@@ -8513,9 +8516,6 @@ document.addEventListener("click", e => {
   const lcard = t.closest("[data-open], .lcard");
   if (lcard && lcard.dataset.open) { go("lesson", lcard.dataset.open); return; }
 
-  /* theme */
-  if (t.closest("#themeBtn")) { setTheme(state.settings.theme === "dark" ? "light" : "dark"); return; }
-
   /* translation mode — the same setting, reachable from the reader or from Settings */
   const tr = t.closest("[data-tr]");
   if (tr) {
@@ -9872,7 +9872,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.15";
+const APP_VERSION = "3.16";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
