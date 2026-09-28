@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.27 · neural German, cached on device -->
+<!-- Sprachlabor — v3.28 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -2984,7 +2984,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .drill > *{position:relative;z-index:1}
 
 /* ---------- the bar: close · progress · counter ---------- */
-.drill__bar{gap:16px;padding:11px 20px;align-items:center}
+.drill__bar{flex-direction:column;align-items:stretch;gap:9px;padding:12px 20px 11px}
 .dclose{
   display:flex;align-items:center;justify-content:center;flex:none;
   width:34px;height:34px;border-radius:100px;border:1px solid var(--rule);
@@ -2993,17 +2993,22 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 }
 .dclose svg{width:15px;height:15px;stroke-width:2.2}
 .dclose:hover{background:var(--surface-2);color:var(--ink);border-color:var(--ink-3)}
-.dhead{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
-.dhead__row{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
-.dhead__title{
-  font-size:12.5px;font-weight:600;color:var(--ink-2);letter-spacing:-.005em;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+/* first line: close, what this is, where you are, the two keys; the
+   second and third: how the session is going, as a rail and its tally */
+.sbar__top{display:flex;align-items:center;gap:10px;min-height:38px}
+.sbar__ttl{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.sbar__eye{
+  display:flex;align-items:center;gap:8px;min-height:12px;min-width:0;overflow:hidden;font-size:9.5px;font-weight:700;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
 }
-.dhead__title b{
-  font-family:var(--sans);font-size:9.5px;font-weight:700;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--ink-3);margin-right:9px;
+.sbar__w{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sbar__eye .dtimer{height:18px;padding:0 7px;gap:5px;font-size:11px;letter-spacing:-.01em}
+.sbar__ttl b{
+  font-size:14.5px;font-weight:600;letter-spacing:-.012em;color:var(--ink);line-height:1.2;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.dhead__pct{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink-3);flex:none;letter-spacing:.02em}
+.sbar__top .dcount{margin:0 4px 0 6px}
+@media (max-width:340px){.sbar__w{display:none}}
 .drail{
   display:flex;height:7px;border-radius:100px;background:var(--rule-2);
   overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);
@@ -3012,13 +3017,14 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 .drail .s-hard{background:var(--hard)}
 .drail .s-learning{background:var(--learn)}
 .drail .s-known{background:var(--known)}
-.dlegend{display:flex;gap:14px;flex-wrap:wrap}
+.dlegend{display:flex;justify-content:space-between;gap:12px}
 .dleg{
   display:inline-flex;align-items:center;gap:6px;font-size:9.5px;font-weight:700;
-  letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
+  letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;
 }
 .dleg i{width:6px;height:6px;border-radius:100px;background:currentColor;flex:none}
-.dleg b{font-family:var(--mono);font-size:11px;letter-spacing:0}
+.dleg b{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:0;color:var(--ink)}
+@media (min-width:721px){.dlegend{justify-content:flex-start;gap:28px}}
 .dleg--hard{color:var(--hard)}
 .dleg--learning{color:var(--learn)}
 .dleg--known{color:var(--known)}
@@ -3127,9 +3133,8 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 }
 
 @media (max-width:720px){
-  .drill__bar{gap:11px;padding:10px 14px}
-  .dhead__title b{display:none}
-  .dlegend{gap:10px}
+  .drill__bar{gap:8px;padding:10px 14px 10px}
+  .sbar__top{gap:8px}
   .dcount b{font-size:18px}
   .drill__stage{padding:16px 14px}
   .dstack .drill__card{padding:22px 20px 18px 23px;min-height:clamp(250px,42vh,360px)}
@@ -3571,8 +3576,8 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 /* on a phone the session bar is already carrying a close key, a rail, a
    legend and a counter, so the reading key gives back what it can */
 @media (max-width:720px){
-  .drill__bar [data-readpop]{width:30px;height:30px}
-  .drill__bar .dclose .aaico{font-size:13px}
+  .sbar__top [data-readpop],.sbar__top [data-dfs]{width:32px;height:32px}
+  .sbar__top .dclose .aaico{font-size:13px}
 }
 
 .rquick{
@@ -3747,7 +3752,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 }
 .spell > *{position:relative;z-index:1}
 .wbar{
-  display:flex;align-items:center;gap:16px;padding:11px 20px;
+  display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:12px 20px 11px;
   border-bottom:1px solid var(--rule);background:var(--surface);flex:none;
 }
 .wrail{
@@ -3983,7 +3988,7 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
   .rail__btn span{font-size:8px;letter-spacing:.04em}
 }
 @media (max-width:720px){
-  .wbar{gap:11px;padding:10px 14px}
+  .wbar{gap:8px;padding:10px 14px}
   .wstage{padding:14px 13px}
   .wcard{padding:18px 17px 16px;gap:13px}
   .wfoot{padding:10px 13px calc(11px + env(safe-area-inset-bottom))}
@@ -8183,31 +8188,32 @@ function drillRail(total) {
     '<span class="s-known" style="width:' + w("known") + '"></span>' +
   "</span>";
 }
-function drillBar(done, total) {
-  const pct = total ? Math.round((done / total) * 100) : 0;
-  return '<div class="drill__bar">' +
-    '<button type="button" class="dclose" data-drill-close="1" title="Close the session (Esc)" aria-label="Close the session">' + ICO_X + "</button>" +
-    '<div class="dhead">' +
-      '<div class="dhead__row">' +
-        '<span class="dhead__title"><b>Reviewing</b>' + esc(drill.title) + "</span>" +
-        timerChip() +
-        '<span class="dhead__pct">' + pct + "%</span>" +
-      "</div>" +
-      drillRail(total) +
-      '<div class="dlegend">' + STATUS_ORDER.map(k =>
-        '<span class="dleg dleg--' + k + '"><i></i>' + STATUS_META[k].label +
-        " <b>" + drill.counts[k] + "</b></span>").join("") + "</div>" +
+/* The bar over a practice session, the same for cards and spelling: the
+   close key, what this is and where you are, and the two reading keys on
+   the first line; the rail and its tally, full width, beneath. */
+function sessBar(cls, word, title, closeAttr, pos, total, rail, tally) {
+  const fs = fullscreen.ok()
+    ? '<button type="button" class="dclose" data-dfs="1" aria-pressed="' + String(fullscreen.on()) +
+      '" title="' + (fullscreen.on() ? "Leave full screen" : "Full screen") +
+      '" aria-label="' + (fullscreen.on() ? "Leave full screen" : "Full screen") + '">' +
+      (fullscreen.on() ? ICO_FS_OUT : ICO_FS_IN) + "</button>"
+    : "";
+  return '<div class="' + cls + '">' +
+    '<div class="sbar__top">' +
+      '<button type="button" class="dclose" ' + closeAttr + ' title="Close the session (Esc)" aria-label="Close the session">' + ICO_X + "</button>" +
+      '<div class="sbar__ttl"><span class="sbar__eye"><span class="sbar__w">' + word + "</span>" + timerChip() + "</span><b>" + esc(title) + "</b></div>" +
+      '<div class="dcount"><b>' + Math.min(pos + 1, total) + '</b><span>/ ' + total + "</span></div>" +
+      fs +
+      '<button type="button" class="dclose" data-readpop="1" aria-expanded="false" title="Text size and what a card shows" aria-label="Text size">' + ICO_AA + "</button>" +
     "</div>" +
-    '<div class="dcount"><b>' + Math.min(done + 1, total) + '</b><span>/ ' + total + "</span></div>" +
-    (fullscreen.ok()
-      ? '<button type="button" class="dclose" data-dfs="1" aria-pressed="' + String(fullscreen.on()) +
-        '" title="' + (fullscreen.on() ? "Leave full screen" : "Full screen") +
-        '" aria-label="' + (fullscreen.on() ? "Leave full screen" : "Full screen") + '">' +
-        (fullscreen.on() ? ICO_FS_OUT : ICO_FS_IN) + "</button>"
-      : "") +
-    '<button type="button" class="dclose" data-readpop="1" aria-expanded="false" title="Text size and what a card shows" aria-label="Text size">' +
-      ICO_AA + "</button>" +
+    rail + tally +
   "</div>";
+}
+function drillBar(done, total) {
+  return sessBar("drill__bar", "Reviewing", drill.title, 'data-drill-close="1"', done, total, drillRail(total),
+    '<div class="dlegend">' + STATUS_ORDER.map(k =>
+      '<span class="dleg dleg--' + k + '"><i></i>' + STATUS_META[k].label +
+      " <b>" + drill.counts[k] + "</b></span>").join("") + "</div>");
 }
 
 function paintDrill() {
@@ -10769,7 +10775,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.27";
+const APP_VERSION = "3.28";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -14623,37 +14629,18 @@ function spKeyboardWatch(on) {
 /* ---------- the bar ---------- */
 function spellBar() {
   const total = spell.entries.length;
-  const done = spell.done;
-  const pct = total ? Math.round((done / total) * 100) : 0;
   const w = k => (total ? (spell.counts[k] / total) * 100 : 0) + "%";
-  return '<div class="wbar">' +
-    '<button type="button" class="dclose" data-spclose="1" title="Close the session (Esc)" aria-label="Close the session">' + ICO_X + "</button>" +
-    '<div class="dhead">' +
-      '<div class="dhead__row">' +
-        '<span class="dhead__title"><b>Writing</b>' + esc(spell.title) + "</span>" +
-        timerChip() +
-        '<span class="dhead__pct">' + pct + "%</span>" +
-      "</div>" +
-      '<span class="wrail">' +
-        '<span class="s-ok" style="width:' + w("ok") + '"></span>' +
-        '<span class="s-near" style="width:' + w("near") + '"></span>' +
-        '<span class="s-no" style="width:' + w("no") + '"></span>' +
-      "</span>" +
-      '<div class="dlegend">' +
-        '<span class="dleg dleg--ok"><i></i>Right <b>' + spell.counts.ok + "</b></span>" +
-        '<span class="dleg dleg--near"><i></i>Almost <b>' + spell.counts.near + "</b></span>" +
-        '<span class="dleg dleg--no"><i></i>Missed <b>' + spell.counts.no + "</b></span>" +
-      "</div>" +
-    "</div>" +
-    '<div class="dcount"><b>' + Math.min(spell.i + 1, total) + '</b><span>/ ' + total + "</span></div>" +
-    (fullscreen.ok()
-      ? '<button type="button" class="dclose" data-dfs="1" aria-pressed="' + String(fullscreen.on()) +
-        '" title="' + (fullscreen.on() ? "Leave full screen" : "Full screen") + '" aria-label="Full screen">' +
-        (fullscreen.on() ? ICO_FS_OUT : ICO_FS_IN) + "</button>"
-      : "") +
-    '<button type="button" class="dclose" data-readpop="1" aria-expanded="false" title="Text size and what a card shows" aria-label="Text size">' +
-      ICO_AA + "</button>" +
-  "</div>";
+  return sessBar("wbar", "Writing", spell.title, 'data-spclose="1"', spell.i, total,
+    '<span class="wrail">' +
+      '<span class="s-ok" style="width:' + w("ok") + '"></span>' +
+      '<span class="s-near" style="width:' + w("near") + '"></span>' +
+      '<span class="s-no" style="width:' + w("no") + '"></span>' +
+    "</span>",
+    '<div class="dlegend">' +
+      '<span class="dleg dleg--ok"><i></i>Right <b>' + spell.counts.ok + "</b></span>" +
+      '<span class="dleg dleg--near"><i></i>Almost <b>' + spell.counts.near + "</b></span>" +
+      '<span class="dleg dleg--no"><i></i>Missed <b>' + spell.counts.no + "</b></span>" +
+    "</div>");
 }
 
 /* ---------- the prompt ---------- */
