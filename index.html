@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.19 · neural German, cached on device -->
+<!-- Sprachlabor — v3.20 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -241,12 +241,14 @@ ul,ol{margin:0;padding:0;list-style:none}
 .view.is-active.is-back{animation:setmenu .26s var(--ease) var(--out) backwards}
 .view.is-active:is(.is-push,.is-back) > .wrap > *{animation-name:fade}
 
+/* a screen names itself and nothing more: the title, its actions on the
+   same line, one rule underneath */
 .page-head{
-  display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
-  padding-bottom:16px;border-bottom:1px solid var(--rule);margin-bottom:28px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;
+  padding-bottom:14px;border-bottom:1px solid var(--rule);margin-bottom:24px;
 }
-.page-head h1{font-size:27px;font-weight:600;letter-spacing:-.022em;line-height:1.15}
-.page-head p{font-size:13px;color:var(--ink-2);margin-top:5px;max-width:52ch}
+/* one button high, so a screen without actions keeps the same header */
+.page-head h1{font-size:27px;font-weight:600;letter-spacing:-.022em;line-height:38px}
 .page-head__actions{display:flex;gap:8px;flex:none}
 
 /* ---------- app bar — the name on the left; on the right, whether
@@ -930,11 +932,10 @@ body.has-sheet .toasts{bottom:auto;top:22px}
    VOCABULARY / FLASHCARDS
    ============================================================ */
 .section-head{
-  display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
   padding-bottom:14px;border-bottom:1px solid var(--rule);margin:52px 0 22px;
 }
 .section-head h2{font-size:19px;font-weight:600;letter-spacing:-.015em}
-.section-head p{font-size:12.5px;color:var(--ink-3);margin-top:4px}
 .section-head__actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
 .grid-cards{
@@ -1222,9 +1223,8 @@ pre.spec b{color:var(--signal);font-weight:500}
   .view{padding-top:24px}
   .toasts{left:16px;right:16px;bottom:76px}
   .drill__foot{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
-  .page-head{flex-direction:column;align-items:flex-start;gap:14px}
-  .page-head__actions{width:100%}
-  .page-head__actions .btn{flex:1;justify-content:center}
+  .page-head{padding-bottom:12px;margin-bottom:20px}
+  .page-head h1{font-size:23px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
@@ -2208,7 +2208,6 @@ pre.spec b{color:var(--signal);font-weight:500}
 #view-settings.is-active .setnav{animation:lift .34s var(--ease) var(--out) backwards}
 .setsec__head{margin-bottom:18px}
 .setsec__head h2{font-size:19px;font-weight:600;letter-spacing:-.018em}
-.setsec__head p{font-size:13px;color:var(--ink-2);margin-top:4px;max-width:62ch;line-height:1.6}
 .panel--danger{border-color:color-mix(in srgb,var(--die) 30%,var(--rule))}
 
 @media (max-width:640px){
@@ -4092,7 +4091,6 @@ button.wrow:active{transform:scale(.99)}
       <header class="page-head">
         <div>
           <h1>Library</h1>
-          <p>Every file you own, filed the way you want it. Open one to read it, or send it straight to the cards.</p>
         </div>
         <div class="page-head__actions">
           <button class="btn" id="btnNewFolder" data-newfolder="root">
@@ -4157,9 +4155,7 @@ button.wrow:active{transform:scale(.99)}
       </div>
       <header class="page-head">
         <div>
-          <div class="eyebrow" style="margin-bottom:8px">Every card in the app</div>
           <h1>Cards</h1>
-          <p>Every card you own, sorted into decks by how well you know it. Open a deck to study only those cards — the hard ones on their own, or everything at once.</p>
         </div>
         <div class="page-head__actions">
           <button class="btn" id="btnSpellSlice">Spell</button>
@@ -4198,9 +4194,7 @@ button.wrow:active{transform:scale(.99)}
       </div>
       <header class="page-head">
         <div>
-          <div class="eyebrow" style="margin-bottom:8px">Schreibprobe · write it from memory</div>
           <h1>Spelling</h1>
-          <p>The review deck asks what a word means. This asks it the other way round — here is the meaning, here is its sentence with the word cut out of it, now write the German. Nothing new to import: every prompt is built from cards you already own.</p>
         </div>
         <div class="page-head__actions">
           <button class="btn btn--primary" data-spbegin="1">Start writing</button>
@@ -4216,9 +4210,7 @@ button.wrow:active{transform:scale(.99)}
     <div class="wrap">
       <header class="page-head">
         <div>
-          <div class="eyebrow" style="margin-bottom:8px">Calendar &amp; statistics</div>
           <h1>Progress</h1>
-          <p>Every review, every minute and every word, laid out by day. Pick a day, a week or a month in the calendar and all five tabs below follow it.</p>
         </div>
         <div class="page-head__actions">
           <button class="btn" id="btnLogStudy">
@@ -4245,9 +4237,7 @@ button.wrow:active{transform:scale(.99)}
     <div class="wrap">
       <header class="page-head">
         <div>
-          <div class="eyebrow" style="margin-bottom:8px">Preferences &amp; storage</div>
           <h1>Settings</h1>
-          <p>Everything that shapes how the app behaves, in one place.</p>
         </div>
       </header>
 
@@ -4290,7 +4280,6 @@ button.wrow:active{transform:scale(.99)}
           <div class="setsec is-on" data-sec="look">
             <div class="setsec__head">
               <h2>Appearance</h2>
-              <p>The theme, the size of the text, and how a wide screen is used. Every change applies the moment you touch it and is stored on this device only — none of it changes a file in your library.</p>
             </div>
 
             <div class="panel">
@@ -4309,7 +4298,6 @@ button.wrow:active{transform:scale(.99)}
           <div class="setsec" data-sec="cards">
             <div class="setsec__head">
               <h2>Cards</h2>
-              <p>Which parts of a card are drawn. One switch changes every card in the app at once, and it is stored on this device only.</p>
             </div>
             <div id="readCards"></div>
           </div>
@@ -4318,7 +4306,6 @@ button.wrow:active{transform:scale(.99)}
           <div class="setsec" data-sec="study">
             <div class="setsec__head">
               <h2>Studying</h2>
-              <p>How a lesson opens, how a session starts, and the targets behind the ring, the week strip and the calendar on the Progress page.</p>
             </div>
 
             <div class="eyebrow setsub setsub--first">Lessons and sessions</div>
@@ -4374,7 +4361,6 @@ button.wrow:active{transform:scale(.99)}
           <div class="setsec" data-sec="voice">
             <div class="setsec__head">
               <h2>Voice</h2>
-              <p>The German voice that reads the cards aloud. It belongs to this device, so your phone and your tablet can sound different.</p>
             </div>
 
             <div class="panel">
@@ -4407,7 +4393,6 @@ button.wrow:active{transform:scale(.99)}
           <div class="setsec" data-sec="data">
             <div class="setsec__head">
               <h2>Add lessons</h2>
-              <p>Every lesson is one JSON file — a paragraph with its cards, or a deck of cards on its own. Make one with a prompt, then bring it in here.</p>
             </div>
 
             <div class="panel">
@@ -4473,7 +4458,6 @@ button.wrow:active{transform:scale(.99)}
           <div class="setsec" data-sec="files">
             <div class="setsec__head">
               <h2>Your files</h2>
-              <p>Everything stored on this device: what it holds, how to take it out, and how to start over.</p>
             </div>
 
             <div class="stats" id="statsRow" style="margin-bottom:22px"></div>
@@ -4504,7 +4488,6 @@ button.wrow:active{transform:scale(.99)}
           <div class="setsec" data-sec="sync">
             <div class="setsec__head">
               <h2>Sync</h2>
-              <p>Connect this device to your private GitHub folder so your tablet and your phone always hold the same library.</p>
             </div>
 
             <div class="panel" id="syncStatus"></div>
@@ -4562,7 +4545,6 @@ button.wrow:active{transform:scale(.99)}
           <div class="setsec" data-sec="reference">
             <div class="setsec__head">
               <h2>Reference</h2>
-              <p>The file shape the importer expects, and the spelling system used for pronunciation.</p>
             </div>
 
             <div class="panel">
@@ -4586,7 +4568,6 @@ button.wrow:active{transform:scale(.99)}
           <div class="setsec" data-sec="about">
             <div class="setsec__head">
               <h2>About</h2>
-              <p>What this app is, what each part of it does, and which copy you are running.</p>
             </div>
 
             <div class="panel about__hero">
@@ -7503,11 +7484,7 @@ function renderLesson(id) {
       : "") +
 
     '<div class="section-head">' +
-      "<div><h2>Cards</h2><p>" +
-        (isDeck
-          ? "Every card in this deck — translation, meaning, how to say it, and the rung you put it on."
-          : "One card for every single word in the paragraph. Tap a word above to open its card there, or work through them here.") +
-      "</p></div>" +
+      "<h2>Cards</h2>" +
       '<div class="section-head__actions">' +
         '<button class="btn btn--sm" data-readpop="1" aria-expanded="false" title="Text size and what a card shows">' +
           ICO_AA + "Reading</button>" +
@@ -10055,7 +10032,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.19";
+const APP_VERSION = "3.20";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
