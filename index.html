@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.16 · neural German, cached on device -->
+<!-- Sprachlabor — v3.17 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -206,12 +206,27 @@ ul,ol{margin:0;padding:0;list-style:none}
    ============================================================ */
 .shell{margin-left:var(--rail);min-height:100vh;display:flex;flex-direction:column}
 .wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 40px}
-/* The entrance used to run for a third of a second and slide the whole
-   panel. On a tab switch that reads as lag, so it is now a short fade
-   with no transform for the layout engine to chase. */
+/* The screen you leave no longer vanishes in one frame: leave() pins it
+   where it stood and fades it off on the leaving curve while the new one
+   arrives from the way you went (--vx/--vy, set by the router: along the
+   rail on a wide screen, along the bottom bar on a phone). The shift is
+   small and the new screen starts moving at once, so it reads as motion,
+   not lag. Backwards fill only, so no transform is left on the view. */
 .view{display:none;padding:34px 0 96px}
-.view.is-active{display:block;animation:rise .16s var(--ease) both}
+.view.is-active{display:block;animation:viewin .26s var(--ease) backwards}
 @keyframes rise{from{opacity:0}to{opacity:1}}
+@keyframes viewin{from{opacity:0;transform:translate(var(--vx,0px),var(--vy,0px))}}
+@keyframes leave{to{opacity:0;transform:translate(var(--lx,0px),var(--ly,0px))}}
+@media (prefers-reduced-motion:reduce){
+  @keyframes viewin{from{opacity:0}}
+  @keyframes leave{to{opacity:0}}
+}
+/* the theme change is one crossfade of the whole page (retheme()) */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.42s;animation-timing-function:var(--ease)}
+/* browsers without view transitions: every colour eases over instead */
+:root.is-retheme *,:root.is-retheme *::before,:root.is-retheme *::after{
+  transition:background-color .42s var(--ease),color .42s var(--ease),border-color .42s var(--ease),fill .42s var(--ease),stroke .42s var(--ease),box-shadow .42s var(--ease) !important;
+}
 /* a file is a page inside Library: it slides in from the side it lives on,
    and the shelf slides back the other way (setpage / setmenu below) */
 .view.is-active.is-push{animation:setpage .26s var(--ease) backwards}
@@ -2135,7 +2150,7 @@ pre.spec b{color:var(--signal);font-weight:500}
 .about__facts > div > b{font-size:13.5px;font-weight:500;line-height:1.5;overflow-wrap:anywhere}
 
 .setsec{display:none}
-.setsec.is-on{display:block;animation:rise .24s var(--ease) both}
+.setsec.is-on{display:block;animation:viewin .26s var(--ease) backwards}
 .setsec__head{margin-bottom:18px}
 .setsec__head h2{font-size:19px;font-weight:600;letter-spacing:-.018em}
 .setsec__head p{font-size:13px;color:var(--ink-2);margin-top:4px;max-width:62ch;line-height:1.6}
@@ -5799,6 +5814,59 @@ function practiceView() { return state.settings.practice === "spell" ? "spell" :
 /* the tab that stands for a screen; Settings has none, it lives in the menu,
    and a file is a page inside Library */
 function tabOf(view) { return view === "cards" || view === "spell" ? "practice" : view === "lesson" ? "library" : view; }
+/* set while a phone swaps the Settings menu for a section (or back), so
+   the section swap inside it does not play a second transition */
+let setFlip = false;
+
+/* ---------- leaving ----------
+   A screen or settings section that is replaced does not vanish in one
+   frame: it is pinned where it stands (fixed, clipped to the window, out
+   of the flow) and fades off on the leaving curve while its successor
+   arrives in the space it left. It is the real node, not a copy, so no id
+   is doubled; its own inline style comes back once it has gone. */
+const leaving = new Map();
+function leave(el, dx, dy) {
+  if (!el) return;
+  settle(el);
+  if (!el.getClientRects().length) return;
+  const r = el.getBoundingClientRect();
+  if (r.bottom <= 0 || r.top >= innerHeight) return;
+  const rec = { style: el.getAttribute("style"), inert: el.inert, t: 0, end: null, ghost: null };
+  const s = el.style;
+  s.setProperty("display", getComputedStyle(el).display, "important");
+  s.position = "fixed"; s.boxSizing = "border-box"; s.margin = "0";
+  s.top = r.top + "px"; s.left = r.left + "px"; s.width = r.width + "px";
+  s.height = Math.min(r.height, innerHeight - r.top) + "px";
+  s.overflow = "hidden"; s.pointerEvents = "none";
+  s.setProperty("--lx", dx + "px"); s.setProperty("--ly", dy + "px");
+  s.animation = "leave .18s cubic-bezier(.4,0,1,1) forwards";
+  el.inert = true;
+  rec.end = e => { if (e.target === el) settle(el); };
+  el.addEventListener("animationend", rec.end);
+  /* animationend is the way out; the timer only covers a hidden tab, where it never comes */
+  rec.t = setTimeout(() => settle(el), 1000);
+  leaving.set(el, rec);
+}
+function settle(el) {
+  const rec = el && leaving.get(el);
+  if (!rec) return;
+  leaving.delete(el);
+  clearTimeout(rec.t);
+  el.removeEventListener("animationend", rec.end);
+  if (rec.ghost) rec.ghost.remove();
+  if (rec.style === null) el.removeAttribute("style"); else el.setAttribute("style", rec.style);
+  el.inert = rec.inert;
+}
+/* which way a tab switch travels: down the rail on a wide screen, across
+   the bottom bar on a phone; Cards and Spelling sit side by side */
+const TAB_ORDER = ["home", "library", "practice", "progress", "settings"];
+function travel(from, to) {
+  const a = tabOf(from), b = tabOf(to), same = a === b;
+  const i = same ? +(from === "spell") : TAB_ORDER.indexOf(a);
+  const j = same ? +(to === "spell") : TAB_ORDER.indexOf(b);
+  const s = j > i ? 1 : j < i ? -1 : 0;
+  return same || matchMedia("(max-width:860px)").matches ? [s, 0] : [0, s];
+}
 
 function go(view, id) {
   if (view === "practice") view = practiceView();
@@ -5837,7 +5905,17 @@ function applyRoute() {
        on its own and a section on its own; a wide screen shows both,
        so there the flag changes nothing. */
     const sv = $("#view-settings"), menu = !setSect(id);
-    if (sv && sv.classList.contains("is-menu") !== menu) { sv.classList.toggle("is-menu", menu); window.scrollTo(0, 0); }
+    if (sv && sv.classList.contains("is-menu") !== menu) {
+      /* on a phone the menu and a section take turns: the one you leave
+         slides off the way it goes while the other slides in */
+      if (sv.classList.contains("is-active") && matchMedia("(max-width:860px)").matches) {
+        setFlip = true;
+        if (menu) leave($(".set__body", sv), 14, 0);
+        /* the list first: pinning the header first would pull the list up before it is measured */
+        else { leave($(".setnav", sv), -10, 0); leave($(".page-head", sv), -10, 0); }
+      }
+      sv.classList.toggle("is-menu", menu); window.scrollTo(0, 0);
+    }
     state.setFromMenu = setNavTap && !menu;
   }
   setNavTap = false;
@@ -5859,13 +5937,33 @@ function applyRoute() {
   closePop();
   const active = $(".view.is-active");
   const node = $("#view-" + view);
+  const dir = view === "lesson" && (prevView === "library" || prevView === "home") ? "is-push"
+    : view === "library" && prevView === "lesson" ? "is-back" : "";
   if (active !== node) {
+    /* the old screen fades off the way you are going, the new one comes in from ahead */
+    settle(node);
+    if (active && node) {
+      const [sx, sy] = dir ? [dir === "is-push" ? 1 : -1, 0] : travel(prevView, view);
+      leave(active, -10 * sx, -8 * sy);
+      node.style.setProperty("--vx", 18 * sx + "px");
+      node.style.setProperty("--vy", 14 * sy + "px");
+    }
     if (active) active.classList.remove("is-active");
     if (node) node.classList.add("is-active");
   }
-  /* Home and Library share the one app bar; it moves to whichever of the two is showing */
+  /* Home and Library share the one app bar; it moves to whichever of the two is showing.
+     The screen fading out keeps a copy in its place, so its content does not jump up. */
   const bar = $(".appbar"), wrap = node && node.firstElementChild;
-  if (bar && wrap && (view === "home" || view === "library") && bar.parentNode !== wrap) wrap.insertBefore(bar, wrap.firstChild);
+  if (bar && wrap && (view === "home" || view === "library") && bar.parentNode !== wrap) {
+    const rec = leaving.get(bar.closest(".view"));
+    if (rec && !rec.ghost) {
+      rec.ghost = bar.cloneNode(true);
+      rec.ghost.setAttribute("aria-hidden", "true");
+      $$("[id]", rec.ghost).forEach(n => n.removeAttribute("id"));
+      bar.parentNode.insertBefore(rec.ghost, bar);
+    }
+    wrap.insertBefore(bar, wrap.firstChild);
+  }
   /* A file slides in from the side it lives on, and the shelf slides back.
      The class stays until the next swap: taking it off at animationend
      would hand the view back to its fade, which would play a second time.
@@ -5873,8 +5971,6 @@ function applyRoute() {
   if (node && !sameView) {
     if (active && active !== node) active.classList.remove("is-push", "is-back");
     node.classList.remove("is-push", "is-back");
-    const dir = view === "lesson" && (prevView === "library" || prevView === "home") ? "is-push"
-      : view === "library" && prevView === "lesson" ? "is-back" : "";
     if (dir) { node.offsetWidth; node.classList.add(dir); }
   }
   let tab = null;
@@ -5904,6 +6000,7 @@ function applyRoute() {
     if (view === "progress") renderProgress();
     if (view === "settings") renderSettings();
   }
+  setFlip = false;
   if (view === "progress" && pmo.mode) progMotion();
   /* stepping off the page closes whatever deck was open, so coming back
      costs the five tiles and nothing else */
@@ -6036,9 +6133,30 @@ function recentLessons(n) {
 /* ---------- theme ---------- */
 function setTheme(t) {
   state.settings.theme = t;
-  document.documentElement.setAttribute("data-theme", t);
+  retheme(t);
   $$("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeSet === t)));
   saveProgress();
+}
+/* The page changes theme as one crossfade instead of every colour
+   snapping at once. With view transitions a still of the old theme fades
+   into the live new one; elsewhere every colour eases over for as long.
+   The callback applies whichever theme was asked for last, so two quick
+   taps can never land on the wrong one. */
+function retheme(t) {
+  const root = document.documentElement;
+  if ((retheme.want || root.getAttribute("data-theme")) === t) return;
+  retheme.want = t;
+  const put = () => root.setAttribute("data-theme", retheme.want);
+  if (document.hidden) return put();
+  if (document.startViewTransition) {
+    /* a second tap skips the first transition; its promise says so, harmlessly */
+    try { document.startViewTransition(put).ready.catch(() => {}); return; } catch (e) {}
+  }
+  root.classList.add("is-retheme");
+  getComputedStyle(root).color;
+  put();
+  clearTimeout(retheme.tm);
+  retheme.tm = setTimeout(() => root.classList.remove("is-retheme"), 460);
 }
 
 
@@ -9513,7 +9631,7 @@ const Sync = {
       .sort((a, b) => (b.at || 0) - (a.at || 0))[0];
     if (!best) return;
     Object.keys(best.settings).forEach(k => { if (DEV_SKIP.indexOf(k) < 0) state.settings[k] = best.settings[k]; });
-    document.documentElement.setAttribute("data-theme", state.settings.theme || "light");
+    retheme(state.settings.theme || "light");
     applyRead();
     saveProgress();
     this.log1("Settings restored from your other " + form);
@@ -9872,7 +9990,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.16";
+const APP_VERSION = "3.17";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -9959,6 +10077,17 @@ function setSection(sect) {
   if (moved) { invalidate("settings"); writeProgress(); }
   $$("#setNav button").forEach(b => b.setAttribute("aria-current", String(b.dataset.sect === sect)));
   const aboutWas = !!$('.setsec.is-on[data-sec="about"]');
+  /* the section you leave fades off, and the new one comes in from its
+     place in the list: from below when it sits further down, from above
+     when it sits higher up. A phone already slides the whole page. */
+  const was = $(".setsec.is-on"), nw = $('.setsec[data-sec="' + sect + '"]');
+  if (nw && was !== nw) {
+    settle(nw);
+    const order = $$("#setNav button").map(b => b.dataset.sect);
+    const s = !was || setFlip ? 0 : order.indexOf(sect) > order.indexOf(was.dataset.sec) ? 1 : -1;
+    if (s) leave(was, 0, -8 * s);
+    nw.style.setProperty("--vy", 12 * s + "px");
+  }
   $$(".setsec").forEach(n => n.classList.toggle("is-on", n.dataset.sec === sect));
   if (sect === "data" || sect === "files" || sect === "reference") renderData();
   if (sect === "sync") renderSyncStatus();
