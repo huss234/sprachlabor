@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.17 · neural German, cached on device -->
+<!-- Sprachlabor — v3.18 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -206,20 +206,26 @@ ul,ol{margin:0;padding:0;list-style:none}
    ============================================================ */
 .shell{margin-left:var(--rail);min-height:100vh;display:flex;flex-direction:column}
 .wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 40px}
-/* The screen you leave no longer vanishes in one frame: leave() pins it
-   where it stood and fades it off on the leaving curve while the new one
-   arrives from the way you went (--vx/--vy, set by the router: along the
-   rail on a wide screen, along the bottom bar on a phone). The shift is
-   small and the new screen starts moving at once, so it reads as motion,
-   not lag. Backwards fill only, so no transform is left on the view. */
-.view{display:none;padding:34px 0 96px}
-.view.is-active{display:block;animation:viewin .26s var(--ease) backwards}
+/* Changing screens is a fade-through, in two strokes that never overlap.
+   leave() pins the old screen where it stood and fades it out, still, in
+   --out. Only then does the new one arrive: its blocks rise in one after
+   another (`lift`), header first, 40ms apart. Chrome the two screens
+   share (the app bar, the Practice switch) stays put throughout.
+   Backwards fill only, so no transform is left behind. */
+.view{display:none;padding:34px 0 96px;--out:.1s}
+.view.is-active{display:block}
+.view.is-active > .wrap > *{animation:lift .34s var(--ease) backwards;animation-delay:calc(var(--out) + 4 * 40ms)}
+.view.is-active > .wrap > :nth-child(1){animation-delay:var(--out)}
+.view.is-active > .wrap > :nth-child(2){animation-delay:calc(var(--out) + 40ms)}
+.view.is-active > .wrap > :nth-child(3){animation-delay:calc(var(--out) + 2 * 40ms)}
+.view.is-active > .wrap > :nth-child(4){animation-delay:calc(var(--out) + 3 * 40ms)}
+.view.is-active > .wrap > :is(.appbar,.practab,.set){animation:none}
+/* Home runs its own cascade inside #homeBody, pushed back by --out */
+#view-home.is-active > .wrap > *{animation:none}
 @keyframes rise{from{opacity:0}to{opacity:1}}
-@keyframes viewin{from{opacity:0;transform:translate(var(--vx,0px),var(--vy,0px))}}
-@keyframes leave{to{opacity:0;transform:translate(var(--lx,0px),var(--ly,0px))}}
+@keyframes leave{to{opacity:0}}
 @media (prefers-reduced-motion:reduce){
-  @keyframes viewin{from{opacity:0}}
-  @keyframes leave{to{opacity:0}}
+  .view.is-active > .wrap > *{animation-name:fade}
 }
 /* the theme change is one crossfade of the whole page (retheme()) */
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.42s;animation-timing-function:var(--ease)}
@@ -227,10 +233,13 @@ ul,ol{margin:0;padding:0;list-style:none}
 :root.is-retheme *,:root.is-retheme *::before,:root.is-retheme *::after{
   transition:background-color .42s var(--ease),color .42s var(--ease),border-color .42s var(--ease),fill .42s var(--ease),stroke .42s var(--ease),box-shadow .42s var(--ease) !important;
 }
-/* a file is a page inside Library: it slides in from the side it lives on,
-   and the shelf slides back the other way (setpage / setmenu below) */
-.view.is-active.is-push{animation:setpage .26s var(--ease) backwards}
-.view.is-active.is-back{animation:setmenu .2s var(--ease) backwards}
+/* a file is a page inside Library: once the shelf has faded, the file
+   comes in from the side it lives on, and the shelf comes back the other
+   way (setpage / setmenu below); their blocks only fade, so the page moves
+   as one */
+.view.is-active.is-push{animation:setpage .3s var(--ease) var(--out) backwards}
+.view.is-active.is-back{animation:setmenu .26s var(--ease) var(--out) backwards}
+.view.is-active:is(.is-push,.is-back) > .wrap > *{animation-name:fade}
 
 .page-head{
   display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
@@ -1698,10 +1707,10 @@ pre.spec b{color:var(--signal);font-weight:500}
 
 /* arriving: blocks rise in turn (backwards fill only, so nothing stays
    transformed), the dial and bars draw from zero, figures count up */
-.hhome.is-enter > *{animation:lift .34s var(--ease) backwards;animation-delay:calc(var(--k) * 70ms)}
-.hhome.is-enter .hkpi{animation:lift .34s var(--ease) backwards;animation-delay:calc(70ms + var(--i) * 45ms)}
-.hhome.is-enter .hbook{animation:lift .34s var(--ease) backwards;animation-delay:calc(210ms + var(--i) * 45ms)}
-.hhome.is-enter .hbar i,.hhome.is-enter .hmix i{animation:growx .6s var(--ease) backwards;animation-delay:calc(.2s + var(--i) * 90ms)}
+.hhome.is-enter > *{animation:lift .34s var(--ease) backwards;animation-delay:calc(var(--out, 0s) + var(--k) * 70ms)}
+.hhome.is-enter .hkpi{animation:lift .34s var(--ease) backwards;animation-delay:calc(var(--out, 0s) + 70ms + var(--i) * 45ms)}
+.hhome.is-enter .hbook{animation:lift .34s var(--ease) backwards;animation-delay:calc(var(--out, 0s) + 210ms + var(--i) * 45ms)}
+.hhome.is-enter .hbar i,.hhome.is-enter .hmix i{animation:growx .6s var(--ease) backwards;animation-delay:calc(var(--out, 0s) + .2s + var(--i) * 90ms)}
 .hhome.is-arriving .harc{stroke-dashoffset:1 !important}
 .hhome.is-arriving .hheat i{opacity:0 !important}
 .hhome.is-arriving .hweek__d.is-met .hweek__r::after{transform:scale(.4);opacity:0}
@@ -2150,7 +2159,10 @@ pre.spec b{color:var(--signal);font-weight:500}
 .about__facts > div > b{font-size:13.5px;font-weight:500;line-height:1.5;overflow-wrap:anywhere}
 
 .setsec{display:none}
-.setsec.is-on{display:block;animation:viewin .26s var(--ease) backwards}
+/* sections fade through like screens: the old one fades out (leave()),
+   then the new one rises in, after the list beside it on the way in */
+.setsec.is-on{display:block;animation:lift .34s var(--ease) calc(var(--out) + 40ms) backwards}
+#view-settings.is-active .setnav{animation:lift .34s var(--ease) var(--out) backwards}
 .setsec__head{margin-bottom:18px}
 .setsec__head h2{font-size:19px;font-weight:600;letter-spacing:-.018em}
 .setsec__head p{font-size:13px;color:var(--ink-2);margin-top:4px;max-width:62ch;line-height:1.6}
@@ -2186,8 +2198,8 @@ pre.spec b{color:var(--signal);font-weight:500}
   .setnav button[aria-current="true"] .setnav__txt small{color:var(--ink-3);opacity:1}
   .setnav button:hover{background:none}
   .setnav button:active{background:var(--surface-2)}
-  #view-settings.is-menu .setnav{animation:setmenu .26s var(--ease) both}
-  #view-settings:not(.is-menu) .set__body{animation:setpage .3s var(--ease) both}
+  /* menu and section fade through too; the back button leads the section in */
+  #view-settings.is-active:not(.is-menu) .setback{animation:lift .34s var(--ease) var(--out) backwards}
   .about__facts div{grid-template-columns:minmax(0,1fr);gap:3px}
 }
 @keyframes setpage{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
@@ -5821,11 +5833,12 @@ let setFlip = false;
 /* ---------- leaving ----------
    A screen or settings section that is replaced does not vanish in one
    frame: it is pinned where it stands (fixed, clipped to the window, out
-   of the flow) and fades off on the leaving curve while its successor
-   arrives in the space it left. It is the real node, not a copy, so no id
-   is doubled; its own inline style comes back once it has gone. */
+   of the flow) and fades out, still, on the leaving curve. Its successor
+   waits out the same --out before it rises in, so the two never overlap.
+   It is the real node, not a copy, so no id is doubled; its own inline
+   style comes back once it has gone. */
 const leaving = new Map();
-function leave(el, dx, dy) {
+function leave(el) {
   if (!el) return;
   settle(el);
   if (!el.getClientRects().length) return;
@@ -5838,8 +5851,7 @@ function leave(el, dx, dy) {
   s.top = r.top + "px"; s.left = r.left + "px"; s.width = r.width + "px";
   s.height = Math.min(r.height, innerHeight - r.top) + "px";
   s.overflow = "hidden"; s.pointerEvents = "none";
-  s.setProperty("--lx", dx + "px"); s.setProperty("--ly", dy + "px");
-  s.animation = "leave .18s cubic-bezier(.4,0,1,1) forwards";
+  s.animation = "leave .1s cubic-bezier(.4,0,1,1) forwards";
   el.inert = true;
   rec.end = e => { if (e.target === el) settle(el); };
   el.addEventListener("animationend", rec.end);
@@ -5856,16 +5868,6 @@ function settle(el) {
   if (rec.ghost) rec.ghost.remove();
   if (rec.style === null) el.removeAttribute("style"); else el.setAttribute("style", rec.style);
   el.inert = rec.inert;
-}
-/* which way a tab switch travels: down the rail on a wide screen, across
-   the bottom bar on a phone; Cards and Spelling sit side by side */
-const TAB_ORDER = ["home", "library", "practice", "progress", "settings"];
-function travel(from, to) {
-  const a = tabOf(from), b = tabOf(to), same = a === b;
-  const i = same ? +(from === "spell") : TAB_ORDER.indexOf(a);
-  const j = same ? +(to === "spell") : TAB_ORDER.indexOf(b);
-  const s = j > i ? 1 : j < i ? -1 : 0;
-  return same || matchMedia("(max-width:860px)").matches ? [s, 0] : [0, s];
 }
 
 function go(view, id) {
@@ -5907,12 +5909,12 @@ function applyRoute() {
     const sv = $("#view-settings"), menu = !setSect(id);
     if (sv && sv.classList.contains("is-menu") !== menu) {
       /* on a phone the menu and a section take turns: the one you leave
-         slides off the way it goes while the other slides in */
+         fades out before the other rises in */
       if (sv.classList.contains("is-active") && matchMedia("(max-width:860px)").matches) {
         setFlip = true;
-        if (menu) leave($(".set__body", sv), 14, 0);
+        if (menu) leave($(".set__body", sv));
         /* the list first: pinning the header first would pull the list up before it is measured */
-        else { leave($(".setnav", sv), -10, 0); leave($(".page-head", sv), -10, 0); }
+        else { leave($(".setnav", sv)); leave($(".page-head", sv)); }
       }
       sv.classList.toggle("is-menu", menu); window.scrollTo(0, 0);
     }
@@ -5940,14 +5942,11 @@ function applyRoute() {
   const dir = view === "lesson" && (prevView === "library" || prevView === "home") ? "is-push"
     : view === "library" && prevView === "lesson" ? "is-back" : "";
   if (active !== node) {
-    /* the old screen fades off the way you are going, the new one comes in from ahead */
-    settle(node);
-    if (active && node) {
-      const [sx, sy] = dir ? [dir === "is-push" ? 1 : -1, 0] : travel(prevView, view);
-      leave(active, -10 * sx, -8 * sy);
-      node.style.setProperty("--vx", 18 * sx + "px");
-      node.style.setProperty("--vy", 14 * sy + "px");
-    }
+    /* the old screen fades out first; the new one rises in after it.
+       A screen still fading out that you come straight back to is put
+       back and hidden for one style pass, so its entrance plays again */
+    if (leaving.has(node)) { settle(node); getComputedStyle(node).display; }
+    if (active && node) leave(active);
     if (active) active.classList.remove("is-active");
     if (node) node.classList.add("is-active");
   }
@@ -9990,7 +9989,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.17";
+const APP_VERSION = "3.18";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -10077,16 +10076,12 @@ function setSection(sect) {
   if (moved) { invalidate("settings"); writeProgress(); }
   $$("#setNav button").forEach(b => b.setAttribute("aria-current", String(b.dataset.sect === sect)));
   const aboutWas = !!$('.setsec.is-on[data-sec="about"]');
-  /* the section you leave fades off, and the new one comes in from its
-     place in the list: from below when it sits further down, from above
-     when it sits higher up. A phone already slides the whole page. */
+  /* the section you leave fades out first, then the new one rises in
+     (on a phone the whole page is already fading through) */
   const was = $(".setsec.is-on"), nw = $('.setsec[data-sec="' + sect + '"]');
   if (nw && was !== nw) {
-    settle(nw);
-    const order = $$("#setNav button").map(b => b.dataset.sect);
-    const s = !was || setFlip ? 0 : order.indexOf(sect) > order.indexOf(was.dataset.sec) ? 1 : -1;
-    if (s) leave(was, 0, -8 * s);
-    nw.style.setProperty("--vy", 12 * s + "px");
+    if (leaving.has(nw)) { settle(nw); getComputedStyle(nw).display; }
+    if (was && !setFlip) leave(was);
   }
   $$(".setsec").forEach(n => n.classList.toggle("is-on", n.dataset.sec === sect));
   if (sect === "data" || sect === "files" || sect === "reference") renderData();
