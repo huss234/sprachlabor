@@ -4012,46 +4012,51 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 }
 
 /* The session with the keyboard up (`.is-tight`, set by spFitViewport when
-   the visible height drops under 560px). The keyboard takes half the
-   screen, so what stays has to be what typing needs: the bar folds to one
-   line (close, name, place, and the tally as dots with counts, the rail
-   thin beneath), the card loses its label lines and tightens, the longer
-   definition drops below the sentence and the hints, and the answer bar
-   gives up height to fit the article row when a noun asks for one. The
-   Aa and full-screen keys wait for the keyboard to go. `.is-tiny` (under
-   380px, a phone on its side) also drops the meta line and the rail. */
-.spell.is-tight .wbar{
-  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:7px 14px 8px;
-}
-.spell.is-tight .sbar__top{grid-column:1;grid-row:1;min-height:34px;gap:9px}
+   the visible height drops under 560px). Nothing is taken away: the keyboard
+   leaves about 460px, so every part gets denser and the card is then fitted
+   to what is left. The bar keeps all its keys and its tally on two slim
+   lines; the two labels stop being rows (It means sits beside the meaning,
+   Now fill the gap rides the top edge of the sentence); and spFit() measures
+   the card and shrinks its spacing first (--g) and its type a little
+   (--f, never below 78%) until the whole card is in view. The answer bar
+   only loses padding, and the umlaut keys share one line with Show me. Only a
+   card too long even at 78% still scrolls. */
+.spell.is-tight .wbar{gap:5px;padding:6px 14px 0}
+.spell.is-tight .sbar__top{min-height:34px;gap:8px}
 .spell.is-tight .sbar__top .dclose{width:32px;height:32px}
-.spell.is-tight .sbar__top .dclose:not([data-spclose]){display:none}
-.spell.is-tight .sbar__top .dcount{margin:0}
-.spell.is-tight .dcount b{font-size:17px}
-.spell.is-tight .dlegend{grid-column:2;grid-row:1;gap:9px;justify-content:flex-end}
-.spell.is-tight .dleg{font-size:0;gap:4px}
-.spell.is-tight .wrail{grid-column:1 / -1;grid-row:2;height:4px}
+.spell.is-tight .dcount b{font-size:18px}
+.spell.is-tight .dlegend{order:1}
+.spell.is-tight .wrail{order:2;height:4px;margin:1px -14px 0;border-radius:0;box-shadow:none}
 .spell.is-tight .wstage{padding:8px 13px}
-.spell.is-tight .wcard{padding:11px 15px 12px;gap:9px}
+.spell.is-tight .wcard{
+  padding:calc(11px * var(--g,1)) 15px calc(12px * var(--g,1));
+  display:grid;grid-template-columns:auto minmax(0,1fr);align-content:start;
+  column-gap:10px;row-gap:calc(9px * var(--g,1));
+}
+.spell.is-tight .wcard > *{grid-column:1 / -1}
 .spell.is-tight .wcard > *:not(.wtop){animation:fade .18s var(--ease) backwards}
 .spell.is-tight .wtop{padding-bottom:0;border-bottom:0}
-.spell.is-tight .wask{display:none}
-.spell.is-tight .wtr{font-size:calc(19px * var(--fs-card))}
-.spell.is-tight .wcard:not(.is-ok):not(.is-near):not(.is-no) .wdef{order:1}
-.spell.is-tight .wdef{font-size:calc(13px * var(--fs-card));line-height:1.5}
-.spell.is-tight .wcloze{padding:9px 12px;gap:4px}
-.spell.is-tight .wcloze__de{font-size:calc(16px * var(--fs-card));line-height:1.5}
-.spell.is-tight .wcloze__en{font-size:calc(12px * var(--fs-card));line-height:1.45}
+.spell.is-tight .wask{grid-column:1;align-self:center}
+.spell.is-tight .wask::after{display:none}
+.spell.is-tight .wask + .wtr,.spell.is-tight .wask + .wdef{grid-column:2}
+.spell.is-tight .wask:has(+ .wcloze){
+  grid-column:1 / -1;justify-self:start;align-self:start;position:relative;z-index:2;
+  height:12px;line-height:12px;margin:0 0 -12px 12px;padding:0 6px;background:var(--surface);
+  transform:translateY(calc(9px * var(--g,1) - 6px));
+}
+.spell.is-tight .wtr{font-size:calc(19px * var(--fs-card) * var(--f,1))}
+.spell.is-tight .wdef{font-size:calc(13px * var(--fs-card) * var(--f,1));line-height:1.5}
+.spell.is-tight .wcloze{padding:calc(9px * var(--g,1) + 4px) 12px calc(9px * var(--g,1));gap:calc(4px * var(--g,1))}
+.spell.is-tight .wcloze__de{font-size:calc(16px * var(--fs-card) * var(--f,1));line-height:1.5}
+.spell.is-tight .wcloze__en{font-size:calc(12px * var(--fs-card) * var(--f,1));line-height:1.45}
 .spell.is-tight .whintb{height:28px;padding:0 10px}
-.spell.is-tight .whintout{padding:7px 11px}
+.spell.is-tight .whintout{padding:calc(7px * var(--g,1)) 11px}
 .spell.is-tight .wfoot{padding:8px 13px calc(8px + env(safe-area-inset-bottom))}
 .spell.is-tight .wform{gap:7px}
 .spell.is-tight .winput{height:calc(46px * var(--fs-w));font-size:calc(20px * var(--fs-w));line-height:calc(46px * var(--fs-w) - 2px)}
 .spell.is-tight .wgo{width:96px}
-.spell.is-tight .wart{height:32px}
+.spell.is-tight .wart{height:30px}
 .spell.is-tight .wkey{height:34px}
-.spell.is-tiny .wtop,.spell.is-tiny .wrail{display:none}
-.spell.is-tiny .wart{height:28px}
 @media (prefers-reduced-motion:reduce){.spell.is-tight .wcard > *:not(.wtop){animation:none}}
 
 /* ════════════════════════════════════════════════════════════
@@ -14668,7 +14673,7 @@ function endSpelling() {
    up underneath it. The visual viewport knows better, so the overlay is
    sized from that instead and follows it up and down. What is left above
    the keyboard also decides the layout: under 560px the session goes
-   `.is-tight` (see its CSS), under 380px `.is-tiny`. */
+   `.is-tight` (see its CSS) and spFit() fits the card into what is left. */
 let spVVHandler = null;
 function spFitViewport() {
   const vv = window.visualViewport;
@@ -14677,7 +14682,40 @@ function spFitViewport() {
   spell.node.style.top = Math.round(vv.offsetTop) + "px";
   spell.node.style.bottom = "auto";
   spell.node.classList.toggle("is-tight", vv.height < 560);
-  spell.node.classList.toggle("is-tiny", vv.height < 380);
+  spFitSoon();
+}
+
+/* With the keyboard up the card is measured, not guessed: t runs from 0
+   (as designed) to 1 (spacing at a quarter, type at 78%), and the smallest
+   t at which the stage no longer scrolls is kept. Spacing goes first
+   because it costs nothing to read. If even t = 1 does not fit, the card
+   stays at t = 1 and the stage scrolls. Off the keyboard it is a no-op. */
+let spFitRaf = 0;
+function spFitSoon() {
+  if (spFitRaf) return;
+  spFitRaf = requestAnimationFrame(() => { spFitRaf = 0; spFit(); });
+}
+function spFit() {
+  const n = spell.node;
+  const st = n && n.querySelector(".wstage");
+  const card = st && st.querySelector(".wcard");
+  if (!card) return;
+  const put = t => {
+    card.style.setProperty("--f", (1 - 0.22 * t).toFixed(3));
+    card.style.setProperty("--g", (1 - 0.75 * t).toFixed(3));
+  };
+  const fits = () => st.scrollHeight <= st.clientHeight;
+  put(0);
+  if (!n.classList.contains("is-tight") || fits()) return;
+  put(1);
+  if (!fits()) return;
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 7; i++) {
+    const m = (lo + hi) / 2;
+    put(m);
+    if (fits()) hi = m; else lo = m;
+  }
+  put(hi);
 }
 function spKeyboardWatch(on) {
   const vv = window.visualViewport;
@@ -14881,6 +14919,7 @@ function paintSpell() {
     '<div class="wfoot">' + spellFoot(e) + "</div>";
 
   if (!marked) spFocus();
+  spFitSoon();
 }
 /* ---------- the answer box ----------
    One place reads it, one place writes it, one place drops a letter in
