@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.38 · neural German, cached on device -->
+<!-- Sprachlabor — v3.39 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -882,22 +882,19 @@ ul,ol{margin:0;padding:0;list-style:none}
 }
 .tok{border-radius:2px;transition:background .12s var(--ease),color .12s var(--ease)}
 .tok--vocab{
-  cursor:pointer;--tokc:var(--signal);
-  /* a real underline, not a painted strip: a strip at a fixed depth fell
-     outside the word's box whenever the font's box was shorter, and the
-     line quietly vanished */
-  text-decoration:underline;text-decoration-color:var(--tokc);text-decoration-thickness:1px;
-  text-underline-offset:.2em;text-decoration-skip-ink:auto;
-  transition:background-color .12s var(--ease),color .12s var(--ease),text-decoration-color .2s var(--ease);
+  cursor:pointer;
+  transition:background-color .12s var(--ease),color .12s var(--ease);
 }
 .tok--vocab:hover{background-color:var(--signal-soft);color:var(--signal)}
 .tok--vocab.is-open{background-color:var(--signal);color:#fff}
 :root[data-theme="dark"] .tok--vocab.is-open{color:#0B0E10}
-/* the underline says how well you know the word: red, amber, and none
-   once it is known, so the eye goes to what is still to learn */
-.tok--vocab[data-st="hard"]{--tokc:var(--hard);text-decoration-thickness:1.5px}
-.tok--vocab[data-st="learning"]{--tokc:var(--learn);text-decoration-thickness:1.5px}
-.tok--vocab[data-st="known"],.tok--known{--tokc:transparent}
+/* words carry no line: they light under the finger or the cursor. The
+   Appearance switch can add a quiet dotted rule under every word that
+   has a card (a real text-decoration, so it shows with any font). */
+:root[data-v-underline="1"] .tok--vocab{
+  text-decoration:underline dotted;text-decoration-color:var(--ink-3);text-decoration-thickness:1px;
+  text-underline-offset:.22em;
+}
 
 .sent--inline{display:inline;margin:0;padding:0}
 /* Room for the speaker at the end of each sentence, inside the line: the
@@ -1098,7 +1095,6 @@ ul,ol{margin:0;padding:0;list-style:none}
 @keyframes sheetOut{from{transform:none;opacity:1}to{transform:translateY(18px);opacity:0}}
 
 /* the status spine runs along the top edge, where a sheet can show it */
-.pop__spine{position:absolute;left:0;right:0;top:0;height:4px;background:var(--gap);z-index:2}
 
 /* the grab handle doubles as the drag target */
 .pop__grip{
@@ -1115,7 +1111,7 @@ ul,ol{margin:0;padding:0;list-style:none}
   padding:6px 40px 0;margin:0;
   width:100%;max-width:1120px;margin-inline:auto;
 }
-.pop__ident{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.pop__ident{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 .pop__word{
   font-family:var(--serif);font-size:clamp(30px,6.4vw,40px);font-weight:400;
   line-height:1.08;letter-spacing:-.022em;
@@ -1160,11 +1156,11 @@ ul,ol{margin:0;padding:0;list-style:none}
 .pop .ex__label{font-size:10px}
 /* the status control is the most-tapped thing on the card: give it room */
 .pop .stat{
-  flex:none;border-top:1px solid var(--rule);border-bottom:none;
-  width:100%;max-width:1120px;margin-inline:auto;
+  flex:none;width:100%;max-width:1120px;margin-inline:auto;padding:12px 40px calc(14px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--rule-2);
 }
-.pop .stat button{height:58px;font-size:12px;letter-spacing:.1em}
-.pop .stat button i{width:9px;height:9px}
+.pop .stat button{height:48px;font-size:13px}
+.pop .stat button i{width:8px;height:8px}
 .pop__gap{font-size:14.5px;line-height:1.6;color:var(--ink-3)}
 
 /* the sheet reaches the true bottom edge on a phone, so it carries the
@@ -1182,6 +1178,8 @@ body.has-sheet .toasts{bottom:auto;top:22px}
   .pop{left:0;max-height:min(84vh,calc(100dvh - 32px))}
   .pop__head{padding:6px 18px 0}
   .pop__body{padding:14px 18px 20px}
+  .pop .stat{padding:10px 18px calc(12px + env(safe-area-inset-bottom));gap:6px}
+  .pop .stat button{height:46px}
 }
 
 /* ============================================================
@@ -1215,34 +1213,11 @@ body.has-sheet .toasts{bottom:auto;top:22px}
 .section-head h2{font-size:19px;font-weight:600;letter-spacing:-.015em}
 .section-head__actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
-.grid-cards{
-  display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(264px,1fr));
-  content-visibility:auto;contain-intrinsic-size:auto 190px;
-}
-.fcard{perspective:1400px;min-height:186px}
-.fcard__inner{
-  display:grid;width:100%;height:100%;min-height:186px;
-  transform-style:preserve-3d;transition:transform .52s var(--ease);
-  text-align:left;
-}
-.fcard.is-flipped .fcard__inner{transform:rotateY(180deg)}
-.fcard__face{
-  grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
-  padding:18px;display:flex;flex-direction:column;gap:10px;
-  transition:border-color .16s var(--ease),box-shadow .16s var(--ease);
-}
-.fcard:hover .fcard__face{box-shadow:var(--shadow)}
-.fcard__face--back{transform:rotateY(180deg);background:var(--surface-2)}
-.fcard__top{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .pos{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
-.fcard__word{font-family:var(--serif);font-size:26px;font-weight:400;line-height:1.15;letter-spacing:-.017em}
 .art{font-weight:500}
 .art--der{color:var(--der)}
 .art--die{color:var(--die)}
 .art--das{color:var(--das)}
-.fcard__tr{font-size:17px;font-weight:600;line-height:1.3}
-.fcard__def{font-size:12.5px;line-height:1.55;color:var(--ink-2)}
 /* ---------- the example block ----------
    Its own panel rather than a quoted aside: this is the only place on
    the card where the word is doing something, and it is now the only
@@ -1297,8 +1272,6 @@ body.has-sheet .toasts{bottom:auto;top:22px}
 @media (hover:none){
   .ex__de{line-height:1.85}
 }
-.fcard__hint{margin-top:auto;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
-.fcard__plural{font-size:11.5px;color:var(--ink-3);font-family:var(--mono)}
 .box-dot{width:6px;height:6px;border-radius:100px;background:var(--rule);flex:none}
 .box-dot.is-on{background:var(--signal)}
 .box-dot.is-max{background:var(--ok)}
@@ -1495,8 +1468,9 @@ pre.spec b{color:var(--signal);font-weight:500}
 @media print{
   .rail,.lbar,.section-head__actions,.page-head__actions,.fcard__hint{display:none !important}
   .shell{margin-left:0}
-  .fcard__inner{transform:none !important}
-  .fcard__face--back{transform:none;position:static}
+  /* on paper every card shows its answer */
+  .fcard__fold{grid-template-rows:1fr !important}
+  .fcard__back{opacity:1 !important;transform:none !important}
   /* on paper a word is not a target, so it stops looking like one */
   .exw{background:none !important;color:inherit !important;box-shadow:none !important}
 }
@@ -2770,153 +2744,107 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 }
 
 .grid-cards{
-  display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(282px,1fr));
-  content-visibility:auto;contain-intrinsic-size:auto 262px;
+  display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(282px,1fr));align-items:start;
+  content-visibility:auto;contain-intrinsic-size:auto 220px;
 }
+/* ---------- the card family ----------
+   The word card and the flip card are one object: a meta line, the word
+   with its sound, the meaning, the note and the example, and one status
+   control at the foot. No coloured spine: the status is the lit key at
+   the foot, which is also where you change it. */
 .fcard{
-  position:relative;display:flex;flex-direction:column;min-height:0;perspective:none;
-  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
-  overflow:hidden;
+  position:relative;display:flex;flex-direction:column;min-height:0;
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);overflow:hidden;
   transition:box-shadow .18s var(--ease),border-color .18s var(--ease),transform .18s var(--ease);
 }
-.fcard:hover{box-shadow:var(--shadow-lift);border-color:var(--ink-3);transform:translateY(-2px)}
+@media (hover:hover){.fcard:hover{box-shadow:var(--shadow-lift);border-color:var(--ink-3);transform:translateY(-2px)}}
 .fcard:focus-within{border-color:var(--signal)}
-@media (prefers-reduced-motion:reduce){.fcard:hover{transform:none}}
-/* the status spine — the one thing you can read across the whole grid
-   without stopping, so it thickens under the cursor like the file rows do */
-.fcard::before{
-  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;z-index:3;background:var(--gap);
-  transition:width .18s var(--ease);
-}
-.fcard:hover::before{width:5px}
-.fcard[data-st="hard"]::before{background:var(--hard)}
-.fcard[data-st="learning"]::before{background:var(--learn)}
-.fcard[data-st="known"]::before{background:var(--known)}
+.fcard.is-flipped{border-color:var(--ink-3)}
+.fcard__flip{display:flex;flex-direction:column;gap:12px;padding:15px 18px 12px;cursor:pointer;outline:none}
+.fcard__flip:focus-visible{box-shadow:inset 0 0 0 2px var(--signal);border-radius:var(--r-lg) var(--r-lg) 0 0}
 
-.fcard__flip{position:relative;display:grid;perspective:1400px;cursor:pointer;min-height:202px}
-.fcard__inner{
-  grid-area:1/1;display:grid;width:100%;height:100%;min-height:0;
-  transform-style:preserve-3d;transition:transform .5s var(--ease);
-}
-.fcard.is-flipped .fcard__inner{transform:rotateY(180deg)}
-.fcard__face{
-  grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  background:var(--surface);border:0;border-radius:0;box-shadow:none;
-  padding:16px 18px 15px 21px;display:flex;flex-direction:column;gap:11px;overflow:hidden;
-}
-.fcard:hover .fcard__face{box-shadow:none}
-.fcard__face--back{transform:rotateY(180deg);background:var(--surface-2)}
-
-/* on the study card the chip sits in the same meta group as the file */
-.dface__top .fcard__meta{flex:none}
-
-/* the right-hand end of the meta row: how often the card has been
-   looked at, then where it came from */
+/* the meta line: what kind of word, then how often seen and where from */
+.fcard__top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:18px}
+.fcard__kind{display:flex;align-items:baseline;gap:8px;min-width:0;overflow:hidden;white-space:nowrap}
 .fcard__meta{display:flex;align-items:center;gap:9px;min-width:0}
 .seenc{
   display:inline-flex;align-items:center;gap:4px;flex:none;
   font-family:var(--mono);font-size:10px;font-weight:500;line-height:1;
   letter-spacing:.02em;color:var(--ink-3);
-  padding:3px 7px 3px 6px;border:1px solid var(--rule-2);border-radius:100px;
-  background:var(--surface-2);
+  padding:3px 7px 3px 6px;border:1px solid var(--rule-2);border-radius:100px;background:var(--surface-2);
   transition:color .18s var(--ease),border-color .18s var(--ease),background .18s var(--ease);
 }
 .seenc svg{width:10.5px;height:10.5px;opacity:.75}
 .seenc b{font-weight:600}
-/* a word you keep returning to earns the settled colour */
 .seenc.is-hot{color:var(--known);border-color:var(--known);background:var(--known-soft)}
 .seenc.is-hot svg{opacity:1}
-
-/* a card that several files share says so, quietly, beside the first */
-.fcard__also{
-  font-style:normal;font-family:var(--mono);font-size:9.5px;font-weight:600;
-  color:var(--ink-3);opacity:.8;margin-left:1px;
-}
-
-/* ---------- front: label, specimen, footer ---------- */
-.fcard__top{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:16px;
-  padding-bottom:9px;border-bottom:1px solid var(--rule-2);
-}
-/* the word, its button and its respelling are one thought, so they sit
-   in one block with the air pulled out from between them. The block
-   floats in the middle of the face because the back is usually the
-   taller of the two and a front pinned to the top of that height reads
-   as a card that is missing something. */
-.fcard__lead{display:flex;flex-direction:column;align-items:flex-start;gap:9px;margin-block:auto}
-.fcard__word{font-family:var(--serif);font-size:27px;line-height:1.1;letter-spacing:-.018em;overflow-wrap:anywhere}
-
-/* ---------- back: prompt, ruled off, then the answer ---------- */
-.fcard__recall{
-  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
-  padding-bottom:10px;border-bottom:1px solid var(--rule);
-}
-.fcard__wordsm{
-  font-family:var(--serif);font-size:17.5px;line-height:1.2;letter-spacing:-.01em;
-  color:var(--ink-2);overflow-wrap:anywhere;
-}
-.fcard__answer{display:flex;flex-direction:column;gap:6px}
-.fcard__tr{font-size:19px;font-weight:600;line-height:1.28;letter-spacing:-.012em}
-.fcard__def{font-size:12.5px;line-height:1.58;color:var(--ink-2)}
-.fcard__hint{
-  margin-top:auto;padding-top:5px;font-size:9.5px;font-weight:700;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:6px;
-}
-.fcard__hint svg{width:12px;height:12px;flex:none;stroke-width:2}
+.fcard__also{font-style:normal;font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--ink-3);opacity:.8;margin-left:1px}
 .fcard__index{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.02em}
 .fcard__src{
   font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
   display:flex;align-items:center;gap:5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
 }
 .fcard__src svg{width:12px;height:12px;flex:none;stroke-width:1.8}
+.fcard__plural{font-size:11.5px;color:var(--ink-3);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis}
 
-/* pronunciation note — the second half of "how do I say it" */
-.pnote{
-  border-left:2px solid var(--stress);padding-left:10px;font-size:12px;line-height:1.5;color:var(--ink-2);
-}
-.pnote b{
-  display:block;font-family:var(--sans);font-size:9.5px;font-weight:700;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--ink-3);margin-bottom:2px;
-}
-.gapflag{
-  display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;color:var(--warn);
-}
+/* the word, its button and its respelling: one thought, one block */
+.fcard__lead{display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.fcard__word{font-family:var(--serif);font-size:28px;line-height:1.1;letter-spacing:-.018em;overflow-wrap:anywhere}
 
-/* ---------- the status control ---------- */
-.stat{
-  display:grid;grid-template-columns:repeat(3,1fr);flex:none;
-  border-top:1px solid var(--rule);background:var(--surface-2);
+/* the answer, folded under the word; it opens in place */
+.fcard__fold{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s var(--ease)}
+.fcard__back{
+  min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:12px;
+  opacity:0;transform:translateY(-4px);transition:opacity .18s var(--ease),transform .26s var(--ease);
 }
+.fcard.is-flipped .fcard__fold{grid-template-rows:1fr}
+.fcard.is-flipped .fcard__back{opacity:1;transform:none;transition-delay:.06s}
+.fcard__answer{display:flex;flex-direction:column;gap:5px;padding-top:12px;border-top:1px solid var(--rule-2)}
+.fcard__tr{font-size:19px;font-weight:600;line-height:1.28;letter-spacing:-.012em}
+.fcard__def{font-size:12.5px;line-height:1.58;color:var(--ink-2)}
+.fcard__hint{
+  display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ink-3);
+  transition:color .15s var(--ease);
+}
+.fcard__hint svg{width:13px;height:13px;flex:none;transition:transform .3s var(--ease)}
+.fcard__hide{display:none}
+.fcard.is-flipped .fcard__show{display:none}
+.fcard.is-flipped .fcard__hide{display:inline}
+.fcard.is-flipped .fcard__hint svg{transform:rotate(180deg)}
+@media (hover:hover){.fcard__flip:hover .fcard__hint{color:var(--signal)}}
+
+/* how to say it: a sound mark and one line, no label */
+.pnote{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.5;color:var(--ink-2)}
+.pnote svg{width:15px;height:15px;flex:none;margin-top:1px;color:var(--stress-ink);background:var(--stress);border-radius:var(--r-sm);padding:2px;box-sizing:content-box}
+.gapflag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--warn)}
+
+/* ---------- the status control: three keys, the lit one is the status ---------- */
+.stat{display:flex;gap:6px;flex:none;padding:10px 12px 12px;border-top:1px solid var(--rule-2);background:var(--surface)}
 .stat button{
-  position:relative;display:flex;align-items:center;justify-content:center;gap:6px;
-  height:40px;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink-3);border-right:1px solid var(--rule);
-  transition:background .15s var(--ease),color .15s var(--ease);
+  flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;height:34px;
+  border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);
+  font-size:11.5px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink-2);white-space:nowrap;
+  transition:background .16s var(--ease),border-color .16s var(--ease),color .16s var(--ease),transform .1s var(--ease);
 }
-.stat button:last-child{border-right:0}
-.stat button:hover{background:var(--surface);color:var(--ink-2)}
-.stat button i{width:7px;height:7px;border-radius:100px;background:currentColor;opacity:.4;flex:none}
-.stat button[aria-pressed="true"] i{opacity:1}
-.stat button[aria-pressed="true"]::after{content:"";position:absolute;left:0;right:0;top:-1px;height:2px;background:currentColor}
-.stat button[data-set="hard"][aria-pressed="true"]{background:var(--hard-soft);color:var(--hard)}
-.stat button[data-set="learning"][aria-pressed="true"]{background:var(--learn-soft);color:var(--learn)}
-.stat button[data-set="known"][aria-pressed="true"]{background:var(--known-soft);color:var(--known)}
-.stat--lg button{height:52px;font-size:11.5px;letter-spacing:.11em}
-
-/* the delete cell — the quietest control in the app on purpose. No
-   label, no colour until you are actually on it, and a fourth track on
-   the grid so the three rungs keep the width they always had. */
-.stat--del{grid-template-columns:repeat(3,1fr) 40px}
-.stat .stat__del{
-  display:flex;align-items:center;justify-content:center;
-  border-right:0;color:var(--ink-3);opacity:.3;
-  transition:opacity .16s var(--ease),color .16s var(--ease),background .16s var(--ease);
-}
+.stat button i{width:7px;height:7px;border-radius:100px;background:var(--c);flex:none;transition:transform .2s var(--ease)}
+.stat button[data-set="hard"]{--c:var(--hard);--cs:var(--hard-soft)}
+.stat button[data-set="learning"]{--c:var(--learn);--cs:var(--learn-soft)}
+.stat button[data-set="known"]{--c:var(--known);--cs:var(--known-soft)}
+@media (hover:hover){.stat button:not([aria-pressed="true"]):hover{border-color:var(--c);color:var(--ink)}}
+.stat button:active{transform:scale(.96)}
+.stat button[aria-pressed="true"]{background:var(--cs);border-color:var(--c);color:var(--c)}
+.stat button[aria-pressed="true"] i{transform:scale(1.3)}
+.stat--lg{padding:12px 16px 14px}
+.stat--lg button{height:44px;font-size:13px}
+/* the delete key: an icon, quiet until you are on it, and it asks first */
+.stat .stat__del{flex:0 0 34px;border-color:transparent;color:var(--ink-3);opacity:.5}
+.stat--lg .stat__del{flex-basis:44px}
 .stat .stat__del svg{width:15px;height:15px}
-.fcard:hover .stat .stat__del{opacity:.5}
-.stat .stat__del:hover,.stat .stat__del:focus-visible{opacity:1;color:var(--die);background:var(--surface)}
-.stat--lg .stat__del svg{width:17px;height:17px}
+.stat .stat__del:hover,.stat .stat__del:focus-visible{opacity:1;color:var(--die);border-color:var(--rule);background:var(--surface-2)}
+@media (prefers-reduced-motion:reduce){
+  .fcard__back{transform:none}
+  .stat button:active{transform:none}
+}
 
 /* small read-only status pill, used in lists */
 .spill{
@@ -2931,9 +2859,6 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 
 /* ---------- word sheet: status colouring ---------- */
 .pop__body .say{margin:0}
-.pop[data-st="hard"] .pop__spine{background:var(--hard)}
-.pop[data-st="learning"] .pop__spine{background:var(--learn)}
-.pop[data-st="known"] .pop__spine{background:var(--known)}
 
 /* ============================================================
    V2 — CARDS VIEW (every card in the app, in one place)
@@ -3006,7 +2931,6 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 
 @media (max-width:720px){
   .grid-cards{grid-template-columns:1fr}
-  .fcard__flip{min-height:184px}
 }
 
 /* ============================================================
@@ -3114,7 +3038,6 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 }
 
 /* a card whose back is empty should look unfinished, not broken */
-.fcard__face--back .fcard__tr{color:var(--ink)}
 .fcard .gapflag{margin-top:auto}
 
 /* stored-file rows carry the kind chip inline */
@@ -3129,7 +3052,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
   .tally{grid-template-columns:repeat(2,1fr)}
   .promptcard__head{gap:8px}
   .promptcard__acts .btn{flex:1}
-  .stat button{font-size:9.5px;letter-spacing:.06em;gap:4px}
+  .stat button{font-size:11px;gap:5px}
 }
 
 /* ============================================================
@@ -3556,7 +3479,6 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 :root[data-readfont="sans"] .de-text .md-h{letter-spacing:-.02em}
 /* the blue rule under a word that owns a card can be turned off for
    people who read the underlines as noise — the words stay tappable */
-:root[data-v-underline="0"] .tok--vocab{text-decoration:none}
 :root[data-v-underline="0"] .tok--vocab:hover{background-color:var(--signal-soft)}
 
 /* ---------- the card, wherever it appears ---------- */
@@ -3571,7 +3493,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .pop .ex__de{font-size:calc(18.5px * var(--fs-card));line-height:calc(var(--lh-card) * 1.05)}
 .pop .ex__en{font-size:calc(15px * var(--fs-card));line-height:var(--lh-card)}
 .pop .ex__label{font-size:calc(10px * var(--fs-card))}
-.pop .stat button{font-size:calc(12px * var(--fs-card))}
+.pop .stat button{font-size:calc(13px * var(--fs-card))}
 
 .fcard__word{font-size:calc(28px * var(--fs-card))}
 .fcard__wordsm{font-size:calc(18.5px * var(--fs-card))}
@@ -3583,7 +3505,6 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .fcard .ex__en{font-size:calc(13px * var(--fs-card))}
 .fcard .say{font-size:calc(13px * var(--fs-card))}
 /* the face is clipped, so the pane has to grow with the type inside it */
-.fcard__flip{min-height:calc(202px * var(--fs-card))}
 .grid-cards{grid-template-columns:repeat(auto-fill,minmax(calc(282px * var(--fs-card)),1fr))}
 
 .drill__word{font-size:calc(clamp(32px,6vw,46px) * var(--fs-card))}
@@ -3612,7 +3533,6 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 :root[data-v-def="0"] .drill__def{display:none}
 :root[data-v-say="0"] .say{display:none}
 :root[data-v-note="0"] .pnote{display:none}
-:root[data-v-say="0"][data-v-note="0"] .pop__sound{display:none}
 :root[data-v-ex="0"] .ex{display:none}
 :root[data-v-exen="0"] .ex__en{display:none}
 :root[data-v-pos="0"] .pop__meta,
@@ -3656,12 +3576,11 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
   :root[data-sidecard="1"] .pop__grip{display:none}
   /* and its status runs down the leading edge, the way it does on every
      other card in the app, rather than along the top of a sheet */
-  :root[data-sidecard="1"] .pop__spine{right:auto;bottom:0;width:4px;height:auto}
   :root[data-sidecard="1"] .pop__head{padding:20px 24px 0;max-width:none;margin-inline:0}
   :root[data-sidecard="1"] .pop__body{padding:16px 24px 24px;max-width:none;margin-inline:0;gap:16px}
   :root[data-sidecard="1"] .pop__body > *{max-width:none}
-  :root[data-sidecard="1"] .pop .stat{max-width:none;margin-inline:0}
-  :root[data-sidecard="1"] .pop .stat button{height:54px}
+  :root[data-sidecard="1"] .pop .stat{max-width:none;margin-inline:0;padding:14px 24px 18px}
+  :root[data-sidecard="1"] .pop .stat button{height:46px}
   :root[data-sidecard="1"] .pop__word{font-size:calc(33px * var(--fs-card))}
   :root[data-sidecard="1"] .pop__tr{font-size:calc(23px * var(--fs-card))}
   :root[data-sidecard="1"] .pop__def{font-size:calc(16.5px * var(--fs-card))}
@@ -5796,7 +5715,7 @@ function exampleHTML(v, cls, lid) {
   const btn = sayBtn(de, "the whole example sentence");
   const n = list.length;
   const head = '<div class="ex__head">' + btn +
-      '<span class="ex__label">' + (btn ? "In use \u00B7 tap any word" : "In use") + "</span>" +
+      '<span class="ex__label">' + (n > 1 ? "Examples" : "Example") + "</span>" +
       (n > 1 ? '<button type="button" class="exgo" data-exgo="1"' +
                  ' title="Next sentence \u2014 or swipe the sentence"' +
                  ' aria-label="Show the next example sentence, 2 of ' + n + '">' +
@@ -6782,7 +6701,7 @@ const READ_SHOW = ["def", "say", "note", "ex", "exen", "pos", "src", "hint", "un
 const READ_DEFAULTS = {
   text: 100, card: 100, line: 172, measure: 66,
   font: "serif", sidecard: 1, widestudy: 1, fsauto: 0, page: "auto",
-  show: { def: 1, say: 1, note: 1, ex: 1, exen: 1, pos: 1, src: 1, hint: 1, underline: 1 }
+  show: { def: 1, say: 1, note: 1, ex: 1, exen: 1, pos: 1, src: 1, hint: 1, underline: 0 }
 };
 /* the passage's page: the app's own colours, or a page of its own */
 const READ_PAGES = [["auto", "Auto"], ["paper", "Paper"], ["sepia", "Sepia"], ["night", "Night"]];
@@ -6796,6 +6715,9 @@ function readCfg() {
   const saved = state.settings.read && typeof state.settings.read === "object" ? state.settings.read : {};
   const out = Object.assign({}, READ_DEFAULTS, saved);
   out.show = Object.assign({}, READ_DEFAULTS.show, saved.show || {});
+  /* 3.39: words in the passage are no longer underlined by default; a
+     setting saved before then is reset once, and can be turned on again */
+  if (!saved.ul39) { out.show.underline = 0; out.ul39 = 1; }
   READ_SHOW.forEach(k => { out.show[k] = out.show[k] ? 1 : 0; });
   ["text", "card", "line", "measure"].forEach(k => { out[k] = +out[k] || READ_DEFAULTS[k]; });
   out.font = out.font === "sans" ? "sans" : "serif";
@@ -7863,8 +7785,10 @@ function seenChip(v) {
 function statusPill(st) {
   return '<span class="spill spill--' + st + '"><i></i>' + STATUS_META[st].label + "</span>";
 }
+const ICO_WAVE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 12h1.5M8 8.5v7M12 5v14M16 8.5v7M19.5 12H20"/></svg>';
+/* how to say it, in one line: a sound mark, then the note */
 function noteHTML(v) {
-  return v.note ? '<div class="pnote"><b>Pronunciation note</b>' + esc(v.note) + "</div>" : "";
+  return v.note ? '<div class="pnote" title="Pronunciation">' + ICO_WAVE + "<span>" + esc(v.note) + "</span></div>" : "";
 }
 function gapFlag() {
   return '<span class="gapflag">' +
@@ -7879,53 +7803,37 @@ function cardHTML(lesson, v, i, src, also) {
   const lid = lesson.id;
   const st = statusOf(lid, v);
   const thin = !v.translation && !v.definition;
+  /* One card, read top to bottom: what kind of word, the word with its
+     sound, then the answer folded under it. Tapping the card opens the
+     answer in place instead of turning the card over, so a card is only
+     as tall as what it is showing and the grid stays even. */
   return '<article class="fcard" data-st="' + st + '" data-fc="' + esc(lid) + "|" + i + '">' +
-    '<div class="fcard__flip" data-card="' + i + '" data-fclid="' + esc(lid) + '" role="button" tabindex="0" aria-label="Flip card: ' + esc(v.word) + '">' +
-      '<div class="fcard__inner">' +
-
-        /* FRONT — one question, asked once. A quiet meta line, then the
-           word with its button against it and the respelling directly
-           underneath, because how it is written and how it is said are
-           one thought and belong in one block. */
-        '<div class="fcard__face fcard__face--front">' +
-          '<div class="fcard__top">' +
-            '<span class="pos">' + esc(v.pos || "word") + "</span>" +
-            '<span class="fcard__meta">' + seenChip(v) +
-              (src ? '<span class="fcard__src"' +
-                       (also ? ' title="Also in ' + also + (also === 1 ? " other file" : " other files") + '"' : "") +
-                       ">" + ICO_DOC + esc(src) +
-                       (also ? '<i class="fcard__also">+' + also + "</i>" : "") + "</span>"
-                   : '<span class="fcard__index">' + String(i + 1).padStart(2, "0") + "</span>") +
-            "</span>" +
-          "</div>" +
-          '<div class="fcard__lead">' +
-            '<div class="wordrow"><div class="fcard__word">' + articleHTML(v) + "</div>" +
-              sayBtn(v.word, v.word) + "</div>" +
-            sayStrip(v.say) +
-            (v.plural ? '<div class="fcard__plural">pl. ' + esc(v.plural) + "</div>" : "") +
-          "</div>" +
-          '<div class="fcard__hint">' + (thin ? gapFlag() : ICO_FLIP + "Tap to reveal") + "</div>" +
-        "</div>" +
-
-        /* BACK — the word again, small and still speakable, ruled off
-           from the answer beneath it so the eye lands on the meaning
-           first and the example last. */
-        '<div class="fcard__face fcard__face--back">' +
-          '<div class="fcard__recall">' +
-            '<div class="wordrow"><div class="fcard__wordsm">' + articleHTML(v) + "</div>" +
-              sayBtn(v.word, v.word, "sm") + "</div>" +
-            sayStrip(v.say) +
-          "</div>" +
-          '<div class="fcard__answer">' +
-            '<div class="fcard__tr">' + (v.translation ? esc(v.translation) : "\u2014") + "</div>" +
-            (v.definition ? '<div class="fcard__def">' + esc(v.definition) + "</div>" : "") +
-          "</div>" +
-          noteHTML(v) +
-          exampleHTML(v, "", lid) +
-          '<div class="fcard__hint">' + ICO_FLIP + "Tap to flip back</div>" +
-        "</div>" +
-
+    '<div class="fcard__flip" data-card="' + i + '" data-fclid="' + esc(lid) + '" role="button" tabindex="0" aria-expanded="false" aria-label="Show the answer: ' + esc(v.word) + '">' +
+      '<div class="fcard__top">' +
+        '<span class="fcard__kind"><span class="pos">' + esc(v.pos || "word") + "</span>" +
+          (v.plural ? '<span class="fcard__plural">pl. ' + esc(v.plural) + "</span>" : "") + "</span>" +
+        '<span class="fcard__meta">' + seenChip(v) +
+          (src ? '<span class="fcard__src"' +
+                   (also ? ' title="Also in ' + also + (also === 1 ? " other file" : " other files") + '"' : "") +
+                   ">" + ICO_DOC + esc(src) +
+                   (also ? '<i class="fcard__also">+' + also + "</i>" : "") + "</span>"
+               : '<span class="fcard__index">' + String(i + 1).padStart(2, "0") + "</span>") +
+        "</span>" +
       "</div>" +
+      '<div class="fcard__lead">' +
+        '<div class="wordrow"><div class="fcard__word">' + articleHTML(v) + "</div>" + sayBtn(v.word, v.word) + "</div>" +
+        sayStrip(v.say) +
+      "</div>" +
+      '<div class="fcard__fold"><div class="fcard__back">' +
+        '<div class="fcard__answer">' +
+          '<div class="fcard__tr">' + (v.translation ? esc(v.translation) : "\u2014") + "</div>" +
+          (v.definition ? '<div class="fcard__def">' + esc(v.definition) + "</div>" : "") +
+        "</div>" +
+        noteHTML(v) +
+        exampleHTML(v, "", lid) +
+      "</div></div>" +
+      '<div class="fcard__hint">' + (thin ? gapFlag() :
+        '<span class="fcard__show">Show answer</span><span class="fcard__hide">Hide answer</span>' + ICO_CHEV) + "</div>" +
     "</div>" +
     statusBar(lid, v, i, false, true) +
     "</article>";
@@ -8291,7 +8199,6 @@ function openPop(tok, lesson, v, i) {
   popEl.setAttribute("data-st", st);
   popEl.dataset.pk = lesson.id + "|" + i;
   popEl.innerHTML =
-    '<span class="pop__spine"></span>' +
     '<div class="pop__grip" aria-hidden="true"></div>' +
     /* You tapped this word because you did not know it, so the meaning
        comes first and the sound comes second — the reverse of the card,
@@ -8299,12 +8206,13 @@ function openPop(tok, lesson, v, i) {
        its button against it and its labels underneath it. */
     '<div class="pop__head">' +
       '<div class="pop__ident">' +
-        '<div class="wordrow"><div class="pop__word">' + articleHTML(v) + "</div>" +
-          sayBtn(v.word, v.word, "lg") + "</div>" +
         '<div class="pop__meta"><span class="pos">' + esc(v.pos || "word") + "</span>" +
           (v.plural ? '<span class="pop__plural">pl. ' + esc(v.plural) + "</span>" : "") +
           seenChip(v) +
         "</div>" +
+        '<div class="wordrow"><div class="pop__word">' + articleHTML(v) + "</div>" +
+          sayBtn(v.word, v.word, "lg") + "</div>" +
+        sayStrip(v.say) +
       "</div>" +
       '<button class="pop__close" aria-label="Close card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
     "</div>" +
@@ -8315,8 +8223,7 @@ function openPop(tok, lesson, v, i) {
       "</div>" +
       (!v.translation && !v.definition
         ? '<div class="pop__gap">This word has a card, but the file carried no translation for it. Re-run the paragraph prompt to fill it in.</div>' : "") +
-      (v.say || v.note
-        ? '<div class="pop__sound">' + (v.say ? sayStrip(v.say) : "") + noteHTML(v) + "</div>" : "") +
+      noteHTML(v) +
       exampleHTML(v, "", lesson.id) +
     "</div>" +
     statusBar(lesson.id, v, i, true, true) +
@@ -10037,6 +9944,8 @@ document.addEventListener("click", e => {
   if (card) {
     const shell = card.closest(".fcard") || card;
     shell.classList.toggle("is-flipped");
+    const fl = shell.querySelector(".fcard__flip");
+    if (fl) fl.setAttribute("aria-expanded", String(shell.classList.contains("is-flipped")));
     /* turning it face up is looking at it; turning it back is not */
     if (shell.classList.contains("is-flipped")) countCardView(shell);
     return;
@@ -10044,7 +9953,11 @@ document.addEventListener("click", e => {
   const fa = t.closest("[data-flipall]");
   if (fa) {
     const on = fa.dataset.flipall === "1";
-    $$(".grid-cards .fcard").forEach(c => c.classList.toggle("is-flipped", on));
+    $$(".grid-cards .fcard").forEach(c => {
+      c.classList.toggle("is-flipped", on);
+      const fl = c.querySelector(".fcard__flip");
+      if (fl) fl.setAttribute("aria-expanded", String(on));
+    });
     fa.dataset.flipall = on ? "0" : "1";
     fa.textContent = on ? "Hide every answer" : "Show every answer";
     return;
@@ -11367,7 +11280,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.38";
+const APP_VERSION = "3.39";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
