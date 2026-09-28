@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.14 · neural German, cached on device -->
+<!-- Sprachlabor — v3.15 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -6334,7 +6334,7 @@ function readWideHTML() {
 function readFsHTML() {
   return '<div class="panel">' +
       "<h3>Full screen</h3>" +
-      "<p>A session is the one screen here with nothing on it you need to leave room for, so it can take the whole panel \u2014 no address bar, no tabs. The button sits in the session bar, next to the size control, and works whether or not you switch this on.</p>" +
+      "<p>A session is the one screen here with nothing on it you need to leave room for, so it can take the whole panel \u2014 no address bar, no tabs. The button sits in the session bar, next to the size control, and works whether or not you switch this on. For the rest of the app, Full screen is in the \u22ee menu.</p>" +
       '<div class="rsplit">' +
         rSeg("fsauto", "When a session starts", [[1, "Go full screen"], [0, "Stay as it is"]],
           "Some browsers refuse the request outright, and every one of them lets you leave again with Escape.") +
@@ -7513,6 +7513,7 @@ function startSession(entries, title, lid) {
   /* the click that started the session is the gesture the browser wants,
      so this is the only moment the request will be granted */
   drill.fs = false;
+  drill.fsKeep = fullscreen.on();
   if (readCfg().fsauto && fullscreen.ok() && !fullscreen.on()) { drill.fs = true; fullscreen.enter(); }
   paintDrill();
 }
@@ -7525,8 +7526,9 @@ function endDrill() {
   if (!drill.on) return;
   notePending("dr", drill.entries.slice(drill.i), drill.title, drill.lid, drill.i, drill.pbase, drill.resumed);
   drill.on = false;
-  /* full screen belongs to the session, so it ends with it */
-  if (fullscreen.on()) fullscreen.exit();
+  /* full screen the session asked for ends with it; full screen you
+     were already in from the menu stays */
+  if (!drill.fsKeep && fullscreen.on()) fullscreen.exit();
   drill.fs = false;
   clock.end({ n: drill.rated, ok: drill.counts.learning + drill.counts.known });
   if (drill.node) drill.node.remove();
@@ -9870,7 +9872,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.14";
+const APP_VERSION = "3.15";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -12403,7 +12405,14 @@ function appMenu(anchor) {
     /* the picker opens straight from the menu; the tap is the gesture it needs */
     { id: "import", label: "Import lessons", icon: MI.up, meta: ".json", run: () => $("#filePick").click() },
     { id: "theme", label: "Dark mode", icon: MI.moon, on: () => state.settings.theme === "dark",
-      run: () => setTheme(state.settings.theme === "dark" ? "light" : "dark") },
+      run: () => setTheme(state.settings.theme === "dark" ? "light" : "dark") }
+  );
+  /* a plain row, not a switch: the browser answers the request later,
+     and the page resizes under the menu when it does */
+  if (fullscreen.ok()) items.push(fullscreen.on()
+    ? { id: "fs", label: "Leave full screen", icon: ICO_FS_OUT, run: () => fullscreen.exit() }
+    : { id: "fs", label: "Full screen", icon: ICO_FS_IN, run: () => fullscreen.enter() });
+  items.push(
     "-",
     { id: "settings", label: "Settings", icon: MI.gear, run: () => go("settings") }
   );
@@ -13334,6 +13343,7 @@ function startSpelling(entries, title, lid, whole) {
   document.body.appendChild(spell.node);
   document.body.style.overflow = "hidden";
   spell.fs = false;
+  spell.fsKeep = fullscreen.on();
   if (readCfg().fsauto && fullscreen.ok() && !fullscreen.on()) { spell.fs = true; fullscreen.enter(); }
   spKeyboardWatch(true);
   paintSpell();
@@ -13345,7 +13355,7 @@ function endSpelling() {
   notePending("sp", spell.entries.slice(spAt), spell.title, spell.lid, spAt, spell.pbase, spell.resumed);
   spell.on = false;
   spKeyboardWatch(false);
-  if (fullscreen.on()) fullscreen.exit();
+  if (!spell.fsKeep && fullscreen.on()) fullscreen.exit();
   spell.fs = false;
   clock.end({ n: spell.done, ok: spell.counts.ok, m: "sp" });
   if (spell.node) spell.node.remove();
