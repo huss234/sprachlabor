@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.30 · neural German, cached on device -->
+<!-- Sprachlabor — v3.31 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -3740,227 +3740,227 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
 }
 .wchip b{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--hard);letter-spacing:.02em}
 
-/* ---------- the session ---------- */
+/* ---------- the session (Schreibprobe) ----------
+   Written for the keyboard, because that is where it is used: the answer is
+   typed, so the keyboard is up for the whole session and never goes away,
+   not even after a word is marked. One layout at every height and width:
+   a header, a page that is the prompt (and then the verdict), and a dock
+   that is the answer. The header and dock are fixed in size; only the type
+   of the page follows the room (--u, set by spFit()), and never past what a
+   phone with the keyboard up allows, so a card looks the same with or
+   without it. */
 .spell{
   position:fixed;left:0;right:0;top:0;bottom:0;z-index:92;background:var(--paper);
   display:flex;flex-direction:column;animation:fade .2s var(--ease) both;
-  /* the card reads off the card scale like every other card in the app;
-     the answer bar follows it but stops climbing at 140%, because the
-     box and the umlaut keys are controls reached with a thumb and a
-     doubled row of them would push the card off the screen */
-  --fs-w:min(var(--fs-card),1.4);
+  --fs-w:min(var(--fs-card),1.15);
 }
-.spell::before{
-  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(120% 70% at 50% 0%, var(--surface) 0%, transparent 60%);
-  opacity:.9;
-}
-.spell > *{position:relative;z-index:1}
-.wbar{
-  display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:12px 20px 11px;
-  border-bottom:1px solid var(--rule);background:var(--surface);flex:none;
-}
-.wrail{
-  display:flex;height:7px;border-radius:100px;background:var(--rule-2);
-  overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);
-}
-.wrail span{display:block;height:100%;transition:width .45s var(--ease)}
-.wrail .s-ok{background:var(--known)}
-.wrail .s-near{background:var(--learn)}
-.wrail .s-no{background:var(--hard)}
-.dleg--ok{color:var(--known)}
-.dleg--near{color:var(--learn)}
-.dleg--no{color:var(--hard)}
+.sp-in{width:min(560px,100%);margin:0 auto}
 
-.wstage{flex:1;display:flex;justify-content:center;padding:clamp(14px,3vw,32px) 20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.wcard{
-  position:relative;overflow:hidden;align-self:flex-start;
-  width:min(620px,100%);background:var(--surface);border:1px solid var(--rule);
-  border-radius:var(--r-lg);box-shadow:var(--shadow-lift);
-  padding:22px 24px 20px;display:flex;flex-direction:column;gap:15px;
-  animation:deal .3s var(--ease) both;
+/* header: who, where, how it is going. The strip is the whole session at a
+   glance: a segment per word, coloured as it is marked, the current one cobalt */
+.sp-head{flex:none;background:var(--surface);border-bottom:1px solid var(--rule)}
+.sp-head__row{display:flex;align-items:center;gap:8px;padding:7px 14px 6px}
+.sp-head .dclose{width:34px;height:34px}
+.sp-head__ttl{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.sp-head__ttl b{
+  font-size:14.5px;font-weight:600;letter-spacing:-.012em;line-height:1.2;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.wcard::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--signal);opacity:.9}
-.wcard.is-ok::before{background:var(--known)}
-.wcard.is-near::before{background:var(--learn)}
-.wcard.is-no::before{background:var(--hard)}
-.wtop{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none;
-  padding-bottom:12px;border-bottom:1px solid var(--rule-2);
-}
-.wtop .pos{flex:none}
-.wtop .fcard__meta{flex:none}
-.wask{
-  font-size:calc(9.5px * var(--fs-card));font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);
-  display:flex;align-items:center;gap:8px;
-}
-.wask::after{content:"";flex:1;height:1px;background:var(--rule-2)}
-.wtr{font-size:calc(clamp(21px,4.4vw,27px) * var(--fs-card));font-weight:600;letter-spacing:-.02em;line-height:1.25}
-.wdef{font-size:calc(14px * var(--fs-card));line-height:1.65;color:var(--ink-2)}
-.wpos-line{font-size:calc(12px * var(--fs-card));color:var(--ink-3);letter-spacing:.01em}
-.wpos-line b{color:var(--ink-2);font-weight:600}
+.sp-head__eye{display:flex;align-items:center;gap:11px;min-height:17px;min-width:0;overflow:hidden}
+.sp-head__eye .dtimer{height:17px;padding:0 7px;gap:5px;font-size:10.5px;letter-spacing:-.01em}
+.sp-t{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink);letter-spacing:0}
+.sp-t i{width:6px;height:6px;border-radius:100px;background:currentColor;flex:none}
+.sp-t--ok i{color:var(--known)}
+.sp-t--near i{color:var(--learn)}
+.sp-t--no i{color:var(--hard)}
+.sp-head .dcount{margin:0 2px 0 4px}
+.sp-head .dcount b{font-size:19px}
+.sp-head [data-dfs],.sp-head [data-readpop]{width:32px;height:32px}
+.sp-strip{display:flex;gap:2px;height:4px}
+.sp-strip.is-fine{gap:1px}
+.sp-strip i{flex:1 1 0;min-width:0;background:var(--rule-2);transition:background .3s var(--ease)}
+.sp-strip i.is-cur{background:var(--signal)}
+.sp-strip i.s-ok{background:var(--known)}
+.sp-strip i.s-near{background:var(--learn)}
+.sp-strip i.s-no{background:var(--hard)}
 
-/* the sentence with the hole in it */
-.wcloze{
-  border-left:2px solid var(--signal);background:var(--signal-soft);
-  border-radius:0 var(--r-md) var(--r-md) 0;padding:13px 15px;display:flex;flex-direction:column;gap:7px;
+/* page: the prompt, then the verdict. It sits at the top of its room; what
+   does not fit at full size is set a little smaller, up to a fifth */
+.sp-stage{flex:1;min-height:0;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.sp-page{
+  width:min(560px,100%);margin:0 auto auto;flex:none;
+  padding:calc(14px * var(--g,1)) 20px calc(14px * var(--g,1));
+  display:flex;flex-direction:column;gap:calc(12px * var(--g,1));
 }
-.wcloze__de{font-family:var(--serif);font-size:calc(clamp(16px,3.4vw,19px) * var(--fs-card));line-height:1.65;color:var(--ink)}
-.wcloze__en{font-size:calc(12.5px * var(--fs-card));line-height:1.6;color:var(--ink-3)}
-.wcloze__note{font-size:11px;color:var(--warn);font-weight:600;letter-spacing:.01em}
-.wgap{
-  display:inline-block;min-width:96px;border-bottom:2px dashed var(--signal);
-  vertical-align:baseline;margin:0 3px;
-}
-.wgap.is-filled{
-  border-bottom-color:transparent;background:var(--stress);color:var(--stress-ink);
-  border-radius:3px;padding:0 5px;min-width:0;
-}
-.wmaskchip{
-  display:inline-block;min-width:52px;border-bottom:2px dashed var(--ink-3);
-  vertical-align:baseline;margin:0 2px;opacity:.7;
-}
+.sp-page.is-out{opacity:0;transition:opacity .1s cubic-bezier(.4,0,1,1)}
+.sp-page.is-in > *{animation:lift .22s var(--ease) backwards}
+.sp-page.is-in > *:nth-child(2){animation-delay:.04s}
+.sp-page.is-in > *:nth-child(3){animation-delay:.08s}
+.sp-page.is-in > *:nth-child(4){animation-delay:.12s}
+.sp-page.is-in > *:nth-child(5){animation-delay:.16s}
+.sp-page.is-in > *:nth-child(6){animation-delay:.2s}
+.sp-page.is-in > *:nth-child(7){animation-delay:.24s}
+@media (prefers-reduced-motion:reduce){.sp-page.is-in > *{animation-name:fade}}
+.sp-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:22px}
+.sp-meta .pos{flex:none;font-size:calc(10.5px * var(--fs-card))}
+.sp-meta .fcard__meta{flex:0 1 auto}
+.sp-lab{display:block;font-size:9.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+.sp-means{display:flex;flex-direction:column;gap:calc(5px * var(--g,1))}
+.sp-tr{font-size:calc(25px * var(--u,1) * var(--fs-card));font-weight:600;letter-spacing:-.022em;line-height:1.16;color:var(--ink)}
+.sp-def{font-size:calc(13px * var(--u,1) * var(--fs-card));line-height:1.5;color:var(--ink-2)}
+.wmaskchip{display:inline-block;min-width:52px;border-bottom:2px dashed var(--ink-3);vertical-align:baseline;margin:0 2px;opacity:.7}
 
-/* the three graded hints */
-.whints{display:flex;gap:7px;flex-wrap:wrap}
-.whintb{
-  display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;
-  border:1px solid var(--rule);border-radius:100px;background:var(--surface-2);color:var(--ink-2);
+/* the sentence with the hole in it: the one raised thing on the page. What
+   is typed appears in the hole as it is typed. */
+.sp-sheet{
+  display:flex;flex-direction:column;gap:calc(5px * var(--g,1));
+  padding:calc(11px * var(--g,1)) 14px calc(12px * var(--g,1));
+  background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--signal);border-radius:var(--r-md);
+}
+.sp-de{font-family:var(--serif);font-size:calc(19px * var(--u,1) * var(--fs-card));line-height:1.5;color:var(--ink)}
+.sp-en{font-size:calc(12px * var(--u,1) * var(--fs-card));line-height:1.45;color:var(--ink-3)}
+.sp-de .wgap{
+  display:inline-block;min-width:calc(84px * var(--u,1));margin:0 2px;vertical-align:baseline;text-align:center;white-space:nowrap;
+  border-bottom:2px dashed var(--signal);
+  transition:background .14s var(--ease),color .14s var(--ease),border-color .14s var(--ease);
+}
+.sp-de .wgap:not(:empty){
+  min-width:0;padding:0 5px;border-bottom:2px solid var(--signal);border-radius:3px 3px 0 0;
+  background:var(--signal-soft);color:var(--signal);
+}
+.sp-de .wgap.is-filled{border-bottom-color:transparent;background:var(--stress);color:var(--stress-ink);border-radius:3px}
+
+/* help: the three graded hints, and the way out. A hint you take becomes its
+   own answer in place, so the row never grows a second one. */
+.sp-help{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.sp-h{
+  display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px;
+  border:1px solid var(--rule);border-radius:100px;background:var(--surface);color:var(--ink-2);
   font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  transition:background .15s var(--ease),border-color .15s var(--ease),color .15s var(--ease);
+  transition:background .15s var(--ease),border-color .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
 }
-.whintb svg{width:12px;height:12px;flex:none}
-.whintb:hover{background:var(--surface);border-color:var(--ink-3);color:var(--ink)}
-.whintb[aria-pressed="true"]{background:var(--stress);border-color:var(--stress);color:var(--stress-ink)}
-.whintout{
-  display:flex;flex-wrap:wrap;gap:10px;align-items:center;
-  padding:11px 13px;border:1px dashed var(--rule);border-radius:var(--r-md);background:var(--surface-2);
-}
-.wlet{
-  font-family:var(--mono);font-size:calc(13px * var(--fs-card));font-weight:600;color:var(--ink-2);letter-spacing:.06em;
-}
-.wlet b{color:var(--signal)}
+.sp-h svg{width:12px;height:12px;flex:none}
+.sp-h:active{transform:scale(.97)}
+@media (hover:hover){.sp-h:hover{border-color:var(--ink-3);color:var(--ink)}}
+.sp-h.is-open{background:var(--stress);border-color:var(--stress);color:var(--stress-ink);text-transform:none;letter-spacing:0}
+.sp-h.is-open .say{border:0;background:none;font-size:12.5px;color:inherit}
+.sp-h.is-open .say i{padding:0 5px 0 0;border:0;color:inherit}
+.sp-h.is-open .say i.is-stress{background:none;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.sp-h.is-open .wlet{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.04em;color:inherit}
+.sp-h.is-open .wlet b{color:inherit}
+.sp-h[aria-pressed="true"]:not(.is-open){border-color:var(--signal);color:var(--signal);background:var(--signal-soft)}
+.sp-h--skip{margin-left:auto;border-color:transparent;background:none;color:var(--ink-3)}
 
-/* ---------- the answer ---------- */
-.wfoot{
-  flex:none;border-top:1px solid var(--rule);background:var(--surface);
-  padding:12px 20px calc(13px + env(safe-area-inset-bottom));
-}
-.wform{width:min(620px,100%);margin:0 auto;display:flex;flex-direction:column;gap:9px}
-.warts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.wart{
-  height:38px;border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);
-  font-family:var(--serif);font-size:calc(16px * var(--fs-w));color:var(--ink-3);
-  transition:background .14s var(--ease),border-color .14s var(--ease),color .14s var(--ease);
-}
-.wart:hover{border-color:var(--ink-3);color:var(--ink)}
-.wart[aria-pressed="true"]{color:#fff;border-color:transparent;font-weight:500}
-:root[data-theme="dark"] .wart[aria-pressed="true"]{color:#0B0E10}
-.wart--der[aria-pressed="true"]{background:var(--der)}
-.wart--die[aria-pressed="true"]{background:var(--die)}
-.wart--das[aria-pressed="true"]{background:var(--das)}
-.wart.is-right{box-shadow:inset 0 0 0 2px var(--known)}
-.wart.is-wrong{box-shadow:inset 0 0 0 2px var(--hard)}
-
-.winrow{display:flex;gap:9px;align-items:stretch}
-.winput{
-  flex:1;min-width:0;height:calc(56px * var(--fs-w));padding:0 16px;
-  border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface-2);
-  font-family:var(--serif);font-size:calc(24px * var(--fs-w));color:var(--ink);letter-spacing:-.01em;
-  transition:border-color .15s var(--ease),box-shadow .15s var(--ease),background .15s var(--ease);
-  /* it is an editable element rather than an input now, so the things a
-     text field gave for nothing are stated: one line, centred on it,
-     scrolling sideways rather than growing when the word runs long */
-  line-height:calc(56px * var(--fs-w) - 2px);
-  white-space:pre;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
-  cursor:text;-webkit-user-select:text;user-select:text;
-}
-.winput::-webkit-scrollbar{display:none}
-/* the placeholder, likewise: an empty box says what it wants */
-.winput:empty::before{content:attr(data-ph);color:var(--ink-3);opacity:.55;font-size:calc(17px * var(--fs-w))}
-.winput:focus{outline:none;border-color:var(--signal);background:var(--surface);box-shadow:0 0 0 3px var(--signal-soft)}
-.wgo{
-  flex:none;width:130px;display:flex;align-items:center;justify-content:center;gap:8px;
-  border:1px solid var(--signal);border-radius:var(--r-md);background:var(--signal);color:#fff;
-  font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
-  transition:filter .15s var(--ease),transform .12s var(--ease);
-}
-:root[data-theme="dark"] .wgo{color:#0B0E10}
-.wgo:hover{filter:brightness(1.07)}
-.wgo:active{transform:translateY(1px)}
-.wgo--next{border-color:var(--ink);background:var(--ink);color:var(--paper)}
-.wgo .kbd{border-color:currentColor;color:inherit;opacity:.7}
-
-/* the umlaut row — the one thing that types German on any keyboard */
-.wkeys{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.wkey{
-  min-width:42px;height:38px;padding:0 8px;
-  border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface-2);
-  font-family:var(--serif);font-size:calc(18px * var(--fs-w));color:var(--ink);
-  transition:background .12s var(--ease),border-color .12s var(--ease),transform .1s var(--ease);
-}
-.wkey:hover{background:var(--surface);border-color:var(--ink-3)}
-.wkey:active{transform:translateY(1px);background:var(--signal-soft);border-color:var(--signal)}
-.wkey--wide{min-width:auto;font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
-.wkeys__sep{flex:1}
-.wtiny{
-  font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.02em;
-  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
-}
-.wtiny span{display:inline-flex;align-items:center;gap:6px}
-
-/* ---------- the verdict ---------- */
-.wverdict{display:flex;flex-direction:column;gap:14px}
-.wbadge{
+/* the verdict */
+.sp-recap{display:flex;align-items:baseline;gap:10px;min-width:0}
+.sp-recap span:last-child{font-size:calc(14px * var(--u,1) * var(--fs-card));font-weight:600;color:var(--ink-2);min-width:0}
+.sp-badge{
   display:inline-flex;align-items:center;gap:9px;align-self:flex-start;
-  padding:7px 13px;border-radius:100px;font-size:10.5px;font-weight:700;
-  letter-spacing:.13em;text-transform:uppercase;
+  padding:7px 13px;border-radius:100px;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
 }
-.wbadge svg{width:14px;height:14px;stroke-width:2.4}
-.wbadge--ok{background:var(--known-soft);color:var(--known)}
-.wbadge--near{background:var(--learn-soft);color:var(--learn)}
-.wbadge--no{background:var(--hard-soft);color:var(--hard)}
-.wanswer{
-  font-family:var(--serif);font-size:calc(clamp(28px,6vw,42px) * var(--fs-card));font-weight:400;
-  letter-spacing:-.025em;line-height:1.15;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+.sp-badge svg{width:14px;height:14px;stroke-width:2.4}
+.sp-badge--ok{background:var(--known-soft);color:var(--known)}
+.sp-badge--near{background:var(--learn-soft);color:var(--learn)}
+.sp-badge--no{background:var(--hard-soft);color:var(--hard)}
+.sp-answer{
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 12px;
+  font-family:var(--serif);font-size:calc(38px * var(--u,1) * var(--fs-card));font-weight:400;letter-spacing:-.025em;line-height:1.12;
 }
-.wdiff i{font-style:normal}
-.wdiff i.is-miss{
-  background:var(--known-soft);color:var(--known);border-radius:3px;
-  box-shadow:inset 0 -2px 0 var(--known);
-}
-.wyours{
-  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
-  font-size:calc(13px * var(--fs-card));color:var(--ink-3);
-}
-.wyours em{
-  font-style:normal;font-family:var(--serif);font-size:calc(20px * var(--fs-card));color:var(--ink-2);
+.sp-answer i{font-style:normal}
+.sp-answer i.is-miss{background:var(--known-soft);color:var(--known);border-radius:3px;box-shadow:inset 0 -2px 0 var(--known)}
+.sp-yours{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;font-size:calc(13px * var(--u,1) * var(--fs-card));color:var(--ink-3)}
+.sp-yours em{
+  font-style:normal;font-family:var(--serif);font-size:calc(20px * var(--u,1) * var(--fs-card));color:var(--ink-2);
   text-decoration:line-through;text-decoration-color:var(--hard);text-decoration-thickness:1.5px;
 }
-.wyours em i{font-style:normal}
-.wyours em i.is-bad{background:var(--hard-soft);color:var(--hard);border-radius:3px;text-decoration:none}
-.wwhy{
-  display:flex;flex-wrap:wrap;gap:7px;
-}
-.wwhy span{
+.sp-yours em i{font-style:normal}
+.sp-yours em i.is-bad{background:var(--hard-soft);color:var(--hard);border-radius:3px;text-decoration:none}
+.sp-why{display:flex;flex-wrap:wrap;gap:7px}
+.sp-why span{
   display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:100px;
-  background:var(--surface-2);border:1px solid var(--rule);
-  font-size:11px;font-weight:600;color:var(--ink-2);letter-spacing:.01em;
+  background:var(--surface);border:1px solid var(--rule);font-size:11px;font-weight:600;color:var(--ink-2);
 }
-.wwhy span i{width:6px;height:6px;border-radius:100px;background:var(--learn);flex:none;font-style:normal}
-.wrev{display:flex;flex-direction:column;gap:12px;padding-top:13px;border-top:1px solid var(--rule-2)}
+.sp-why span i{width:6px;height:6px;border-radius:100px;background:var(--learn);flex:none;font-style:normal}
+.sp-rev{display:flex;flex-direction:column;gap:calc(11px * var(--g,1));padding-top:calc(13px * var(--g,1));border-top:1px solid var(--rule)}
+.sp-page .say{font-size:calc(12.5px * var(--fs-card))}
+.sp-page .pnote{font-size:calc(12px * var(--fs-card))}
+.sp-page .ex__label{font-size:calc(9px * var(--fs-card))}
+.sp-page .ex__de{font-size:calc(15px * var(--u,1) * var(--fs-card))}
+.sp-page .ex__en{font-size:calc(12px * var(--u,1) * var(--fs-card))}
 
-/* the pieces the card borrows from the rest of the app — the respelling
-   strip, the pronunciation note, the example sentence, the part of
-   speech — are sized off the same multiplier here as they are on the
-   popover and in the drill, so the whole card grows as one thing */
-.wcard .pos{font-size:calc(11.5px * var(--fs-card))}
-.wcard .say{font-size:calc(12.5px * var(--fs-card))}
-.wcard .say--lg{font-size:calc(15px * var(--fs-card))}
-.wcard .pnote{font-size:calc(12px * var(--fs-card))}
-.wcard .ex__label{font-size:calc(9px * var(--fs-card))}
-.wcard .ex__de{font-size:calc(14.5px * var(--fs-card))}
-.wcard .ex__en{font-size:calc(12px * var(--fs-card))}
+/* dock: the answer. It is built once and never repainted, so the caret
+   stays put and the keyboard stays up from the first word to the last. */
+.sp-dock{
+  flex:none;display:flex;flex-direction:column;gap:7px;background:var(--surface);border-top:1px solid var(--rule);
+  padding:8px 14px calc(8px + env(safe-area-inset-bottom));
+}
+.sp-dock > *{width:min(560px,100%);margin:0 auto}
+.sp-row{display:flex;gap:8px;height:46px}
+.sp-row--keys{height:36px}
+.sp-field{
+  flex:1;min-width:0;display:flex;align-items:stretch;overflow:hidden;
+  border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface-2);
+  transition:border-color .15s var(--ease),box-shadow .15s var(--ease),background .15s var(--ease);
+}
+.sp-field:focus-within{border-color:var(--signal);background:var(--surface);box-shadow:0 0 0 3px var(--signal-soft)}
+.sp-arts{display:none;flex:none;border-right:1px solid var(--rule)}
+.sp-dock.has-art .sp-arts{display:flex}
+.sp-art{
+  width:35px;font-family:var(--serif);font-size:calc(16px * var(--fs-w));color:var(--ink-3);
+  border-right:1px solid var(--rule-2);
+  transition:background .14s var(--ease),color .14s var(--ease);
+}
+.sp-art:last-child{border-right:0}
+.sp-art[aria-pressed="true"]{font-weight:500}
+.sp-art--der[aria-pressed="true"]{color:var(--der);background:color-mix(in srgb,var(--der) 13%,var(--surface))}
+.sp-art--die[aria-pressed="true"]{color:var(--die);background:color-mix(in srgb,var(--die) 13%,var(--surface))}
+.sp-art--das[aria-pressed="true"]{color:var(--das);background:color-mix(in srgb,var(--das) 13%,var(--surface))}
+.sp-art.is-right{box-shadow:inset 0 -2px 0 var(--known)}
+.sp-art.is-wrong{box-shadow:inset 0 -2px 0 var(--hard)}
+.sp-dock[data-phase="marked"] .sp-art{pointer-events:none}
+.sp-input{
+  flex:1;min-width:0;padding:0 14px;display:block;
+  font-family:var(--serif);font-size:calc(22px * var(--fs-w));color:var(--ink);letter-spacing:-.01em;line-height:44px;
+  white-space:pre;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
+  cursor:text;-webkit-user-select:text;user-select:text;outline:none;
+}
+.sp-input::-webkit-scrollbar{display:none}
+.sp-input:empty::before{content:attr(data-ph);color:var(--ink-3);opacity:.55;font-size:calc(17px * var(--fs-w))}
+.sp-field.is-locked .sp-input{caret-color:transparent}
+.sp-field.is-ok{border-color:var(--known);background:var(--known-soft)}
+.sp-field.is-near{border-color:var(--learn);background:var(--learn-soft)}
+.sp-field.is-no{border-color:var(--hard);background:var(--hard-soft)}
+.sp-field.is-ok .sp-input{color:var(--known)}
+.sp-field.is-near .sp-input{color:var(--learn)}
+.sp-field.is-no .sp-input{color:var(--hard)}
+.sp-go{
+  flex:none;width:92px;display:flex;align-items:center;justify-content:center;gap:8px;
+  border:1px solid var(--signal);border-radius:var(--r-md);background:var(--signal);color:#fff;
+  font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  transition:filter .15s var(--ease),transform .12s var(--ease),background .2s var(--ease),border-color .2s var(--ease),color .2s var(--ease);
+}
+:root[data-theme="dark"] .sp-go{color:#0B0E10}
+.sp-go:active{transform:scale(.97)}
+.sp-go > span{transition:opacity .16s var(--ease)}
+.sp-go.is-out > span{opacity:0;transition:opacity .1s cubic-bezier(.4,0,1,1)}
+.sp-go .kbd{border-color:currentColor;color:inherit;opacity:.7}
+@media (hover:none){.sp-go .kbd{display:none}}
+@media (hover:hover){.sp-go:hover{filter:brightness(1.07)}}
+.sp-dock[data-phase="marked"] .sp-go{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.sp-keys{flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.sp-key{
+  min-width:0;border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface-2);
+  font-family:var(--serif);font-size:calc(19px * var(--fs-w));color:var(--ink);
+  transition:background .12s var(--ease),border-color .12s var(--ease),transform .1s var(--ease);
+}
+.sp-key:active{transform:scale(.94);background:var(--signal-soft);border-color:var(--signal)}
+@media (hover:hover){.sp-key:hover{background:var(--surface);border-color:var(--ink-3)}}
+.sp-again{flex:1;justify-content:center}
+.sp-row--keys > [hidden]{display:none !important}
+.sp-row--keys > .is-out{opacity:0;transition:opacity .1s cubic-bezier(.4,0,1,1)}
+.sp-row--keys > .is-in{animation:fade .16s var(--ease) backwards}
+.spell.is-done .sp-dock{display:none}
+.sp-page .wdone{width:100%;align-self:auto}
 
 /* ---------- the finish card ---------- */
 .wdone{
@@ -3993,71 +3993,10 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
   .rail__btn span{font-size:8px;letter-spacing:.04em}
 }
 @media (max-width:720px){
-  .wbar{gap:8px;padding:10px 14px}
-  .wstage{padding:14px 13px}
-  .wcard{padding:18px 17px 16px;gap:13px}
-  .wfoot{padding:10px 13px calc(11px + env(safe-area-inset-bottom))}
-  .winput{height:calc(52px * var(--fs-w));font-size:calc(22px * var(--fs-w));line-height:calc(52px * var(--fs-w) - 2px)}
-  .wgo{width:104px;font-size:11.5px}
-  .wkey{min-width:38px;height:36px;font-size:calc(17px * var(--fs-w))}
-  /* the seven letters and Show me share one line: the keys share what the
-     button leaves, so the row never wraps onto a second one */
-  .wkeys{flex-wrap:nowrap;gap:5px}
-  .wkey{flex:1 1 0;min-width:0;padding:0}
-  .wkey--wide{flex:none;padding:0 11px;font-size:11px}
-  .wkeys__sep{display:none}
-  .wtiny{display:none}
   .wgo-row .btn{flex:1;justify-content:center}
   .wbarline .selectbox{min-width:0;width:100%}
 }
 
-/* The session with the keyboard up (`.is-tight`, set by spFitViewport when
-   the visible height drops under 560px). Nothing is taken away: the keyboard
-   leaves about 460px, so every part gets denser and the card is then fitted
-   to what is left. The bar keeps all its keys and its tally on two slim
-   lines; the two labels stop being rows (It means sits beside the meaning,
-   Now fill the gap rides the top edge of the sentence); and spFit() measures
-   the card and shrinks its spacing first (--g) and its type a little
-   (--f, never below 78%) until the whole card is in view. The answer bar
-   only loses padding, and the umlaut keys share one line with Show me. Only a
-   card too long even at 78% still scrolls. */
-.spell.is-tight .wbar{gap:5px;padding:6px 14px 0}
-.spell.is-tight .sbar__top{min-height:34px;gap:8px}
-.spell.is-tight .sbar__top .dclose{width:32px;height:32px}
-.spell.is-tight .dcount b{font-size:18px}
-.spell.is-tight .dlegend{order:1}
-.spell.is-tight .wrail{order:2;height:4px;margin:1px -14px 0;border-radius:0;box-shadow:none}
-.spell.is-tight .wstage{padding:8px 13px}
-.spell.is-tight .wcard{
-  padding:calc(11px * var(--g,1)) 15px calc(12px * var(--g,1));
-  display:grid;grid-template-columns:auto minmax(0,1fr);align-content:start;
-  column-gap:10px;row-gap:calc(9px * var(--g,1));
-}
-.spell.is-tight .wcard > *{grid-column:1 / -1}
-.spell.is-tight .wcard > *:not(.wtop){animation:fade .18s var(--ease) backwards}
-.spell.is-tight .wtop{padding-bottom:0;border-bottom:0}
-.spell.is-tight .wask{grid-column:1;align-self:center}
-.spell.is-tight .wask::after{display:none}
-.spell.is-tight .wask + .wtr,.spell.is-tight .wask + .wdef{grid-column:2}
-.spell.is-tight .wask:has(+ .wcloze){
-  grid-column:1 / -1;justify-self:start;align-self:start;position:relative;z-index:2;
-  height:12px;line-height:12px;margin:0 0 -12px 12px;padding:0 6px;background:var(--surface);
-  transform:translateY(calc(9px * var(--g,1) - 6px));
-}
-.spell.is-tight .wtr{font-size:calc(19px * var(--fs-card) * var(--f,1))}
-.spell.is-tight .wdef{font-size:calc(13px * var(--fs-card) * var(--f,1));line-height:1.5}
-.spell.is-tight .wcloze{padding:calc(9px * var(--g,1) + 4px) 12px calc(9px * var(--g,1));gap:calc(4px * var(--g,1))}
-.spell.is-tight .wcloze__de{font-size:calc(16px * var(--fs-card) * var(--f,1));line-height:1.5}
-.spell.is-tight .wcloze__en{font-size:calc(12px * var(--fs-card) * var(--f,1));line-height:1.45}
-.spell.is-tight .whintb{height:28px;padding:0 10px}
-.spell.is-tight .whintout{padding:calc(7px * var(--g,1)) 11px}
-.spell.is-tight .wfoot{padding:8px 13px calc(8px + env(safe-area-inset-bottom))}
-.spell.is-tight .wform{gap:7px}
-.spell.is-tight .winput{height:calc(46px * var(--fs-w));font-size:calc(20px * var(--fs-w));line-height:calc(46px * var(--fs-w) - 2px)}
-.spell.is-tight .wgo{width:96px}
-.spell.is-tight .wart{height:30px}
-.spell.is-tight .wkey{height:34px}
-@media (prefers-reduced-motion:reduce){.spell.is-tight .wcard > *:not(.wtop){animation:none}}
 
 /* ════════════════════════════════════════════════════════════
    v2.1 — THE CLOCK, AND WHAT IT LETS THE PAGE SAY
@@ -10844,7 +10783,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.30";
+const APP_VERSION = "3.31";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -14631,6 +14570,8 @@ function startSpelling(entries, title, lid, whole) {
   spell.i = 0; spell.seen = Object.create(null); spell.done = 0;
   spell.phase = "ask"; spell.hints = {}; spell.art = ""; spell.res = null; spell.retryOf = -1;
   spell.counts = { ok: 0, near: 0, no: 0 };
+  spell.marks = [];
+  spell.lock = "";
   spell.misses = [];
   spell.title = title || "Spelling";
   spell.lid = lid || null;
@@ -14642,7 +14583,8 @@ function startSpelling(entries, title, lid, whole) {
   spell.fsKeep = fullscreen.on();
   if (readCfg().fsauto && fullscreen.ok() && !fullscreen.on()) { spell.fs = true; fullscreen.enter(); }
   spKeyboardWatch(true);
-  paintSpell();
+  paintSpell("start");
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(spFitSoon);
 }
 function endSpelling() {
   speech.stop();
@@ -14671,9 +14613,7 @@ function endSpelling() {
    A fixed overlay keeps the height of the layout viewport, which on
    Android is the height *behind* the keyboard — so the answer box ends
    up underneath it. The visual viewport knows better, so the overlay is
-   sized from that instead and follows it up and down. What is left above
-   the keyboard also decides the layout: under 560px the session goes
-   `.is-tight` (see its CSS) and spFit() fits the card into what is left. */
+   sized from that instead and follows it up and down. */
 let spVVHandler = null;
 function spFitViewport() {
   const vv = window.visualViewport;
@@ -14681,41 +14621,7 @@ function spFitViewport() {
   spell.node.style.height = Math.round(vv.height) + "px";
   spell.node.style.top = Math.round(vv.offsetTop) + "px";
   spell.node.style.bottom = "auto";
-  spell.node.classList.toggle("is-tight", vv.height < 560);
   spFitSoon();
-}
-
-/* With the keyboard up the card is measured, not guessed: t runs from 0
-   (as designed) to 1 (spacing at a quarter, type at 78%), and the smallest
-   t at which the stage no longer scrolls is kept. Spacing goes first
-   because it costs nothing to read. If even t = 1 does not fit, the card
-   stays at t = 1 and the stage scrolls. Off the keyboard it is a no-op. */
-let spFitRaf = 0;
-function spFitSoon() {
-  if (spFitRaf) return;
-  spFitRaf = requestAnimationFrame(() => { spFitRaf = 0; spFit(); });
-}
-function spFit() {
-  const n = spell.node;
-  const st = n && n.querySelector(".wstage");
-  const card = st && st.querySelector(".wcard");
-  if (!card) return;
-  const put = t => {
-    card.style.setProperty("--f", (1 - 0.22 * t).toFixed(3));
-    card.style.setProperty("--g", (1 - 0.75 * t).toFixed(3));
-  };
-  const fits = () => st.scrollHeight <= st.clientHeight;
-  put(0);
-  if (!n.classList.contains("is-tight") || fits()) return;
-  put(1);
-  if (!fits()) return;
-  let lo = 0, hi = 1;
-  for (let i = 0; i < 7; i++) {
-    const m = (lo + hi) / 2;
-    put(m);
-    if (fits()) hi = m; else lo = m;
-  }
-  put(hi);
 }
 function spKeyboardWatch(on) {
   const vv = window.visualViewport;
@@ -14732,101 +14638,221 @@ function spKeyboardWatch(on) {
   }
 }
 
-/* ---------- the bar ---------- */
-function spellBar() {
-  const total = spell.entries.length;
-  const w = k => (total ? (spell.counts[k] / total) * 100 : 0) + "%";
-  return sessBar("wbar", "Writing", spell.title, 'data-spclose="1"', spell.i, total,
-    '<span class="wrail">' +
-      '<span class="s-ok" style="width:' + w("ok") + '"></span>' +
-      '<span class="s-near" style="width:' + w("near") + '"></span>' +
-      '<span class="s-no" style="width:' + w("no") + '"></span>' +
-    "</span>",
-    '<div class="dlegend">' +
-      '<span class="dleg dleg--ok"><i></i>Right <b>' + spell.counts.ok + "</b></span>" +
-      '<span class="dleg dleg--near"><i></i>Almost <b>' + spell.counts.near + "</b></span>" +
-      '<span class="dleg dleg--no"><i></i>Missed <b>' + spell.counts.no + "</b></span>" +
-    "</div>");
+/* The page is set to its room. The design size (--u = 1 at 390px wide, a
+   touch more on a wider column) is what every card gets; one that is too
+   long for the room has its spacing tightened first and its type set
+   smaller after it, never below 78%, so the whole prompt is in view
+   without scrolling. The room it is measured against is
+   capped at what a phone leaves above its keyboard, so a card comes out
+   the same size whether the keyboard is up or not; only a screen shorter
+   than that makes it smaller still. If even 78% is too much the page
+   scrolls. */
+let spFitRaf = 0;
+function spFitSoon() {
+  if (spFitRaf) return;
+  spFitRaf = requestAnimationFrame(() => { spFitRaf = 0; spFit(); });
+}
+function spFit() {
+  const n = spell.node;
+  const st = n && document.getElementById("spStage");
+  const page = st && document.getElementById("spPage");
+  if (!page) return;
+  const ub = Math.max(0.94, Math.min(1.25, Math.min(st.clientWidth, 560) / 390));
+  /* t = 0 is the design; t = 1 has the spacing at half and the type at 78% */
+  const put = t => {
+    st.style.setProperty("--u", (ub * (1 - 0.22 * t)).toFixed(3));
+    st.style.setProperty("--g", (1 - 0.5 * t).toFixed(3));
+  };
+  put(0);
+  if (n.classList.contains("is-done")) return;
+  const room = Math.min(st.clientHeight, 300 * ub);
+  const fits = () => page.offsetHeight <= room;
+  if (fits()) return;
+  put(1);
+  if (!fits()) return;
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 7; i++) {
+    const m = (lo + hi) / 2;
+    put(m);
+    if (fits()) hi = m; else lo = m;
+  }
+  put(hi);
 }
 
-/* ---------- the prompt ---------- */
-function spellPrompt(e, reveal) {
+/* ============================================================
+   THE SESSION SCREEN
+   One shell per session — header, page, dock — built once. What changes
+   between words is painted into it: the header's numbers and strip, the
+   page (the prompt, then the verdict) and the dock's state. The dock is
+   never rebuilt, because the answer box in it is what holds the keyboard
+   up; a repaint would drop the caret and the keyboard with it.
+   ============================================================ */
+const SP_KEYS = ["ä", "ö", "ü", "ß", "Ä", "Ö", "Ü"];
+
+function spShell() {
+  const n = spell.node;
+  const fs = fullscreen.ok()
+    ? '<button type="button" class="dclose" data-dfs="1" aria-pressed="' + String(fullscreen.on()) +
+      '" title="' + (fullscreen.on() ? "Leave full screen" : "Full screen") +
+      '" aria-label="' + (fullscreen.on() ? "Leave full screen" : "Full screen") + '">' +
+      (fullscreen.on() ? ICO_FS_OUT : ICO_FS_IN) + "</button>"
+    : "";
+  const total = spell.entries.length;
+  n.innerHTML =
+    '<header class="sp-head">' +
+      '<div class="sp-in sp-head__row">' +
+        '<button type="button" class="dclose" data-spclose="1" title="Close the session (Esc)" aria-label="Close the session">' + ICO_X + "</button>" +
+        '<div class="sp-head__ttl"><b>' + esc(spell.title) + "</b>" +
+          '<span class="sp-head__eye">' + timerChip() +
+            '<span class="sp-t sp-t--ok" title="Right"><i></i><b id="spT_ok">0</b></span>' +
+            '<span class="sp-t sp-t--near" title="Almost"><i></i><b id="spT_near">0</b></span>' +
+            '<span class="sp-t sp-t--no" title="Missed"><i></i><b id="spT_no">0</b></span>' +
+          "</span></div>" +
+        '<div class="dcount"><b id="spPlace">1</b><span id="spTotal">/ ' + total + "</span></div>" +
+        fs +
+        '<button type="button" class="dclose" data-readpop="1" aria-expanded="false" title="Text size and what a card shows" aria-label="Text size">' + ICO_AA + "</button>" +
+      "</div>" +
+      '<div class="sp-strip" id="spStrip"></div>' +
+    "</header>" +
+    '<main class="sp-stage" id="spStage"><div class="sp-page" id="spPage"></div></main>' +
+    '<footer class="sp-dock" id="spDock">' +
+      '<div class="sp-row sp-row--in">' +
+        '<div class="sp-field" id="spField">' +
+          '<div class="sp-arts" role="group" aria-label="The article">' +
+            ["der", "die", "das"].map(a =>
+              '<button type="button" class="sp-art sp-art--' + a + '" data-spart="' + a + '" aria-pressed="false" tabindex="-1">' + a + "</button>").join("") +
+          "</div>" +
+          /* Not an <input>: the browser hangs its own autofill bar off any
+             form field that takes the focus. An editable element that is not a
+             form control has nothing for it to attach to. It still asks the
+             keyboard for German, refuses autocorrect, capitals and
+             spellcheck, and answers Enter. */
+          '<div class="sp-input" id="spellInput" contenteditable="true" role="textbox"' +
+            ' lang="de" dir="ltr" inputmode="text" enterkeyhint="done"' +
+            ' autocorrect="off" autocapitalize="off" spellcheck="false" translate="no"' +
+            ' data-ph="Write in German…" aria-label="The German spelling"></div>' +
+        "</div>" +
+        '<button type="button" class="sp-go" data-spcheck="1"><span>Check <span class="kbd">↵</span></span></button>' +
+      "</div>" +
+      '<div class="sp-row sp-row--keys">' +
+        '<div class="sp-keys">' +
+          SP_KEYS.map(k => '<button type="button" class="sp-key" data-spkey="' + k + '" tabindex="-1">' + k + "</button>").join("") +
+        "</div>" +
+        '<button type="button" class="btn sp-again" data-spretry="1" hidden>Write it again</button>' +
+      "</div>" +
+    "</footer>";
+  const box = spBox();
+  box.addEventListener("input", spOnInput);
+  /* a button in the page or the dock must not take the focus from the
+     answer box, or the keyboard would close under the tap */
+  n.addEventListener("mousedown", e => {
+    if (e.target.closest("button") && !e.target.closest(".sp-head")) e.preventDefault();
+  });
+}
+
+/* what is typed shows in the hole of the sentence as it is typed */
+function spMirror() {
+  const gap = spell.node && spell.node.querySelector(".sp-de .wgap:not(.is-filled)");
+  if (!gap) return;
+  const t = spVal().trim().replace(/^(der|die|das)\s+/i, "");
+  if (gap.textContent !== t) gap.textContent = t;
+}
+function spOnInput() {
+  if (spell.phase === "marked") {
+    /* the box is a readout once a word is marked; it stays focused so the
+       keyboard stays up, and whatever the keyboard adds is put back */
+    const b = spBox();
+    if (b && b.textContent !== spell.lock) spSetVal(spell.lock);
+    return;
+  }
+  spMirror();
+}
+
+/* ---------- header ---------- */
+function spPaintHead() {
+  const total = spell.entries.length;
+  const set = (id, v) => {
+    const n = document.getElementById(id);
+    if (n && n.textContent !== String(v)) n.textContent = v;
+  };
+  set("spPlace", Math.min(spell.i + 1, total));
+  set("spTotal", "/ " + total);
+  ["ok", "near", "no"].forEach(k => set("spT_" + k, spell.counts[k]));
+  const strip = document.getElementById("spStrip");
+  if (!strip) return;
+  if (strip.children.length !== total) {
+    strip.innerHTML = new Array(total + 1).join("<i></i>");
+    strip.classList.toggle("is-fine", total > 60);
+  }
+  for (let k = 0; k < total; k++) {
+    const g = spell.marks[k];
+    strip.children[k].className = (g ? "s-" + g : "") + (k === spell.i ? " is-cur" : "");
+  }
+}
+
+/* ---------- the page ---------- */
+function spHelpHTML(e) {
+  const v = e.v;
+  const bare = spAsk(v);
+  const on = k => !!spell.hints[k];
+  const btn = (k, open, inner) =>
+    '<button type="button" class="sp-h' + (open ? " is-open" : "") + '" data-sphint="' + k + '"' +
+    ' aria-pressed="' + (on(k) ? "true" : "false") + '">' + ICO_LIGHT + inner + "</button>";
+  let h = "";
+  if (v.say) h += btn("say", on("say"), on("say") ? sayStrip(v.say, false) : "Sound");
+  const letters = bare.replace(/\s+/g, "").length;
+  h += btn("shape", on("shape"), on("shape")
+    ? '<span class="wlet"><b>' + esc(bare.charAt(0)) + "</b> · " + letters + (letters === 1 ? " letter" : " letters") +
+      (v.gender ? " · " + esc(v.gender) : "") + "</span>"
+    : "Letters");
+  if (speech.ok && speech.has()) h += btn("hear", false, "Hear it");
+  h += '<button type="button" class="sp-h sp-h--skip" data-spskip="1">Show me</button>';
+  return '<div class="sp-help">' + h + "</div>";
+}
+
+function spPageAsk(e) {
   const cfg = spellCfg();
   const v = e.v;
-  const cz = cfg.cloze ? spCloze(v, reveal) : null;
-  const bare = spAsk(v);
-  const bits = [];
-
-  bits.push('<div class="wtop">' +
-    '<span class="pos">' + esc(v.pos || "word") + (v.plural ? " · pl. " + esc(v.plural) : "") + "</span>" +
-    '<span class="fcard__meta">' + seenChip(v) +
-      '<span class="fcard__src">' + ICO_DOC + esc(e.src || "") + "</span>" +
-    "</span></div>");
-
+  const cz = cfg.cloze ? spCloze(v, false) : null;
+  let h = '<div class="sp-meta"><span class="pos">' + esc(v.pos || "word") + (v.plural ? " · pl. " + esc(v.plural) : "") + "</span>" +
+    '<span class="fcard__meta">' + seenChip(v) + '<span class="fcard__src">' + ICO_DOC + esc(e.src || "") + "</span></span></div>";
   if (v.translation || v.definition) {
-    bits.push('<div class="wask">It means</div>');
-    if (v.translation) bits.push('<div class="wtr">' + spMask(v.translation, v) + "</div>");
-    if (v.definition) bits.push('<div class="wdef">' + spMask(v.definition, v) + "</div>");
+    h += '<div class="sp-means">' +
+      (v.translation ? '<div class="sp-tr">' + spMask(v.translation, v) + "</div>" : "") +
+      (v.definition ? '<div class="sp-def">' + spMask(v.definition, v) + "</div>" : "") + "</div>";
   }
   if (cz) {
-    bits.push('<div class="wask">' + (reveal ? "In use" : "Now fill the gap") + "</div>");
-    bits.push('<div class="wcloze">' +
-      '<div class="wcloze__de">' + cz.html + "</div>" +
-      (v.example.en ? '<div class="wcloze__en">' + esc(v.example.en) + "</div>" : "") +
-    "</div>");
+    h += '<div class="sp-sheet">' +
+      '<div class="sp-de">' + cz.html + "</div>" +
+      (v.example.en ? '<div class="sp-en">' + esc(v.example.en) + "</div>" : "") + "</div>";
   } else if (!v.translation && !v.definition) {
-    bits.push('<div class="wask">The word</div><div class="wdef">This card carries only a sentence.</div>');
+    h += '<div class="sp-means"><div class="sp-def">This card carries only a sentence.</div></div>';
   }
-
-  /* the hints, and whatever they have already given away */
-  if (!reveal) {
-    const opts = [];
-    if (v.say) opts.push({ k: "say", label: "Sound", ico: ICO_LIGHT });
-    opts.push({ k: "shape", label: "Letters", ico: ICO_LIGHT });
-    if (speech.ok && speech.has()) opts.push({ k: "hear", label: "Hear it", ico: ICO_LIGHT });
-    if (opts.length) {
-      bits.push('<div class="whints">' + opts.map(o =>
-        '<button type="button" class="whintb" data-sphint="' + o.k + '"' +
-        ' aria-pressed="' + (spell.hints[o.k] ? "true" : "false") + '">' + o.ico + esc(o.label) + "</button>"
-      ).join("") + "</div>");
-    }
-    const shown = [];
-    if (spell.hints.say && v.say) shown.push(sayStrip(v.say, false));
-    if (spell.hints.shape) {
-      const letters = bare.replace(/\s+/g, "").length;
-      shown.push('<span class="wlet"><b>' + esc(bare.charAt(0)) + "</b>" +
-        "\u00A0·\u00A0" + letters + (letters === 1 ? " letter" : " letters") +
-        (v.gender ? "\u00A0·\u00A0" + esc(v.gender) : "") + "</span>");
-    }
-    if (shown.length) bits.push('<div class="whintout">' + shown.join("") + "</div>");
-  }
-  return bits.join("");
+  return h + spHelpHTML(e);
 }
 
-/* ---------- the verdict ---------- */
-function spellVerdict(e) {
+function spPageMarked(e) {
   const r = spell.res;
   const v = e.v;
   const meta = { ok: { l: "Right", ico: ICO_TICK }, near: { l: "Almost", ico: ICO_NEAR }, no: { l: "Not this time", ico: ICO_NO } }[r.grade];
   const target = r.target;
   const artOk = !r.artAsked || r.artRight;
-
-  return '<div class="wverdict">' +
-    '<span class="wbadge wbadge--' + r.grade + '">' + meta.ico + meta.l +
+  return (v.translation ? '<div class="sp-recap"><span class="sp-lab">It means</span><span>' + esc(v.translation) + "</span></div>" : "") +
+    '<span class="sp-badge sp-badge--' + r.grade + '">' + meta.ico + meta.l +
       (r.practice ? " · practice, not scored" : r.helped ? " · with a hint" : "") + "</span>" +
-    '<div class="wanswer">' +
+    '<div class="sp-answer">' +
       (v.gender ? '<span class="art art--' + v.gender + '">' + v.gender + "</span> " : "") +
       (r.grade === "ok" ? esc(target) : spDiffTarget(r.answer, target)) +
       sayBtn(spSayText(v), v.word, "sm") +
     "</div>" +
     (r.grade === "ok" && artOk ? "" :
-      '<div class="wyours">' +
+      '<div class="sp-yours">' +
         (r.answer && r.answer !== target
           ? "<span>You wrote</span><em>" + spDiffAnswer(r.answer, target) + "</em>"
           : (r.answer ? "" : "<span>Nothing was written</span>")) +
       "</div>") +
     (r.why.length || r.artAsked
-      ? '<div class="wwhy">' +
+      ? '<div class="sp-why">' +
         r.why.map(w => "<span><i></i>" + esc(w) + "</span>").join("") +
         (r.artAsked
           ? '<span><i style="background:var(--' + (r.artRight ? "known" : (r.artSkipped ? "gap" : "hard")) + ')"></i>' +
@@ -14837,89 +14863,110 @@ function spellVerdict(e) {
           : "") +
       "</div>"
       : "") +
-    '<div class="wrev">' +
-      sayStrip(v.say, false) +
-      noteHTML(v) +
-      exampleHTML(v, "") +
-    "</div>" +
-  "</div>";
+    '<div class="sp-rev">' + sayStrip(v.say, false) + noteHTML(v) + exampleHTML(v, "") + "</div>";
 }
 
-/* ---------- the answer bar ---------- */
-const SP_KEYS = ["ä", "ö", "ü", "ß", "Ä", "Ö", "Ü"];
-function spellFoot(e) {
+/* A new page is a fade-through: the old one leaves in place (.1s), then the
+   new one's blocks rise in, 40ms apart. A hint repaints the same page in
+   place, without either. */
+let spPageT = 0;
+function spShowPage(html, how) {
+  const page = document.getElementById("spPage");
+  const st = document.getElementById("spStage");
+  if (!page) return;
+  clearTimeout(spPageT);
+  const put = enter => {
+    page.innerHTML = html;
+    page.classList.remove("is-out", "is-in");
+    if (enter) { void page.offsetWidth; page.classList.add("is-in"); if (st) st.scrollTop = 0; }
+    spMirror();
+    spFit();
+  };
+  if (how === "quiet") return put(false);
+  if (how === "now") return put(true);
+  page.classList.add("is-out");
+  spPageT = setTimeout(() => put(true), 100);
+}
+
+/* ---------- dock ---------- */
+function spFlip(node, change) {
+  clearTimeout(node._flip);
+  node.classList.add("is-out");
+  node._flip = setTimeout(() => { change(); node.classList.remove("is-out"); }, 100);
+}
+let spKeysT = 0;
+function spSwapKeys(marked, instant) {
+  const row = spell.node.querySelector(".sp-row--keys");
+  const keys = row.querySelector(".sp-keys"), again = row.querySelector(".sp-again");
+  const inn = marked ? again : keys, out = marked ? keys : again;
+  clearTimeout(spKeysT);
+  const done = () => { out.hidden = true; out.classList.remove("is-out"); inn.hidden = false; };
+  if (instant || !inn.hidden) { done(); return; }
+  out.classList.add("is-out");
+  spKeysT = setTimeout(() => {
+    done();
+    inn.classList.add("is-in");
+    setTimeout(() => inn.classList.remove("is-in"), 200);
+  }, 100);
+}
+function spPaintDock(instant) {
+  const d = document.getElementById("spDock");
+  const e = spell.entries[spell.i];
+  if (!d || !e) return;
   const cfg = spellCfg();
   const v = e.v;
+  const marked = spell.phase === "marked";
+  const r = spell.res;
   const total = spell.entries.length;
-
-  if (spell.phase === "marked") {
-    const last = spell.i >= total - 1;
-    return '<div class="wform">' +
-      '<div class="winrow">' +
-        '<button type="button" class="btn" data-spretry="1" style="flex:1;height:56px;justify-content:center">Write it again</button>' +
-        '<button type="button" class="wgo wgo--next" data-spnext="1" style="width:auto;flex:1;height:56px">' +
-          (last ? "Finish" : "Next word") + ' <span class="kbd">\u21B5</span></button>' +
-      "</div>" +
-      '<div class="wtiny"><span>Enter moves on</span><span>Esc closes</span></div>' +
-    "</div>";
-  }
-
-  const askArt = cfg.article && !!v.gender;
-  return '<div class="wform">' +
-    (askArt
-      ? '<div class="warts" role="group" aria-label="The article">' +
-        ["der", "die", "das"].map(a =>
-          '<button type="button" class="wart wart--' + a + '" data-spart="' + a + '"' +
-          ' aria-pressed="' + (spell.art === a ? "true" : "false") + '">' + a + "</button>").join("") +
-        "</div>"
-      : "") +
-    '<div class="winrow">' +
-      /* Not an <input>. The browser hangs its own autofill bar — the key,
-         the card, the pin — off any form field that takes the focus, and
-         in full screen it is measured against the wrong box and lands
-         across the middle of the card. Nothing on the page can move or
-         hide that bar, but autofill has no claim on an editable element
-         that is not a form control, so there is nothing for it to attach
-         to and the bar never comes. Everything else is unchanged: the
-         box still asks the keyboard for German, still refuses
-         autocorrect, capitals and spellcheck, and still answers Enter. */
-      '<div class="winput" id="spellInput" contenteditable="true" role="textbox"' +
-        ' lang="de" dir="ltr" inputmode="text" enterkeyhint="done"' +
-        ' autocorrect="off" autocapitalize="off" spellcheck="false" translate="no"' +
-        ' data-ph="Write the German word\u2026" aria-label="The German spelling"></div>' +
-      '<button type="button" class="wgo" data-spcheck="1">Check <span class="kbd">\u21B5</span></button>' +
-    "</div>" +
-    '<div class="wkeys">' +
-      SP_KEYS.map(k => '<button type="button" class="wkey" data-spkey="' + k + '" tabindex="-1">' + k + "</button>").join("") +
-      '<span class="wkeys__sep"></span>' +
-      '<button type="button" class="wkey wkey--wide" data-spskip="1">Show me</button>' +
-    "</div>" +
-    '<div class="wtiny"><span>Enter checks</span><span>Esc closes</span><span>lang="de" \u00B7 keys above always type German</span></div>' +
-  "</div>";
+  d.classList.toggle("has-art", !!(cfg.article && v.gender));
+  d.dataset.phase = marked ? "marked" : "ask";
+  const chosen = marked ? r.art : spell.art;
+  d.querySelectorAll(".sp-art").forEach(b => {
+    const a = b.dataset.spart;
+    b.setAttribute("aria-pressed", String(chosen === a));
+    b.classList.toggle("is-right", marked && r.artAsked && a === v.gender);
+    b.classList.toggle("is-wrong", marked && r.artAsked && chosen === a && a !== v.gender);
+  });
+  const f = document.getElementById("spField");
+  f.classList.toggle("is-locked", marked);
+  ["ok", "near", "no"].forEach(k => f.classList.toggle("is-" + k, marked && r.grade === k));
+  const box = spBox();
+  box.setAttribute("data-ph", marked ? "Nothing written" : "Write in German…");
+  box.setAttribute("aria-readonly", String(marked));
+  const go = d.querySelector(".sp-go");
+  if (marked) { go.removeAttribute("data-spcheck"); go.setAttribute("data-spnext", "1"); }
+  else { go.removeAttribute("data-spnext"); go.setAttribute("data-spcheck", "1"); }
+  const label = marked
+    ? (spell.i >= total - 1 ? "Finish" : "Next") + ' <span class="kbd">↵</span>'
+    : 'Check <span class="kbd">↵</span>';
+  const paintLabel = () => { go.firstElementChild.innerHTML = label; };
+  if (instant || go.firstElementChild.innerHTML === label) paintLabel(); else spFlip(go, paintLabel);
+  spSwapKeys(marked, instant);
 }
 
-/* ---------- painting ---------- */
-function paintSpell() {
+/* ---------- painting ----------
+   how: "start" (build it all), "next" / "retry" (a new prompt),
+   "mark" (the verdict), "hint" (the same page, in place). Called with
+   nothing, it rebuilds the shell around whatever has been typed. */
+function paintSpell(how) {
   const n = spell.node;
   if (!n) return;
-  const total = spell.entries.length;
-
-  if (spell.i >= total) return paintSpellDone();
-
+  if (spell.i >= spell.entries.length) return paintSpellDone();
   const e = spell.entries[spell.i];
   spCountView(e);
-
-  const marked = spell.phase === "marked";
-  n.innerHTML =
-    spellBar() +
-    '<div class="wstage"><div class="wcard' + (marked ? " is-" + spell.res.grade : "") + '">' +
-      spellPrompt(e, marked) +
-      (marked ? spellVerdict(e) : "") +
-    "</div></div>" +
-    '<div class="wfoot">' + spellFoot(e) + "</div>";
-
-  if (!marked) spFocus();
-  spFitSoon();
+  let keep = "";
+  if (!how || !document.getElementById("spDock")) {
+    keep = how ? "" : spVal();
+    spShell();
+    how = "start";
+  }
+  if (how === "next" || how === "retry") spSetVal("");
+  spPaintHead();
+  spPaintDock(how === "start");
+  spShowPage(spell.phase === "marked" ? spPageMarked(e) : spPageAsk(e), how === "hint" ? "quiet" : how === "start" ? "now" : "fade");
+  if (keep) spSetVal(keep);
+  if (spell.phase !== "marked") spFocus();
+  spMirror();
 }
 /* ---------- the answer box ----------
    One place reads it, one place writes it, one place drops a letter in
@@ -14951,9 +14998,13 @@ function paintSpellDone() {
   const total = spell.entries.length;
   const acc = total ? Math.round((spell.counts.ok / total) * 100) : 0;
   const missed = spell.misses.slice();
-  n.innerHTML =
-    spellBar() +
-    '<div class="wstage"><div class="wdone">' +
+  if (!document.getElementById("spPage")) spShell();
+  const box = spBox();
+  if (box) box.blur();
+  n.classList.add("is-done");
+  spPaintHead();
+  spShowPage(
+    '<div class="wdone">' +
       "<h2>Ausgeschrieben.</h2>" +
       "<p>" + spell.counts.ok + " of " + total + " written cleanly — " + acc + "% right. " +
         (missed.length
@@ -14978,7 +15029,7 @@ function paintSpellDone() {
         '<button class="btn" data-spagain="1">Run the whole set again</button>' +
         '<button class="btn" data-spclose="1">Done</button>' +
       "</div>" +
-    "</div></div>";
+    "</div>", "fade");
 }
 
 /* ---------- what the buttons do ---------- */
@@ -15019,15 +15070,12 @@ function spellHint(k) {
     return;
   }
   spell.hints[k] = 1;
-  /* keep whatever has been typed so far across the repaint */
-  const keep = spVal();
-  paintSpell();
-  if (spBox()) { spSetVal(keep); spFocus(); }
+  paintSpell("hint");
 }
 function spellSetArticle(a) {
   if (!spell.on || spell.phase === "marked") return;
   spell.art = spell.art === a ? "" : a;
-  $$(".wart", spell.node).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.spart === spell.art)));
+  $$(".sp-art", spell.node).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.spart === spell.art)));
   spFocus();
 }
 function spellMark(raw, forced) {
@@ -15071,17 +15119,19 @@ function spellMark(raw, forced) {
          sentence bent it and the card's own word when it did not */
       word: spFold(r.target) === spFold(spBare(v.word)) ? v.word : r.target,
       answer: r.answer, entry: e });
+    spell.marks[spell.i] = r.grade;
     recordSpell(e, r.grade, helped);
   }
   clock.bump();
-  paintSpell();
+  spell.lock = spVal();
+  paintSpell("mark");
   if (cfg.autosay && speech.ok) speech.say(spSayText(v), null);
 }
 function spellCheck() {
   if (!spell.on || spell.phase === "marked") return;
   const val = spVal();
   if (!spClean(val)) {
-    if (spell.retryOf === spell.i) { spell.i++; spellReset(); paintSpell(); }
+    if (spell.retryOf === spell.i) { spell.i++; spellReset(); paintSpell("next"); }
     else spFocus();
     return;
   }
@@ -15100,7 +15150,7 @@ function spellRetry() {
   spell.res = null;
   spell.hints = { say: spell.hints.say, shape: spell.hints.shape, hear: spell.hints.hear };
   spell.retryOf = spell.i;
-  paintSpell();
+  paintSpell("retry");
 }
 function spellReset() {
   spell.phase = "ask"; spell.res = null; spell.hints = {}; spell.art = ""; spell.retryOf = -1;
@@ -15110,7 +15160,7 @@ function spellNext() {
   if (spell.phase !== "marked") return spellCheck();
   spell.i++;
   spellReset();
-  paintSpell();
+  paintSpell("next");
 }
 function spellEnter() {
   if (spell.i >= spell.entries.length) return;
