@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.23 · neural German, cached on device -->
+<!-- Sprachlabor — v3.24 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -7295,6 +7295,28 @@ function richEnglish(src) {
   return html + notes.html(ctx);
 }
 
+/* A preview line for a card: the opening of the passage with its
+   emphasis kept and its structure flattened. Headings, list and quote
+   markers, table pipes and rules drop away; a link keeps only its words
+   and an image nothing, since the whole card is already the button. */
+function mdExcerpt(src, max) {
+  let flat = String(src || "").replace(/\r\n?/g, "\n").split("\n").map(line => line
+    .replace(/^ {0,3}(#{1,6}\s+|>\s?|[-*+]\s+\[[ xX]\]\s+|[-*+]\s+|\d+[.)]\s+)+/, "")
+    .replace(/^\s*([-*_=]\s*){3,}$|^\s*\|?[\s:|-]+\|[\s:|-]*$|^\s*(```|~~~).*$/, "")
+    .replace(/\s*#+\s*$/, "")
+    .replace(/^\s*\||\|\s*$/g, "").replace(/\s*\|\s*/g, " · ")
+    .trim()).filter(Boolean).join(" ")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[\^[^\]\s]+\]/g, "")
+    .replace(/\s+/g, " ").trim();
+  /* A cut inside a span still pairs with its closer in the rest, and
+     mdBalance shuts the span at the cut, so no stray ** is left showing. */
+  if (flat.length <= max) return mdInline(mdBalance([flat])[0].text, esc, null);
+  const head = flat.slice(0, max).replace(/\s+\S*$/, "");
+  return mdInline(mdBalance([head, flat.slice(head.length)])[0].text, esc, null) + "…";
+}
+
 /* ---------- the passage speaker ----------
 
    Every card could already be heard; the passage itself could only be
@@ -10222,7 +10244,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.23";
+const APP_VERSION = "3.24";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -12426,7 +12448,7 @@ function lessonCard(l, showPath) {
   const st = !n ? "gap" : hard ? "hard" : (pct >= 100 ? "known" : "learning");
   const excerpt = isDeck
     ? l.vocabulary.slice(0, 8).map(v => v.word).join(" · ")
-    : l.paragraph.de;
+    : mdExcerpt(l.paragraph.de, 300);
   return '<div class="lcard" data-st="' + st + '" data-open="' + esc(l.id) + '" data-dragl="' + esc(l.id) + '" draggable="true"' +
     ' role="button" tabindex="0" aria-label="Open ' + esc(fileName(l)) + '">' +
     '<div class="lcard__top">' +
@@ -12438,7 +12460,7 @@ function lessonCard(l, showPath) {
       '<button class="dcard__menu" data-lmenu="' + esc(l.id) + '" aria-label="File options">' + ICO_DOTS + "</button>" +
     "</div>" +
     '<div class="lcard__name">' + esc(fileName(l)) + "</div>" +
-    '<div class="lcard__excerpt">' + esc(excerpt) + "</div>" +
+    '<div class="lcard__excerpt">' + (isDeck ? esc(excerpt) : excerpt) + "</div>" +
     (showPath ? '<div class="lcard__path">' + ICO_FOLDER + esc(pathLabel(l.folder)) + "</div>" : "") +
     '<div class="lcard__foot">' +
       '<span class="lcard__n">' + plural(n, "card") + "</span>" +
@@ -12624,12 +12646,12 @@ function renderHome(enter) {
   }
   if (last) {
     const pct = lessonScore(last), n = last.vocabulary.length, isDeck = last.kind === "deck";
-    const ex = isDeck ? last.vocabulary.slice(0, 10).map(v => v.word).join(" · ") : String(last.paragraph.de || "").slice(0, 220);
+    const ex = isDeck ? last.vocabulary.slice(0, 10).map(v => esc(v.word)).join(" · ") : mdExcerpt(last.paragraph.de, 300);
     pick += '<article class="hread" data-k="read" data-open="' + esc(last.id) + '" role="button" tabindex="0" aria-label="Open ' + esc(fileName(last)) + '">' +
       '<div class="hread__top"><span class="eyebrow">Last opened · ' + (isDeck ? "Deck" : "Paragraph") + "</span>" +
         '<span class="chip chip--level">' + esc(last.level) + "</span></div>" +
       "<h3>" + esc(fileName(last)) + "</h3>" +
-      (ex ? '<p class="hread__de" lang="de">' + esc(ex) + "</p>" : "") +
+      (ex ? '<p class="hread__de" lang="de">' + ex + "</p>" : "") +
       '<div class="hread__foot"><span class="meter"><i class="' + (pct === 100 ? "is-full" : "") + '" style="width:' + pct + '%"></i></span>' +
         '<span class="hread__pct">' + pct + "% known</span>" +
         (n ? '<button class="btn btn--sm' + (P ? "" : " btn--primary") + '" data-reviewfile="' + esc(last.id) + '">' + ICO_DRILL + "Study " + n + "</button>" : "") +
