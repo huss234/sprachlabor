@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.28 · neural German, cached on device -->
+<!-- Sprachlabor — v3.29 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -760,6 +760,10 @@ ul,ol{margin:0;padding:0;list-style:none}
 .tok--known{background-image:linear-gradient(var(--ok),var(--ok))}
 
 .sent--inline{display:inline;margin:0;padding:0}
+/* Room for the speaker at the end of each sentence, inside the line: the
+   word joiner glues it to the last word, so it never wraps on its own.
+   25px button + 8px gap. */
+.can-say #readerText .sent::after{content:"\2060";padding-right:33px}
 .en-line{
   display:block;
   font-size:14.5px;line-height:1.6;color:var(--ink-2);font-style:italic;
@@ -3262,9 +3266,10 @@ button.imp__row:active .imp__tick{transform:scale(.9)}
   .tts.is-playing .tts__w1,.tts.is-playing .tts__w2{animation:none;opacity:1}
 }
 /* The passage speaker. One button for the whole reader rather than one
-   per line: it floats over the text and follows the sentence under the
-   cursor, so the passage keeps its own spacing and nothing sits in the
-   middle of a heading or a table cell. Below the sheet, above the bar. */
+   per line: it follows the sentence under the cursor and sits in the room
+   each sentence keeps free at its end (`.sent::after`), so it never covers
+   a word and nothing sits in the middle of a heading or a table cell.
+   Below the sheet, above the bar. */
 .sentsay{
   position:fixed;left:0;top:0;z-index:88;
   opacity:0;pointer-events:none;transform:scale(.86);
@@ -7571,21 +7576,30 @@ const sentSpeak = (() => {
     if (node) node.classList.remove("is-on");
   }
 
-  /* It sits at the end of the sentence's last line, which is where the
-     eye already is when the line runs out, and swaps to the near side
-     when the column has no room on the right. */
+  /* It sits right after the last word of the sentence, in the gap the
+     sentence keeps for it, which is where the eye already is when the
+     line runs out. The sentence is a block, so its own box spans the
+     whole column; the end of the text is read off a range over its
+     contents instead, taking the last line's boxes. */
   function place() {
     if (!node || !sent) return;
     if (!document.contains(sent)) { hide(); return; }
-    const rects = sent.getClientRects();
-    if (!rects.length) { hide(); return; }
-    const r = rects[rects.length - 1];
+    const range = document.createRange();
+    range.selectNodeContents(sent);
+    const boxes = Array.from(range.getClientRects()).filter(b => b.width > 0 && b.height > 0);
+    if (!boxes.length) { hide(); return; }
+    const bottom = Math.max.apply(null, boxes.map(b => b.bottom));
+    const last = boxes.filter(b => b.bottom > bottom - 3);
+    const r = {
+      top: Math.min.apply(null, last.map(b => b.top)), bottom: bottom,
+      right: Math.max.apply(null, last.map(b => b.right))
+    };
+    r.height = r.bottom - r.top;
     const size = node.offsetWidth || 25;
     /* scrolled out of the way: it goes, unless it is the stop button
        for the line currently being read */
     if ((r.bottom < 46 || r.top > window.innerHeight - 8) && !busy()) { hide(); return; }
-    let x = r.right + 8;
-    if (x + size > window.innerWidth - 8) x = Math.max(8, r.left - size - 8);
+    const x = Math.min(r.right + 8, window.innerWidth - size - 8);
     const y = Math.min(Math.max(46, r.top + (r.height - size) / 2), window.innerHeight - size - 8);
     node.style.left = Math.round(x) + "px";
     node.style.top = Math.round(y) + "px";
@@ -7630,6 +7644,7 @@ const sentSpeak = (() => {
   /* The click itself is not handled here: the button carries data-tts
      like every other speaker in the app, so the existing routing reads
      it, lights it and stops it on a second press. */
+  if (speech.ok) document.documentElement.classList.add("can-say");
   document.addEventListener("mouseover", from);
   document.addEventListener("focusin", from);
   window.addEventListener("scroll", () => { if (sent) place(); }, { passive: true });
@@ -10775,7 +10790,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.28";
+const APP_VERSION = "3.29";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
