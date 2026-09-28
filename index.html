@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.25 · neural German, cached on device -->
+<!-- Sprachlabor — v3.26 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -463,14 +463,26 @@ ul,ol{margin:0;padding:0;list-style:none}
 .search__x svg{position:static;left:auto;width:13px;height:13px}
 .search:has(.search__x:not([hidden])) input{padding-right:34px}
 #libSearch::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
-.seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);overflow:hidden}
+.seg{position:relative;display:inline-flex;border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);overflow:hidden}
 .seg button{
   height:36px;padding:0 13px;font-size:12px;font-weight:600;color:var(--ink-2);
-  border-right:1px solid var(--rule);transition:background .14s var(--ease),color .14s var(--ease);
+  border-right:1px solid var(--rule);transition:background .14s var(--ease),color .2s var(--ease),transform .1s var(--ease);
 }
 .seg button:last-child{border-right:none}
 .seg button:hover{background:var(--surface-2)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.seg button:active{transform:scale(.97)}
+/* The selected fill is one thumb that slides to the tapped segment
+   (segThumb() places it and re-places it whenever a pressed state changes).
+   Until the script has built it the plain pressed fill above still shows. */
+.seg.has-thumb button{position:relative}
+.seg.has-thumb button[aria-pressed="true"],.seg.has-thumb button[aria-pressed="true"]:hover{background:none;color:var(--paper)}
+.seg__thumb{
+  position:absolute;top:0;bottom:0;left:0;width:100px;background:var(--ink);
+  transform-origin:0 0;transform:scaleX(0);pointer-events:none;
+  transition:transform .3s var(--ease),opacity .2s var(--ease);
+}
+.seg__thumb.is-off{opacity:0}
 .seg--ico button{width:38px;padding:0;display:grid;place-items:center}
 .seg--ico svg{width:16px;height:16px}
 /* Practice switch: a .seg whose selected fill is one thumb that slides.
@@ -4324,7 +4336,7 @@ button.wrow:active{transform:scale(.99)}
   .is-grow .bar,.is-grow .dowcol i,.is-grow .meter i,.is-grow .frow__bar i,.is-grow .lbrow__b i,.is-grow .wrow__b i,.is-grow .pickup__m i,
   .is-grow .mixbar,.is-grow .boxbar,.is-grow .spark,.is-grow .hours,.is-grow .year,.is-grow .chart .line,.is-grow .chart .line2{animation:none}
   .cal__grid.is-slide{animation-name:fade}
-  .ptabs__ind{transition:none}
+  .ptabs__ind,.seg__thumb{transition:none}
   .cday:active,.weekstrip button:active,.pickup button:active,.cal__nav button:active,.cal__wk:active,.ptabs button:active,
   button.wrow:active,.fold__btn:active,.year i[data-day]:active,.cal__title:active{transform:none}
 }
@@ -6460,6 +6472,77 @@ function practab(node, from) {
   (toRight ? a : b).animate([{ color: on }, { color: off }], cOpt);
 }
 
+/* Every segmented toggle (.seg): the selected fill is one thumb that slides
+   from the old segment to the new one, wherever the switch lives. Callers
+   only flip aria-pressed, or rebuild the whole group with innerHTML; a
+   MutationObserver sees both. A rebuilt group starts its thumb where the
+   same group had it a moment ago, so a re-render still slides. */
+const segMem = new Map();
+function segKey(seg) {
+  return (seg.id || "") + "|" + (seg.getAttribute("aria-label") || "") + "|" +
+    Array.prototype.map.call(seg.children, b => b.textContent).join("/");
+}
+function segPlace(seg, still) {
+  const t = seg.querySelector(":scope > .seg__thumb");
+  if (!t) return;
+  const on = seg.querySelector(":scope > button[aria-pressed='true']");
+  if (!seg.offsetWidth) return;
+  if (!on) { t.classList.add("is-off"); return; }
+  const sr = seg.getBoundingClientRect(), br = on.getBoundingClientRect(), k = sr.width / seg.offsetWidth || 1;
+  const x = (br.left - sr.left) / k - seg.clientLeft, w = br.width / k;
+  const idx = Array.prototype.indexOf.call(seg.children, on);
+  const put = (px, pw) => { t.style.transform = "translateX(" + px + "px) scaleX(" + (pw / 100) + ")"; };
+  const mem = segMem.get(seg.__segKey);
+  if (t.dataset.x === undefined) {
+    /* first placement: nothing to slide from, unless this group was just rebuilt */
+    const recent = mem && mem.seg !== seg && Date.now() - mem.at < 1500 && mem.i !== idx && !reducedMotion();
+    t.style.transition = "none";
+    put(recent ? mem.x : x, recent ? mem.w : w);
+    t.classList.remove("is-off");
+    t.getBoundingClientRect();
+    t.style.transition = "";
+    if (recent) put(x, w);
+  } else if (+t.dataset.x !== x || +t.dataset.w !== w || t.classList.contains("is-off")) {
+    if (still) t.style.transition = "none";
+    put(x, w);
+    t.classList.remove("is-off");
+    if (still) { t.getBoundingClientRect(); t.style.transition = ""; }
+  }
+  t.dataset.x = x; t.dataset.w = w;
+  segMem.set(seg.__segKey, { seg: seg, i: idx, x: x, w: w, at: Date.now() });
+}
+function segInit(seg) {
+  if (seg.classList.contains("has-thumb") || !seg.querySelector(":scope > button")) return;
+  const t = document.createElement("i");
+  t.className = "seg__thumb"; t.setAttribute("aria-hidden", "true");
+  seg.insertBefore(t, seg.firstChild);
+  seg.classList.add("has-thumb");
+  seg.__segKey = segKey(seg);
+  segPlace(seg, true);
+  if (segRO) segRO.observe(seg);
+}
+const segRO = "ResizeObserver" in window ? new ResizeObserver(list => list.forEach(e => {
+  if (!e.target.isConnected) { segRO.unobserve(e.target); return; }
+  segPlace(e.target, true);
+})) : null;
+function segScan(root) {
+  if (root.matches && root.matches(".seg")) segInit(root);
+  if (root.querySelectorAll) root.querySelectorAll(".seg").forEach(segInit);
+}
+segScan(document);
+new MutationObserver(list => {
+  const dirty = new Set();
+  list.forEach(m => {
+    if (m.type === "attributes") {
+      const seg = m.target.parentNode;
+      if (seg && seg.classList && seg.classList.contains("has-thumb")) dirty.add(seg);
+      return;
+    }
+    m.addedNodes.forEach(n => { if (n.nodeType === 1) segScan(n); });
+  });
+  dirty.forEach(seg => segPlace(seg, false));
+}).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-pressed"] });
+
 /* ---------- recently opened ---------- */
 function noteRecent(id) {
   if (!id) return;
@@ -6486,8 +6569,13 @@ function recentLessons(n) {
 /* ---------- theme ---------- */
 function setTheme(t) {
   state.settings.theme = t;
-  retheme(t);
   $$("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeSet === t)));
+  /* the switch's thumb slides first; the page crossfade starts once it has
+     nearly arrived, so the two never fight over the same frames */
+  const seg = $("#themeSeg");
+  clearTimeout(setTheme.tm);
+  if (seg && seg.offsetWidth && !reducedMotion()) setTheme.tm = setTimeout(() => retheme(t), 220);
+  else retheme(t);
   saveProgress();
 }
 /* The page changes theme as one crossfade instead of every colour
@@ -10671,7 +10759,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.25";
+const APP_VERSION = "3.26";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
