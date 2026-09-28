@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.21 · neural German, cached on device -->
+<!-- Sprachlabor — v3.22 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -3991,6 +3991,28 @@ button.wrow:active{transform:scale(.99)}
 .fold.is-open .fold__body{grid-template-rows:1fr;opacity:1;
   transition:grid-template-rows .28s var(--ease),opacity .22s var(--ease) .05s}
 .fold__body>div{min-height:0;overflow:hidden}
+
+/* ---------- info tip: an explanation kept behind an i beside its heading ---------- */
+.tipbtn{
+  display:inline-grid;place-items:center;width:24px;height:24px;margin:-4px 0 -4px 4px;vertical-align:middle;
+  border-radius:100px;color:var(--ink-3);
+  transition:background .15s var(--ease),color .15s var(--ease),transform .1s var(--ease);
+}
+.tipbtn svg{width:16px;height:16px}
+.tipbtn:hover{background:var(--surface-2);color:var(--ink-2)}
+.tipbtn:active{transform:scale(.94)}
+.tipbtn[aria-expanded="true"]{background:var(--signal-soft);color:var(--signal)}
+.tip{display:grid;grid-template-rows:0fr;opacity:0;
+  transition:grid-template-rows .2s cubic-bezier(.4,0,1,1),opacity .14s cubic-bezier(.4,0,1,1)}
+.tip.is-open{grid-template-rows:1fr;opacity:1;
+  transition:grid-template-rows .28s var(--ease),opacity .22s var(--ease) .05s}
+.tip>div{min-height:0;overflow:hidden}
+.tip p{font-size:12.5px;color:var(--ink-2);line-height:1.6;max-width:62ch;margin:0;padding:0 0 14px}
+.tip p + p{margin-top:-6px}
+.chart__head .tip p{padding:4px 0 0;font-size:12px}
+.panel > h3:not(:has(+ p)){margin-bottom:14px}
+.panel--tiponly > h3:not(:has(+ p)){margin-bottom:0}
+.panel--tiponly .tip p{padding:10px 0 0}
 .earned{
   display:grid;gap:1px;background:var(--rule-2);border:1px solid var(--rule);border-radius:var(--r-md);
   margin:6px 0 2px;max-height:252px;overflow-y:auto;overscroll-behavior:contain;
@@ -4284,7 +4306,6 @@ button.wrow:active{transform:scale(.99)}
 
             <div class="panel">
               <h3>Theme</h3>
-              <p>Light suits daytime reading; dark is easier late at night.</p>
               <div class="seg seg--full" id="themeSeg" role="group" aria-label="Theme">
                 <button data-theme-set="light" aria-pressed="true">Light</button>
                 <button data-theme-set="dark" aria-pressed="false">Dark</button>
@@ -4310,8 +4331,8 @@ button.wrow:active{transform:scale(.99)}
 
             <div class="eyebrow setsub setsub--first">Lessons and sessions</div>
             <div class="panel">
-              <h3>Translation shown by default</h3>
-              <p>What the reader shows when you open a lesson. You can still switch it inside any lesson — the last choice you make there becomes the new default.</p>
+              <h3>Translation shown by default<button class="tipbtn" type="button" data-tipbtn="tr" aria-controls="tip-tr" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-tr" inert><div><p>Switching it inside a lesson also changes this default.</p></div></div>
               <div class="seg seg--full" id="trSeg" role="group" aria-label="Default translation mode">
                 <button data-tr="off" aria-pressed="true">Hide</button>
                 <button data-tr="inline" aria-pressed="false">By line</button>
@@ -4322,8 +4343,8 @@ button.wrow:active{transform:scale(.99)}
 
             <div class="eyebrow setsub">Goals and calendar</div>
             <div class="panel">
-              <h3>Daily targets</h3>
-              <p>A day counts as done when you hit either one. Set them where you will actually meet them most days — a streak you can keep is worth more than an ambitious one you break.</p>
+              <h3>Daily targets<button class="tipbtn" type="button" data-tipbtn="goals" aria-controls="tip-goals" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-goals" inert><div><p>A day counts as done when you meet either one.</p></div></div>
               <div class="numrow">
                 <div class="field">
                   <label for="goalCards">Cards a day</label>
@@ -4337,18 +4358,17 @@ button.wrow:active{transform:scale(.99)}
             </div>
 
             <div class="panel">
-              <h3>The clock</h3>
-              <p>Time is counted whenever you are reading a passage or inside a session, and it stops on its own after two minutes without a touch. It is counted quietly: nothing on screen ticks unless you ask it to below, and the totals are on the Time tab either way.</p>
+              <h3>The clock<button class="tipbtn" type="button" data-tipbtn="clock" aria-controls="tip-clock" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-clock" inert><div><p>Time counts while you read or study and pauses after two minutes without a touch. It counts whether or not the clock is shown; the totals are on the Time tab.</p></div></div>
               <label class="switch">
                 <input type="checkbox" id="optShowTimer">
                 <i></i>
-                <span>Show the running clock — <em style="font-style:normal;color:var(--ink-3)">the floating pill by the rail, and the small readout inside a drill or a writing session. Off by default; the counting does not depend on it.</em></span>
+                <span>Show the running clock</span>
               </label>
             </div>
 
             <div class="panel">
               <h3>Week starts on</h3>
-              <p>Changes where the calendar and the week strip draw their boundaries.</p>
               <div class="seg seg--full" id="weekStartSeg" role="group" aria-label="First day of the week">
                 <button data-wstart="6" aria-pressed="false">Saturday</button>
                 <button data-wstart="0" aria-pressed="false">Sunday</button>
@@ -4365,7 +4385,6 @@ button.wrow:active{transform:scale(.99)}
 
             <div class="panel">
               <h3>Spoken German</h3>
-              <p>Every card carries two speaker buttons — one on the word, one on the example sentence. They are read by the voice built into this device.</p>
 
               <div id="engDevice">
                 <div class="vstat" id="voiceStat"><i></i><span>Checking what this device can speak…</span></div>
@@ -4396,8 +4415,8 @@ button.wrow:active{transform:scale(.99)}
             </div>
 
             <div class="panel">
-              <h3>Turn any German content into a file</h3>
-              <p>There are two ways to study here, so there are two prompts. Copy one, paste it into whichever assistant you use, then paste your German underneath it. What comes back is a file this app imports as it stands — dropped in below, or pasted straight into the box.</p>
+              <h3>Turn any German content into a file<button class="tipbtn" type="button" data-tipbtn="prompts" aria-controls="tip-prompts" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-prompts" inert><div><p>Copy a prompt, paste it into any assistant with your German under it, then bring the answer back below. Both prompts also ask for a file name of three words at most.</p></div></div>
 
               <div class="promptcard">
                 <div class="promptcard__head">
@@ -4407,7 +4426,7 @@ button.wrow:active{transform:scale(.99)}
                     <button class="btn btn--sm" data-showprompt="paragraph">Show the text</button>
                   </div>
                 </div>
-                <p class="sub">Builds a reading passage <b>and</b> its deck inside one file: the German text, the English line by line, and one card for every single word in it — articles, particles and one-letter words included. Use it for anything you want to read.</p>
+                <p class="sub">A passage with its English, and a card for every word in it.</p>
                 <pre class="prompt" id="promptParagraph" hidden></pre>
               </div>
 
@@ -4419,17 +4438,16 @@ button.wrow:active{transform:scale(.99)}
                     <button class="btn btn--sm" data-showprompt="deck">Show the text</button>
                   </div>
                 </div>
-                <p class="sub">Builds cards with no passage attached — a word list, a chapter's vocabulary, or a set that hangs together on its own like the days of the week. Give it a list, or just name the topic.</p>
+                <p class="sub">Cards only, from a word list or a topic.</p>
                 <pre class="prompt" id="promptDeck" hidden></pre>
               </div>
 
-              <p style="margin:14px 0 0;font-size:12.5px;color:var(--ink-3);line-height:1.65">Both prompts end by asking for the file name in three words at most. That name is what you will see in the folder list, at the top of the reader and on every card in the review queue, so it is worth glancing at before you import.</p>
             </div>
 
             <div class="cols">
               <div class="panel">
-                <h3>Add files</h3>
-                <p>Drop paragraph files, deck files or a whole library bundle. A file whose id already exists is replaced by the new one.</p>
+                <h3>Add files<button class="tipbtn" type="button" data-tipbtn="addfiles" aria-controls="tip-addfiles" aria-expanded="false" aria-label="More about this"></button></h3>
+                <div class="tip" id="tip-addfiles" inert><div><p>Paragraph files, deck files or a whole library bundle. A file whose id already exists is replaced.</p></div></div>
                 <div class="drop" id="dropZone">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
                   <p>Drop <b>.json</b> files here</p>
@@ -4437,14 +4455,13 @@ button.wrow:active{transform:scale(.99)}
                   <input type="file" id="filePick" accept=".json,application/json" multiple hidden>
                 </div>
                 <div class="hint" style="margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                  <span>No file yet? The samples show what one looks like.</span>
+                  <span>No files yet?</span>
                   <button class="btn btn--sm" id="btnSeed">Restore sample lessons</button>
                 </div>
               </div>
 
               <div class="panel">
                 <h3>Paste the answer</h3>
-                <p>Paste whatever the assistant replied. Stray text or a code fence around the JSON is stripped for you.</p>
                 <textarea class="code" id="pasteBox" placeholder='{ "format": "sprachlabor.lesson", "version": 1, … }' spellcheck="false"></textarea>
                 <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
                   <button class="btn btn--primary" id="btnPaste">Add to library</button>
@@ -4464,7 +4481,6 @@ button.wrow:active{transform:scale(.99)}
 
             <div class="panel">
               <h3>Stored files</h3>
-              <p>Export writes a file named exactly the way the importer expects it.</p>
               <div class="btnrow" style="margin-bottom:14px">
                 <button class="btn" id="btnExportAll">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v11M8 11l4 4 4-4M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>
@@ -4475,8 +4491,8 @@ button.wrow:active{transform:scale(.99)}
             </div>
 
             <div class="panel panel--danger">
-              <h3>Danger zone</h3>
-              <p>Both of these are permanent on this device, and the next sync carries them to your other devices. Export first if you want a copy.</p>
+              <h3>Danger zone<button class="tipbtn" type="button" data-tipbtn="danger" aria-controls="tip-danger" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-danger" inert><div><p>Both are permanent, and the next sync carries them to your other devices. Export first if you want a copy.</p></div></div>
               <div class="btnrow">
                 <button class="btn btn--danger" id="btnResetProgress">Reset all progress</button>
                 <button class="btn btn--danger" id="btnWipe">Delete everything</button>
@@ -4493,8 +4509,8 @@ button.wrow:active{transform:scale(.99)}
             <div class="panel" id="syncStatus"></div>
 
             <div class="panel">
-              <h3>GitHub connection</h3>
-              <p>These three fields are all it needs. Everything is stored on this device only — nothing is ever written into the public folder that holds the app.</p>
+              <h3>GitHub connection<button class="tipbtn" type="button" data-tipbtn="gh" aria-controls="tip-gh" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-gh" inert><div><p>The token is kept in this browser only and is sent nowhere but GitHub, over an encrypted connection.</p><p><b>Never paste it into a message, a file or the public repository.</b> Anyone holding it can read and write your private folder. If it leaks, delete it on GitHub and make a new one.</p></div></div>
               <div class="cols">
                 <div class="field">
                   <label for="ghUser">GitHub username</label>
@@ -4508,7 +4524,6 @@ button.wrow:active{transform:scale(.99)}
               <div class="field">
                 <label for="ghToken">Personal access token</label>
                 <input type="password" id="ghToken" autocomplete="off" spellcheck="false" placeholder="ghp_…">
-                <div class="hint">The long code you copied from GitHub. It is kept in this browser's private storage and is never uploaded anywhere except to GitHub itself, over an encrypted connection.</div>
               </div>
               <div class="btnrow">
                 <button class="btn btn--primary" id="btnGhSave">Save and connect</button>
@@ -4519,14 +4534,11 @@ button.wrow:active{transform:scale(.99)}
                 </button>
                 <button class="btn btn--danger" id="btnGhForget">Forget this device</button>
               </div>
-              <div class="warnbox">
-                <b>Never paste this token into a message, a file, or the public repository.</b> Anyone holding it can read and write your private folder. If it ever leaks, delete it on GitHub and generate a new one — that instantly makes the old one useless.
-              </div>
             </div>
 
             <div class="panel">
-              <h3>Automatic sync</h3>
-              <p>When this is on, the app syncs quietly after you study and whenever you reopen it, and while it is open it checks every minute for anything new from your other device. Turn it off to sync only with the button above.</p>
+              <h3>Automatic sync<button class="tipbtn" type="button" data-tipbtn="autosync" aria-controls="tip-autosync" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-autosync" inert><div><p>It syncs after you study, when you reopen the app, and every minute while it is open. Off, it syncs only when you ask.</p><p>Devices never overwrite each other. Lessons merge one by one and the newest edit wins; progress merges word by word, and your history pools what each device recorded.</p></div></div>
               <label class="switch">
                 <input type="checkbox" id="ghAuto">
                 <i></i>
@@ -4534,11 +4546,6 @@ button.wrow:active{transform:scale(.99)}
               </label>
             </div>
 
-            <div class="panel">
-              <h3>How the merge works</h3>
-              <p>Your two devices never overwrite each other wholesale. Lessons merge one by one and the newest edit wins; a deletion wins over anything older than it. Progress merges word by word, so a session on your phone and a session on your tablet both survive. Your study history is append-only, which means it cannot conflict at all — the two devices simply pool what each of them recorded.</p>
-              <p style="margin-bottom:0">Each sync sends only what changed since the last one, as one small file in a single commit, and fetches only what the other device added since. When nothing is new, finding that out costs one quick question to GitHub. Once a week the app folds those small files back into the main copy. Each device also keeps its own settings there, so a phone or tablet you set up again gets its settings back.</p>
-            </div>
           </div>
 
           <!-- ---------- REFERENCE ---------- -->
@@ -4548,8 +4555,8 @@ button.wrow:active{transform:scale(.99)}
             </div>
 
             <div class="panel">
-              <h3>Lesson file format</h3>
-              <p>The importer accepts any file matching this shape. Only <code class="mono">id</code>, <code class="mono">title</code>, <code class="mono">paragraph</code> and <code class="mono">vocabulary</code> are required.</p>
+              <h3>Lesson file format<button class="tipbtn" type="button" data-tipbtn="spec" aria-controls="tip-spec" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-spec" inert><div><p>Only <code class="mono">id</code>, <code class="mono">title</code>, <code class="mono">paragraph</code> and <code class="mono">vocabulary</code> are required.</p></div></div>
               <pre class="spec" id="specBox"></pre>
               <div style="margin-top:14px;font-size:13px;color:var(--ink-2);line-height:1.7">
                 <div style="margin-bottom:8px"><b>Single lesson filename</b><br><span class="filename">sl-lesson__A1__im-cafe.json</span></div>
@@ -4558,8 +4565,8 @@ button.wrow:active{transform:scale(.99)}
             </div>
 
             <div class="panel">
-              <h3>Pronunciation key</h3>
-              <p>Respellings use English spelling patterns only — no IPA. Capitals mark the stressed syllable.</p>
+              <h3>Pronunciation key<button class="tipbtn" type="button" data-tipbtn="keytable" aria-controls="tip-keytable" aria-expanded="false" aria-label="More about this"></button></h3>
+              <div class="tip" id="tip-keytable" inert><div><p>English spelling patterns, no IPA. Capitals mark the stressed syllable.</p></div></div>
               <div class="keytable" id="keyTable"></div>
             </div>
           </div>
@@ -4582,7 +4589,6 @@ button.wrow:active{transform:scale(.99)}
 
             <div class="panel">
               <h3>What it does</h3>
-              <p>Read real German with the English beside it. Every word in the text is also a card, so what you read is what you learn. The cards then come back to you until you know them.</p>
               <div class="about__feats">
                 <div><b>Library</b><span>Your files, in folders you make. A file is a passage with its cards, or a deck of cards on its own.</span></div>
                 <div><b>Lesson</b><span>The German text, with the English hidden, line by line, or in full. Tap any word to open its card.</span></div>
@@ -4595,23 +4601,21 @@ button.wrow:active{transform:scale(.99)}
 
             <div class="panel">
               <h3>This copy</h3>
-              <p>The details to give if something goes wrong.</p>
               <div class="about__facts" id="aboutFacts"></div>
             </div>
 
             <div class="panel">
               <h3>Your data</h3>
-              <p style="margin-bottom:0">Your lessons and your progress are stored in this browser, on this device. The app sends them to one place only: your own private GitHub repository, and only after you connect it under Sync. The spoken German comes from the voice built into your device.</p>
+              <p style="margin-bottom:0">Kept in this browser, and sent only to your own private GitHub repository once you connect it.</p>
             </div>
 
             <div class="panel">
               <h3>Made with</h3>
-              <p>Three typefaces, each with one job.</p>
               <div class="about__facts">
                 <div><span>German text</span><b style="font-family:var(--serif);font-weight:500;font-size:15px">Newsreader</b></div>
                 <div><span>Interface</span><b>Archivo</b></div>
                 <div><span>Pronunciation</span><b class="mono">IBM Plex Mono</b></div>
-                <div><span>Colours</span><b>Cool grey paper, graphite ink, Autobahn blue and signal yellow — borrowed from German road signs.</b></div>
+                <div><span>Colours</span><b>German road signs: grey, graphite, Autobahn blue, signal yellow</b></div>
               </div>
             </div>
           </div>
@@ -4652,6 +4656,31 @@ const el = (tag, cls, html) => {
   if (html != null) n.innerHTML = html;
   return n;
 };
+/* ---------- info tips ----------
+   Explanations wait behind a small i beside their heading instead of
+   sitting under it. Open ones are remembered by key, so a rebuild
+   (Progress redraws often) leaves them as they were. */
+const ICO_INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.2M12 7.9v.1"/></svg>';
+const tipOpen = new Set();
+function tipBtn(key) {
+  return '<button class="tipbtn" type="button" data-tipbtn="' + key + '" aria-controls="tip-' + key +
+    '" aria-expanded="' + tipOpen.has(key) + '" aria-label="More about this">' + ICO_INFO + "</button>";
+}
+function tipBody(key, html) {
+  const on = tipOpen.has(key);
+  return '<div class="tip' + (on ? " is-open" : "") + '" id="tip-' + key + '"' + (on ? "" : " inert") +
+    "><div><p>" + html + "</p></div></div>";
+}
+function toggleTip(b) {
+  const key = b.dataset.tipbtn, body = document.getElementById("tip-" + key);
+  if (!body) return;
+  const on = !tipOpen.has(key);
+  if (on) tipOpen.add(key); else tipOpen.delete(key);
+  body.classList.toggle("is-open", on);
+  body.inert = !on;
+  b.setAttribute("aria-expanded", String(on));
+}
+$$(".tipbtn").forEach(b => { if (!b.firstChild) b.innerHTML = ICO_INFO; });
 const slug = s => String(s).toLowerCase()
   .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
   .normalize("NFD").replace(/[\u0300-\u036f]/g,"")   /* café → cafe */
@@ -6437,11 +6466,10 @@ function renderReadSettings() {
   look.innerHTML =
     '<div class="panel">' +
       "<h3>Type size</h3>" +
-      "<p>Two scales, because a passage and a card are read differently: one is a page you move through, the other is a single answer you stop on. The specimen underneath follows both as you move them.</p>" +
       '<div class="rsplit">' +
         rSlider("text", "Passage text") +
         rSlider("card", "Card text") +
-        rSlider("line", "Line spacing", "How far apart the German lines sit. More air helps on a long passage.") +
+        rSlider("line", "Line spacing") +
       "</div>" +
       '<div class="rsample">' +
         '<div class="rsample__lab">Specimen</div>' +
@@ -6456,14 +6484,12 @@ function renderReadSettings() {
 
     '<div class="panel">' +
       "<h3>The passage</h3>" +
-      "<p>How the German itself is set. The serif is the house voice for the source text; the sans face is plainer and some eyes hold it better over a long paragraph.</p>" +
       '<div class="rsplit">' +
         rSeg("font", "Typeface", [["serif", "Serif"], ["sans", "Sans"]]) +
-        rSeg("measure", "Line width", [[54, "Narrow"], [66, "Normal"], [78, "Wide"], [999, "Full"]],
-          "A shorter line is easier to track back to; a longer one fits more on the screen.") +
+        rSeg("measure", "Line width", [[54, "Narrow"], [66, "Normal"], [78, "Wide"], [999, "Full"]]) +
       "</div>" +
       '<div class="rswitches">' +
-        rSwitch("underline", "Underline words that have a card", "The blue rule under a word. Turning it off leaves the words tappable \u2014 it only stops marking them.") +
+        rSwitch("underline", "Underline words that have a card") +
       "</div>" +
     "</div>" +
 
@@ -6471,25 +6497,24 @@ function renderReadSettings() {
 
     '<div class="panel">' +
       "<h3>Start again</h3>" +
-      "<p style=\"margin-bottom:14px\">Puts the text size, the typeface, the line width, the underline and the wide-screen layout back where they started. The theme stays as it is.</p>" +
       '<div class="btnrow"><button class="btn" data-readreset="look">Reset appearance</button></div>' +
     "</div>";
 
   if (cards) cards.innerHTML =
     '<div class="panel">' +
-      "<h3>What a card shows</h3>" +
-      "<p>These apply to every card at once \u2014 the one that opens from a word in the text, the ones in the grid, and the one in a study session. Switch off whatever you already know and the rest gets the room.</p>" +
+      "<h3>What a card shows" + tipBtn("cardshow") + "</h3>" +
+      tipBody("cardshow", "Applies to every card: the one a word opens, the grid and study sessions.") +
       '<div class="rgrid">' +
         '<div class="rswitches">' +
-          rSwitch("def", "Definition", "The longer explanation under the translation.") +
-          rSwitch("say", "Pronunciation strip", "The syllable blocks, with the stressed one filled in.") +
-          rSwitch("note", "Pronunciation note", "The line about the sound a spelling makes.") +
+          rSwitch("def", "Definition") +
+          rSwitch("say", "Pronunciation strip") +
+          rSwitch("note", "Pronunciation note") +
           rSwitch("pos", "Word type and plural") +
         "</div>" +
         '<div class="rswitches">' +
           rSwitch("ex", "Example sentence") +
-          rSwitch("exen", "Example translation", "The English under the example sentence.") +
-          rSwitch("src", "File name on the card", "Also the file each example sentence came from.") +
+          rSwitch("exen", "Example translation") +
+          rSwitch("src", "File name on the card") +
           rSwitch("hint", "Keyboard and flip hints") +
         "</div>" +
       "</div>" +
@@ -6502,23 +6527,20 @@ function renderReadSettings() {
 /* two panels that live apart from the rest of their set */
 function readWideHTML() {
   return '<div class="panel">' +
-      "<h3>Wide screens</h3>" +
-      "<p>A phone reads one thing at a time and is left alone by both of these. A tablet held sideways, or a desktop, has width to spare on the right of the text \u2014 these decide whether it gets used.</p>" +
+      "<h3>Wide screens" + tipBtn("wide") + "</h3>" +
+      tipBody("wide", "Tablets held sideways and desktops only. Under 900px the word card is always a sheet, and under 1000px the study buttons always sit under the card.") +
       '<div class="rsplit">' +
-        rSeg("sidecard", "Word card in a lesson", [[1, "Side column"], [0, "Bottom sheet"]],
-          "As a column the card holds still on the right while the passage keeps its own width on the left. Under 900px it is a sheet either way.") +
-        rSeg("widestudy", "Study session controls", [[1, "Beside the card"], [0, "Under the card"]],
-          "The card is a single card either way, and it still flips. This only decides whether the verdict buttons sit in a column of their own on the right \u2014 which gives the card back the height they were taking. Under 1000px they go under it regardless.") +
+        rSeg("sidecard", "Word card in a lesson", [[1, "Side column"], [0, "Bottom sheet"]]) +
+        rSeg("widestudy", "Study session controls", [[1, "Beside the card"], [0, "Under the card"]]) +
       "</div>" +
     "</div>";
 }
 function readFsHTML() {
   return '<div class="panel">' +
-      "<h3>Full screen</h3>" +
-      "<p>A session is the one screen here with nothing on it you need to leave room for, so it can take the whole panel \u2014 no address bar, no tabs. The button sits in the session bar, next to the size control, and works whether or not you switch this on. For the rest of the app, Full screen is in the \u22ee menu.</p>" +
+      "<h3>Full screen" + tipBtn("fs") + "</h3>" +
+      tipBody("fs", "The session bar has its own full-screen button either way, and the rest of the app has one in the \u22ee menu. Some browsers refuse; Escape always leaves.") +
       '<div class="rsplit">' +
-        rSeg("fsauto", "When a session starts", [[1, "Go full screen"], [0, "Stay as it is"]],
-          "Some browsers refuse the request outright, and every one of them lets you leave again with Escape.") +
+        rSeg("fsauto", "When a session starts", [[1, "Go full screen"], [0, "Stay as it is"]]) +
       "</div>" +
     "</div>";
 }
@@ -7826,7 +7848,7 @@ function paintDrill() {
     n.innerHTML =
       drillBar(total, total) +
       '<div class="drill__stage"><div class="drill__done">' +
-        "<h2>Durchgearbeitet.</h2><p>Session finished. Every card kept the rung you gave it — the hard ones come back first next time.</p>" +
+        "<h2>Durchgearbeitet.</h2><p>Session finished. The hard ones come back first next time.</p>" +
         '<div class="score">' +
           '<div class="s-hard"><b>' + drill.counts.hard + "</b><span>Hard</span></div>" +
           '<div class="s-learning"><b>' + drill.counts.learning + "</b><span>Learning</span></div>" +
@@ -8068,8 +8090,8 @@ function renderDeckPrompt() {
       "<h3>Open a deck</h3>" +
       "<p>" + (n
         ? "There " + (n === 1 ? "is <b>1 card</b>" : "are <b>" + n + " cards</b>") +
-          " in this scope. Choose one of the decks above to look through it, or press its play button to study it straight away."
-        : "Nothing sits in this scope yet. Widen it with the menu above, clear the search, or import a file.") +
+          " in this scope. Choose a deck above."
+        : "Nothing in this scope yet. Widen it, clear the search, or import a file.") +
       "</p>" +
     "</div>";
 }
@@ -8083,8 +8105,8 @@ function renderCardsGrid() {
   if (!pool.length) {
     host.innerHTML = '<div class="emptycards"><h3>This deck is empty</h3>' +
       "<p>" + (state.lessons.length
-        ? "Nothing in the library sits in this deck right now. Open another deck above, widen the scope or clear the search."
-        : "Import a paragraph file or a deck file and its cards land here automatically.") + "</p>" +
+        ? "Nothing sits in this deck right now."
+        : "Import a file and its cards land here.") + "</p>" +
       '<button class="btn" data-goto="settings/data">Add lessons</button></div>';
     return;
   }
@@ -8541,6 +8563,8 @@ document.addEventListener("click", e => {
      to work on top of whatever is already open — a lesson, a sheet, or
      a session in progress — and because a click anywhere else has to
      be able to put the panel away. */
+  const tb = t.closest("[data-tipbtn]");
+  if (tb) { toggleTip(tb); return; }
   if (t.closest("[data-readpop]")) { e.preventDefault(); toggleReadPop(); return; }
   if (t.closest("[data-readclose]")) { closeReadPop(); return; }
   if (t.closest("[data-dfs]")) { e.preventDefault(); fullscreen.toggle(); return; }
@@ -10046,7 +10070,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.21";
+const APP_VERSION = "3.22";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
@@ -11768,8 +11792,7 @@ function milesBlock() {
   ];
   return '<div class="cols" style="margin-bottom:16px">' +
     '<div class="chart" style="margin-bottom:0">' +
-      '<div class="chart__head"><div><h3>Next milestones</h3>' +
-        "<p>All time, the closest first.</p></div></div>" +
+      '<div class="chart__head"><div><h3>Next milestones</h3></div></div>' +
       '<div class="miles">' + rows + "</div>" +
       '<div class="fold' + (milesOpen ? " is-open" : "") + '">' +
         '<button type="button" class="fold__btn" data-miles="1" aria-expanded="' + milesOpen + '" aria-controls="milesEarned">' +
@@ -11778,8 +11801,7 @@ function milesBlock() {
       "</div>" +
     "</div>" +
     '<div class="chart" style="margin-bottom:0">' +
-      '<div class="chart__head"><div><h3>Personal records</h3>' +
-        "<p>Your best so far. A record set this week is marked.</p></div></div>" +
+      '<div class="chart__head"><div><h3>Personal records</h3></div></div>' +
       krows(rec) +
     "</div>" +
   "</div>";
@@ -11828,28 +11850,26 @@ function renderCharts() {
   host.innerHTML =
     milesBlock() +
     '<div class="chart">' +
-      '<div class="chart__head"><div><h3>' + activityTitle + "</h3>" +
-        "<p>" + (sc.kind === "day" ? "When the reviews happened." : "Tap a bar to jump the whole page to that " +
-          (sc.kind === "year" || sc.kind === "all" ? "month" : "day") + ".") + "</p></div></div>" +
+      '<div class="chart__head"><div><h3>' + activityTitle + (sc.kind === "day" ? "" : tipBtn("pbars")) + "</h3>" +
+        (sc.kind === "day" ? "" : tipBody("pbars", "Tap a bar to move the whole page to that " +
+          (sc.kind === "year" || sc.kind === "all" ? "month" : "day") + ".")) + "</div></div>" +
       barChart(bars, { goalLine: goalLine, aria: activityTitle }) +
       (goalLine ? '<div class="chart__legend"><span><i style="background:var(--signal)"></i>cards reviewed</span>' +
         '<span><i style="background:var(--stress)"></i>daily goal · ' + g.cards + " cards</span></div>" : "") +
     "</div>" +
 
-    (sc.kind === "day" ? '<div class="chart"><div class="chart__head"><div><h3>What you did</h3>' +
-      "<p>Everything recorded on " + esc(niceDayLower(sc.key)) + ".</p></div>" +
+    (sc.kind === "day" ? '<div class="chart"><div class="chart__head"><div><h3>What you did</h3></div>' +
       '<div class="section-head__actions">' +
         '<button class="btn btn--sm" data-logday="' + sc.key + '">Log time</button>' +
         '<button class="btn btn--sm" data-restday="' + sc.key + '">Mark rest day</button>' +
       "</div></div>" + dayJournal(sc.key) + "</div>"
-      : '<div class="chart"><div class="chart__head"><div><h3>Accuracy</h3>' +
-        "<p>Share of cards you got right, over the same period.</p></div></div>" +
+      : '<div class="chart"><div class="chart__head"><div><h3>Accuracy</h3></div></div>' +
         lineChart(accPts) + "</div>") +
 
     '<div class="cols">' +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Where your words sit</h3>' +
-          "<p>Right now, across the whole library. Box 5 is solid.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Where your words sit' + tipBtn("boxes") + "</h3>" +
+          tipBody("boxes", "Across the whole library, right now. Box 5 is solid.") + "</div></div>" +
         '<div class="boxbar">' + spread.map((n, i) => n
           ? '<div style="flex:' + n + ';background:' + BOXCOL[i] + ';color:' + (i === 0 ? "var(--ink-2)" : "#fff") +
             '" title="' + BOXNAMES[i] + ": " + n + '">' + (n / totalW > .07 ? n : "") + "</div>"
@@ -11858,8 +11878,7 @@ function renderCharts() {
           ? '<span><i style="background:' + BOXCOL[i] + '"></i>' + BOXNAMES[i] + " · " + n + "</span>" : "").join("") + "</div>" +
       "</div>" +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Where the time went</h3>' +
-          "<p>The same period, measured in minutes instead of cards.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Where the time went</h3></div></div>' +
         mixBar([
           { label: "Reviewing", v: A.drillMs, c: MIXCOL.drill },
           { label: "Writing", v: A.spellMs, c: MIXCOL.spell },
@@ -11876,8 +11895,7 @@ function renderCharts() {
     "</div>" +
 
     '<div class="chart" style="margin-top:16px">' +
-      '<div class="chart__head"><div><h3>Lessons in this period</h3>' +
-        "<p>Most reviewed first, with how much of it you got right.</p></div></div>" +
+      '<div class="chart__head"><div><h3>Lessons in this period</h3></div></div>' +
       (top.length ? '<div class="lb">' + top.map((x, i) =>
         '<div class="lbrow"><span class="lbrow__n">' + pad2(i + 1) + "</span>" +
         '<span class="lbrow__t">' + esc(x.l ? x.l.title : "Deleted lesson") + "</span>" +
@@ -11887,8 +11905,7 @@ function renderCharts() {
     "</div>" +
 
     '<div class="chart">' +
-      '<div class="chart__head"><div><h3>Last thirty days</h3>' +
-        "<p>Cards on the bars, so a quiet fortnight is impossible to miss.</p></div>" +
+      '<div class="chart__head"><div><h3>Last thirty days</h3></div>' +
         '<div class="section-head__actions"><button class="btn btn--sm" data-ptab="year">Open the year \u2192</button></div></div>' +
       barChart((() => {
         const out = [], t = todayKey();
@@ -12357,7 +12374,7 @@ function renderHome(enter) {
       "</div></article>";
   }
   if (!pick) {
-    pick = '<div class="hnone"><h3>Nothing open yet</h3><p>Open a file in the Library and it waits for you here, with its cards one tap away.</p>' +
+    pick = '<div class="hnone"><h3>Nothing open yet</h3><p>The file you open last waits here.</p>' +
       '<button class="btn btn--sm" data-nav="library">Go to the Library</button></div>';
   }
 
@@ -12402,7 +12419,7 @@ function renderHome(enter) {
             '<section><div class="hsec"><h2>Your cards</h2><button class="hlink" data-nav="practice">Card desk' + ICO_ARR + "</button></div>" + cards + "</section>" +
           "</div>" + shelf
         : '<div class="empty" style="--k:2"><h3>Nothing to study yet</h3>' +
-            "<p>Import a paragraph file or a deck file and this page fills in: the file you had open, your cards by status, and the ones that need you most.</p>" +
+            "<p>Import a file and this page fills in.</p>" +
             '<div class="empty__acts"><button class="btn btn--primary" data-himport="1">' + MI.up + "Import lessons</button>" +
             '<button class="btn" data-goto="settings/data">How files are made</button></div></div>') +
     "</div>";
@@ -12470,7 +12487,7 @@ function renderLibrary() {
     lesHost.innerHTML = hits.length
       ? shelfLabel("Files", hits.length) +
         '<div class="' + grid + '">' + hits.map(l => lessonCard(l, true)).join("") + "</div>"
-      : '<div class="empty"><h3>Nothing matches</h3><p>No file in any folder holds that word. Try a shorter one, or clear the search and browse instead.</p>' +
+      : '<div class="empty"><h3>Nothing matches</h3><p>Try a shorter word.</p>' +
         '<div class="empty__acts"><button class="btn" data-clear="1">Clear search</button></div></div>';
     return;
   }
@@ -12499,13 +12516,13 @@ function renderLibrary() {
     lesHost.innerHTML = "";
   } else if (state.cwd) {
     lesHost.innerHTML = '<div class="empty"><h3>' + esc(folderLabel(state.cwd)) + " is empty</h3>" +
-      "<p>Drag a file onto this folder from anywhere in the library, or open a file\u2019s menu and choose Move to file it here.</p>" +
+      "<p>Drag a file here, or use Move to in a file\u2019s menu.</p>" +
       '<div class="empty__acts">' +
       '<button class="btn btn--primary" data-newfolder="' + esc(state.cwd) + '">New subfolder</button>' +
       '<button class="btn" data-cd="">Back to Library</button></div></div>';
   } else if (!state.lessons.length) {
     lesHost.innerHTML = '<div class="empty"><h3>Your library is empty</h3>' +
-      "<p>Files live as JSON. Copy a prompt under Add lessons in Settings, paste your German into any assistant, then bring the answer back here — or restore the samples to see how one looks.</p>" +
+      "<p>Turn any German text into a file under Settings, Add lessons.</p>" +
       '<div class="empty__acts"><button class="btn btn--primary" data-goto="settings/data">Import files</button></div></div>';
   } else {
     lesHost.innerHTML = "";
@@ -13424,8 +13441,7 @@ function renderSpell() {
       '<div class="wgo-note">' +
         (sliceN
           ? "<b>" + take + "</b> " + (take === 1 ? "word" : "words") + " from <b>" + esc(deck.name) + "</b>" +
-            (cfg.len && sliceN > cfg.len ? " — " + sliceN + " are waiting in all" : "") +
-            ". Each one arrives as its meaning and its sentence with the word cut out; you write it back in."
+            (cfg.len && sliceN > cfg.len ? " — " + sliceN + " are waiting in all" : "") + "."
           : "Nothing in this deck yet. Open another one above, widen the scope, or import a file.") +
       "</div>" +
       '<button class="btn btn--primary" data-spbegin="1"' + (sliceN ? "" : " disabled") + ">" + ICO_PEN +
@@ -13435,7 +13451,6 @@ function renderSpell() {
     '<div class="wsetgrid">' +
       '<div class="panel">' +
         "<h3>How long</h3>" +
-        "<p>A short set you finish beats a long one you abandon. The queue is rebuilt every time you start.</p>" +
         '<div class="seg seg--full" role="group" aria-label="Session length">' +
           [10, 20, 40, 0].map(n =>
             '<button data-splen="' + n + '" aria-pressed="' + (cfg.len === n) + '">' +
@@ -13443,8 +13458,8 @@ function renderSpell() {
         "</div>" +
       "</div>" +
       '<div class="panel">' +
-        "<h3>What counts as right</h3>" +
-        "<p>German spelling is capitals and umlauts as much as it is letters. Strict marks a missing dot as a miss; forgiving lets it through but still names it.</p>" +
+        "<h3>What counts as right" + tipBtn("strict") + "</h3>" +
+        tipBody("strict", "Strict marks a missing capital or umlaut as a miss. Off, it lets it through but still names it.") +
         '<div class="wopts">' +
           spSwitch("strict", "Strict marking", "capitals and umlauts must match") +
           spSwitch("cloze", "Show the sentence", "with the word cut out of it") +
@@ -13456,7 +13471,6 @@ function renderSpell() {
 
     (worst.length
       ? '<div class="panel"><h3>The ones that keep going wrong</h3>' +
-        "<p>Words you have written more than once and still not landed. Straight to the top of a session of their own.</p>" +
         '<div class="wworst">' + worst.map(e => {
           const s = spOf(e.v);
           return '<span class="wchip">' + esc(spBare(e.v.word)) + "<b>" + (s.n - s.ok) + "/" + s.n + "</b></span>";
@@ -13465,8 +13479,8 @@ function renderSpell() {
         ICO_PEN + "Write these " + worst.length + "</button></div></div>"
       : "") +
 
-    '<div class="panel"><h3>Typing German on a phone</h3>' +
-      "<p style=\"margin-bottom:0\">The answer box asks your keyboard for German (<code class=\"mono\">lang=\"de\"</code>) and turns autocorrect, autocapitalisation and spellcheck off, so nothing rewrites your answer behind your back. Gboard and the Samsung keyboard honour that request when German is one of the languages you have added to the keyboard itself — Android settings, then the keyboard's own language list. Whether they switch or not, the row of keys under the box types <b>ä ö ü ß</b> and their capitals directly, so a German answer is always reachable.</p>" +
+    '<div class="panel panel--tiponly"><h3>Typing German on a phone' + tipBtn("phonekb") + "</h3>" +
+      tipBody("phonekb", "The answer box asks for a German keyboard with autocorrect off. Gboard and Samsung switch when German is added to the keyboard\u2019s own languages. The key row under the box always types <b>ä ö ü ß</b>.") +
     "</div>";
 
   const sel = $("#spellScope");
@@ -14556,7 +14570,7 @@ function renderTimeTab() {
     '<div class="chart">' +
       '<div class="chart__head"><div><h3>' +
         (sc.kind === "day" ? "Minutes by hour" : sc.kind === "year" || sc.kind === "all" ? "Minutes each month" : "Minutes each day") +
-      "</h3><p>" + (sc.kind === "day" ? "When the time actually went in." : "Tap a bar to move the whole page to it.") + "</p></div>" +
+      (sc.kind === "day" ? "</h3>" : tipBtn("tbars") + "</h3>" + tipBody("tbars", "Tap a bar to move the whole page to it.")) + "</div>" +
       '<div class="section-head__actions"><span class="chip">' + fmtMins(A.ms) + " in range</span></div></div>" +
       barChart(bars, { goalLine: sc.kind === "day" || sc.kind === "year" || sc.kind === "all" ? 0 : g.mins, aria: "Minutes studied" }) +
       '<div class="chart__note">You met the <b>' + g.mins + "-minute</b> target on <b>" + timeGoalDays +
@@ -14566,8 +14580,7 @@ function renderTimeTab() {
     /* ---- where the time went ---- */
     '<div class="cols">' +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Where the time went</h3>' +
-          "<p>Four kinds of studying, one bar.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Where the time went</h3></div></div>' +
         mixBar([
           { label: "Reviewing cards", v: A.drillMs, c: MIXCOL.drill },
           { label: "Writing practice", v: A.spellMs, c: MIXCOL.spell },
@@ -14580,8 +14593,7 @@ function renderTimeTab() {
           " is time spent browsing rather than studying — worth knowing, not worth worrying about.</div>" +
       "</div>" +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Your pace</h3>' +
-          "<p>How long the work actually takes you.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Your pace</h3></div></div>' +
         krows([
           { k: "Average session", note: "drills and passages, this range", v: avgSession ? hms(avgSession) : "—" },
           { k: "Longest single session", note: longest ? niceDay(dkey(longest.t)) : "nothing yet", v: longest ? hms(longest.ms) : "—" },
@@ -14596,8 +14608,7 @@ function renderTimeTab() {
     /* ---- rhythm ---- */
     '<div class="cols" style="margin-top:16px">' +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Your week</h3>' +
-          "<p>Average minutes on each weekday, all time.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Your week</h3></div></div>' +
         '<div class="dow">' + [0, 1, 2, 3, 4, 5, 6].map(i => {
           const d = (ws + i) % 7;
           return '<div class="dowcol' + (d === bestDow ? " is-best" : "") + '" title="' + DOW3[d] + " · " +
@@ -14610,8 +14621,7 @@ function renderTimeTab() {
         '<div class="chart__note">' + (dowAvg[bestDow] ? "<b>" + DOW3[bestDow] + "</b> is your strongest day." : "Not enough days recorded to call it yet.") + "</div>" +
       "</div>" +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Your usual hours</h3>' +
-          "<p>All time. Darker means you review more then.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Your usual hours</h3></div></div>' +
         '<div class="hours">' + hourCells + "</div>" +
         '<div class="hours-x">' + S.hours.map((v, h) => "<span>" + (h % 6 === 0 ? pad2(h) : "") + "</span>").join("") + "</div>" +
         '<div class="chart__note">' + (hourMax > 1
@@ -14622,8 +14632,8 @@ function renderTimeTab() {
 
     /* ---- the log ---- */
     '<div class="chart" style="margin-top:16px">' +
-      '<div class="chart__head"><div><h3>Every session in this range</h3>' +
-        "<p>Newest first. Time you logged by hand can be removed from the day view.</p></div>" +
+      '<div class="chart__head"><div><h3>Every session in this range' + tipBtn("sess") + "</h3>" +
+        tipBody("sess", "Time you logged by hand can be removed from the day view.") + "</div>" +
         '<div class="section-head__actions"><button class="btn btn--sm" id="btnLogStudy2">Log time</button></div></div>' +
       (sess.length
         ? '<div class="slog">' + sess.slice(0, 40).map(e => {
@@ -14697,8 +14707,7 @@ function renderWordsTab() {
   return (
     '<div class="cols">' +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>From met to mastered</h3>' +
-          "<p>Every distinct word in your library, and how far each one has come.</p></div></div>" +
+        '<div class="chart__head"><div><h3>From met to mastered</h3></div></div>' +
         funnelRows([
           { label: "In the library", v: F.total, c: "var(--rule)" },
           { label: "Met at least once", v: F.seen, c: "var(--heat-2)", pct: F.total ? Math.round(F.seen / F.total * 100) : 0 },
@@ -14711,8 +14720,8 @@ function renderWordsTab() {
           (dedupe.saved ? ", pooling " + plural(dedupe.saved, "duplicate") : "") + ".</div>" +
       "</div>" +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Where your words sit</h3>' +
-          "<p>Right now, across the whole library. Box 5 is solid.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Where your words sit' + tipBtn("boxes2") + "</h3>" +
+          tipBody("boxes2", "Across the whole library, right now. Box 5 is solid.") + "</div></div>" +
         '<div class="boxbar">' + spread.map((n, i) => n
           ? '<div style="flex:' + n + ";background:" + BOXCOL[i] + ";color:" + (i === 0 ? "var(--ink-2)" : "#fff") +
             '" title="' + BOXNAMES[i] + ": " + n + '">' + (n / totalW > .07 ? n : "") + "</div>" : "").join("") + "</div>" +
@@ -14727,8 +14736,7 @@ function renderWordsTab() {
     "</div>" +
 
     '<div class="chart" style="margin-top:16px">' +
-      '<div class="chart__head"><div><h3>Vocabulary met over time</h3>' +
-        "<p>Distinct words you have reviewed at least once, adding up. It never goes down.</p></div>" +
+      '<div class="chart__head"><div><h3>Vocabulary met over time</h3></div>' +
         '<div class="section-head__actions"><span class="chip">' + S.firstSeen.size + " words</span></div></div>" +
       (pts.length > 1
         ? lineChart(pts.map(p => ({ k: p.k, label: p.label, v: p.v / gMax * 100 })), { h: 132, top: gMax, fmt: v => plural(Math.round(v / 100 * gMax), "word") }).replace(/class="line"/, 'class="line2"').replace(/class="area"/, 'class="area2"')
@@ -14737,8 +14745,7 @@ function renderWordsTab() {
     "</div>" +
 
     '<div class="chart">' +
-      '<div class="chart__head"><div><h3>Words that keep coming back</h3>' +
-        "<p>Seen often, still not held. These are the ones worth attacking directly.</p></div>" +
+      '<div class="chart__head"><div><h3>Words that keep coming back</h3></div>' +
         '<div class="section-head__actions"><button class="btn btn--sm" data-drillleech="1">Drill these</button></div></div>' +
       wordRows(leeches(8), {
         empty: "Nothing is fighting you yet — review a few more times and this fills in.",
@@ -14749,8 +14756,8 @@ function renderWordsTab() {
 
     '<div class="cols">' +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Most looked at</h3>' +
-          "<p>Counted every time you tap the word, flip the card or meet it in a session.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Most looked at' + tipBtn("looked") + "</h3>" +
+          tipBody("looked", "Counted each time you tap the word, flip its card or meet it in a session.") + "</div></div>" +
         wordRows(mostViewed(7), {
           empty: "Tap a word in a passage and it starts counting.",
           chip: x => x.st, chipText: x => STATUS_META[x.st].label,
@@ -14758,8 +14765,8 @@ function renderWordsTab() {
         }) +
       "</div>" +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Going quiet</h3>' +
-          "<p>Known words you have not met in a fortnight or more.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Going quiet' + tipBtn("quiet") + "</h3>" +
+          tipBody("quiet", "Known words you have not met in a fortnight or more.") + "</div></div>" +
         wordRows(fading(7), {
           empty: "Nothing has been left long enough to worry about.",
           value: x => plural(x.days, "day") + " ago"
@@ -14769,16 +14776,15 @@ function renderWordsTab() {
 
     '<div class="cols" style="margin-top:16px">' +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>By part of speech</h3>' +
-          "<p>Average box height within each group.</p></div></div>" +
+        '<div class="chart__head"><div><h3>By part of speech' + tipBtn("pos") + "</h3>" +
+          tipBody("pos", "Average box height in each group.") + "</div></div>" +
         (pos.length ? funnelRows(pos.map(p => ({
           label: p.key.charAt(0).toUpperCase() + p.key.slice(1), v: p.n, pct: p.pct, c: "var(--signal)"
         }))) + '<div class="chart__note">The percentage is how far through the five boxes that group has travelled, not how many words it holds.</div>'
           : '<div class="chart__empty">Your cards do not carry a part of speech yet.</div>') +
       "</div>" +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Der, die, das</h3>' +
-          "<p>Gendered nouns, and how solid each gender is.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Der, die, das</h3></div></div>' +
         (gender.length ? funnelRows(gender.map(p => ({
           label: p.key, v: p.n, pct: p.pct, c: GC[p.key] || "var(--ink-3)"
         }))) + '<div class="chart__note">A gender that lags the other two is usually a gender you are guessing.</div>'
@@ -14821,8 +14827,7 @@ function renderWritingTab() {
   return (
     '<div class="cols">' +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Can you write it?</h3>' +
-          "<p>Every word in the library, by how reliably you type it.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Can you write it?</h3></div></div>' +
         donut([
           { label: "Solid — three clean in a row", v: sp.solid, c: "var(--ok)" },
           { label: "Nearly there", v: sp.close, c: "var(--stress)" },
@@ -14832,8 +14837,7 @@ function renderWritingTab() {
         '<div class="chart__note">Reading a word and writing it are different skills, which is why this is kept apart from the boxes on the Words tab. A word can be known on sight and still be unwritable.</div>' +
       "</div>" +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>The record</h3>' +
-          "<p>All time, across every writing session.</p></div></div>" +
+        '<div class="chart__head"><div><h3>The record</h3></div></div>' +
         krows([
           { k: "Words attempted", note: "at least once", v: totals.words },
           { k: "Total attempts", v: totals.n },
@@ -14846,8 +14850,8 @@ function renderWritingTab() {
     "</div>" +
 
     '<div class="chart" style="margin-top:16px">' +
-      '<div class="chart__head"><div><h3>Writing attempts in this range</h3>' +
-        "<p>Only the Schreibprobe counts here — reviews are on the Overview tab.</p></div>" +
+      '<div class="chart__head"><div><h3>Writing attempts in this range' + tipBtn("wattempts") + "</h3>" +
+        tipBody("wattempts", "Only the Schreibprobe counts here; reviews are on the Overview tab.") + "</div>" +
         '<div class="section-head__actions"><span class="chip">' + A.spN + " attempts · " + fmtMins(A.spellMs) + "</span>" +
         '<button class="btn btn--sm" data-gospell="1">Practise writing</button></div></div>' +
       (sc.kind === "day" || sc.kind === "week" || sc.kind === "month"
@@ -14856,8 +14860,7 @@ function renderWritingTab() {
     "</div>" +
 
     '<div class="chart">' +
-      '<div class="chart__head"><div><h3>Spelling accuracy</h3>' +
-        "<p>Share of attempts that came out clean first time.</p></div></div>" +
+      '<div class="chart__head"><div><h3>Spelling accuracy</h3></div></div>' +
       (sc.kind === "day" || sc.kind === "week" || sc.kind === "month"
         ? lineChart(accPts)
         : '<div class="chart__empty">Pick a day, a week or a month to see this broken out.</div>') +
@@ -14865,8 +14868,7 @@ function renderWritingTab() {
 
     '<div class="cols">' +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Most often mistyped</h3>' +
-          "<p>Ranked by how many attempts came out wrong.</p></div>" +
+        '<div class="chart__head"><div><h3>Most often mistyped</h3></div>' +
           '<div class="section-head__actions"><button class="btn btn--sm" data-spellworst="1">Practise these</button></div></div>' +
         wordRows(spellTrouble(8), {
           empty: "Nothing has been mistyped yet.",
@@ -14876,8 +14878,7 @@ function renderWritingTab() {
         }) +
       "</div>" +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>Longest clean runs</h3>' +
-          "<p>The best streak each word has ever had.</p></div></div>" +
+        '<div class="chart__head"><div><h3>Longest clean runs</h3></div></div>' +
         (streaks.length
           ? '<div class="wrows">' + streaks.map((x, i) =>
               '<button class="wrow" data-openword="' + esc(x.r.id) + '">' +
@@ -14910,8 +14911,7 @@ function renderYearTab() {
 
   return (
     '<div class="chart">' +
-      '<div class="chart__head"><div><h3>' + year + " at a glance</h3>" +
-        "<p>Every day of the year. Each square is one day.</p></div>" +
+      '<div class="chart__head"><div><h3>' + year + " at a glance</h3></div>" +
         '<div class="section-head__actions"><span class="chip">' + Y.activeDays + " active days</span>" +
         '<span class="chip">' + fmtMins(Y.ms) + "</span></div></div>" +
       yearHeat(year) +
@@ -14920,8 +14920,8 @@ function renderYearTab() {
     "</div>" +
 
     '<div class="chart">' +
-      '<div class="chart__head"><div><h3>Month by month</h3>' +
-        "<p>Cards on the bar, everything else in the row. Tap a month to open it.</p></div></div>" +
+      '<div class="chart__head"><div><h3>Month by month' + tipBtn("months") + "</h3>" +
+        tipBody("months", "Tap a month to open it.") + "</div></div>" +
       '<div class="wrows">' + months.map(x =>
         '<button class="wrow" data-scope-month="' + x.from + '">' +
           '<span class="wrow__n">' + pad2(x.m + 1) + "</span>" +
@@ -14934,8 +14934,7 @@ function renderYearTab() {
 
     '<div class="cols">' +
       '<div class="chart" style="margin-bottom:0">' +
-        '<div class="chart__head"><div><h3>The year in figures</h3>' +
-          "<p>Everything recorded between January and December.</p></div></div>" +
+        '<div class="chart__head"><div><h3>The year in figures</h3></div></div>' +
         krows([
           { k: "Cards reviewed", v: Y.rev },
           { k: "Correct", v: (Y.rev ? Math.round(Y.ok / Y.rev * 100) : 0) + "%" },

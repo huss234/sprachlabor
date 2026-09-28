@@ -99,7 +99,8 @@ The primary button text is `#fff` in light theme and `#0B0E10` in dark.
 | Rich popover | `.menu` plus a modifier (see `.menu--sync`) | 18px padding, head / inset block / actions / disclosure. Register as `menuNode` so it closes like a menu |
 | Modal | `askConfirm({title, desc, ok, danger})`, `askText(...)`, `.scrim` + `.modal` | 460px, `--r-lg`, head 20/22px, body 18/22px, footer on `--surface-2` with right-aligned buttons |
 | Toast | `toast(msg, bad)` | ink block bottom-left, slides in; `bad` = `--die` |
-| Settings block | `.panel` inside `.setsec` | surface, `--r-lg`, 22px padding, `h3` plus 13px `--ink-2` intro paragraph |
+| Settings block | `.panel` inside `.setsec` | surface, `--r-lg`, 22px padding, `h3` then the controls (14px gap). No intro paragraph; an explanation worth keeping goes in an info tip |
+| Info tip | `tipBtn(key)` + `tipBody(key, html)`, `.tipbtn`, `.tip`; static markup writes the same button empty (the icon is filled in at start) | a 24px round `ICO_INFO` button inside the heading, right after its text, `--ink-3` at rest, `--signal` on `--signal-soft` while open. The note sits straight under the heading, 12.5px `--ink-2`, closed by default and `inert` while closed; it opens with the `.fold` motion (`grid-template-rows` 0fr→1fr plus fade). Open tips are kept by key in `tipOpen`, so a rebuild leaves them open. Used on Settings panels, Spelling panels and Progress charts. A panel that is only an explanation is `.panel--tiponly`: its heading and tip, nothing else |
 | Form field | `.field` > `label` + input, `.hint` | 40px input on `--surface-2`; focus = `--signal` border and 3px `--signal-soft` halo |
 | Switch | `.switch` > `input` + `i` + `span` | 40×23 track, `--signal` when on |
 | Facts | `.stats` (big mono numbers) · inset `dl` rows (see `.syncp__rows`) | rows: eyebrow `dt` left, mono `dd` right, `--rule-2` dividers, block on `--surface-2` |
@@ -138,5 +139,5 @@ stroke-width 1.7–1.8 for normal icons (2 for small chevrons and marks), round 
 5. **Things that grow are folded.** Logs, histories and long lists sit behind a disclosure, closed by default, so a panel stays the same size.
 6. **Every tap answers.** Hover change, press scale, and a toast or visible state change after an action.
 7. **Dark mode is not optional.** Only tokens, so dark works by itself. Check it anyway.
-8. **Copy voice.** Plain, calm, second person, full sentences, no exclamation marks. Say what happened and that nothing is lost. For example: "GitHub asked for a pause. Nothing is lost; it tries again in 3 min."
+8. **Copy voice.** Plain, calm, second person, full sentences, no exclamation marks. Say it once and short. Headings, labels and controls explain themselves; no paragraph under a heading, no note under a switch or a chart title. A detail someone might need but most won't goes in an info tip (`tipBtn`). Empty states get one short line. Say what happened and that nothing is lost. For example: "GitHub asked for a pause. Nothing is lost; it tries again in 3 min."
 9. **Code style.** Double quotes, `const`, small comment blocks that explain *why*, CSS written one rule per line in the file's compact style, new CSS placed next to the component it extends.
