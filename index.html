@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.42 · neural German, cached on device -->
+<!-- Sprachlabor — v3.43 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -958,10 +958,16 @@ ul,ol{margin:0;padding:0;list-style:none}
 .tok{border-radius:2px;transition:background .12s var(--ease),color .12s var(--ease)}
 .tok--vocab{
   cursor:pointer;
-  transition:background-color .12s var(--ease),color .12s var(--ease);
+  transition:background-color .12s var(--ease),color .12s var(--ease),box-shadow .12s var(--ease);
 }
-.tok--vocab:hover{background-color:var(--signal-soft);color:var(--signal)}
-.tok--vocab.is-open{background-color:var(--signal);color:var(--on-signal)}
+/* hover only where there is a cursor: a phone keeps :hover on the word
+   it last tapped, and the pale tint then sat over the open word */
+@media (hover:hover){.tok--vocab:hover{background-color:var(--signal-soft);color:var(--signal)}}
+/* the word whose card is open is the one solid thing in the passage:
+   filled in the primary, and a little wider than its letters */
+.tok--vocab.is-open,.tok--vocab.is-open:hover{
+  background-color:var(--signal);color:var(--on-signal);box-shadow:0 0 0 .14em var(--signal);
+}
 /* words carry no line: they light under the finger or the cursor. The
    Appearance switch can add a quiet dotted rule under every word that
    has a card (a real text-decoration, so it shows with any font). */
@@ -3561,9 +3567,6 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
    for some eyes at length, so it is a choice rather than a decree */
 :root[data-readfont="sans"] .de-text{font-family:var(--sans);letter-spacing:-.008em}
 :root[data-readfont="sans"] .de-text .md-h{letter-spacing:-.02em}
-/* the blue rule under a word that owns a card can be turned off for
-   people who read the underlines as noise — the words stay tappable */
-:root[data-v-underline="0"] .tok--vocab:hover{background-color:var(--signal-soft)}
 
 /* ---------- the card, wherever it appears ---------- */
 .pop__word{font-size:calc(clamp(30px,6.4vw,40px) * var(--fs-card))}
@@ -11409,7 +11412,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.42";
+const APP_VERSION = "3.43";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
