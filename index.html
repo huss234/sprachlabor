@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.43 · neural German, cached on device -->
+<!-- Sprachlabor — v3.44 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -875,22 +875,10 @@ ul,ol{margin:0;padding:0;list-style:none}
   .lhero__acts .btn--primary{flex:1;justify-content:center}
 }
 
-/* the passage on its own page. The page can take its own colours
-   (Paper, Sepia, Night); everything on it reads the same tokens, so
-   the words, the lines of English and the tables follow. No frame and
-   no inset: on a phone every pixel of width belongs to the text. */
+/* the passage on its own page: no frame and no inset, so on a phone
+   every pixel of width belongs to the text */
 .lread{margin-bottom:34px}
-.lpage{
-  --gut:40px;max-width:var(--measure);
-  color:var(--ink);
-  transition:background-color .3s var(--ease),color .3s var(--ease);
-}
-/* a page of its own colour runs out into the screen's margins, so the
-   text keeps the same width it has on the app's own paper */
-:root:not([data-rpage="auto"]) .lpage{
-  background:var(--surface);margin-inline:calc(var(--gut) * -1);padding:24px var(--gut) 28px;
-}
-@media (max-width:860px){.lpage{--gut:20px}}
+.lpage{max-width:var(--measure);color:var(--ink)}
 .lpage.is-full{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 44px}
 .lpage__en{border-left:1px solid var(--rule-2);padding-left:40px;min-width:0}
 .lpage__en .eyebrow{display:block;margin-bottom:12px}
@@ -899,20 +887,50 @@ ul,ol{margin:0;padding:0;list-style:none}
   .lpage.is-full{display:block;max-width:var(--measure)}
   .lpage__en{border-left:0;border-top:1px solid var(--rule-2);padding:24px 0 0;margin-top:28px}
 }
-:root[data-rpage="paper"] .lpage{
-  --surface:#FFFFFF;--surface-2:#F5F7F8;--ink:#14181B;--ink-2:#4A5359;--ink-3:#7C878E;--rule:#D3D9DD;--rule-2:#E4E9EC;
-  --signal:var(--pan-signal);--signal-soft:color-mix(in srgb,var(--signal) 10%,var(--surface));--on-signal:#fff;--der:#1338BE;--die:#C0264C;--das:#17795E;
-  --hard:#C0264C;--learn:#B4620A;--known:#17795E;--ok:#17795E;
+/* PAGE THEMES. Paper, Sepia and Night are the colours of the whole
+   reading screen, edge to edge, the way a book app turns its pages:
+   the bar, the head, the words, the word's card and the app's own
+   chrome all take them while a file is open (data-reading, set by the
+   router in the gap between the old screen leaving and the new one
+   arriving). Each is a complete token set, so nothing on the screen
+   is left in the app's own colours. Auto is the app's own. */
+/* the page colour eases across the gap rather than cutting */
+html,body,.rail{transition:background-color .2s var(--ease)}
+:root[data-reading="1"][data-rpage="paper"]{
+  --paper:#FFFFFF;--paper-2:#F2F4F5;--surface:#FFFFFF;--surface-2:#F5F7F8;
+  --ink:#14181B;--ink-2:#4A5359;--ink-3:#7C878E;--rule:#D9DEE1;--rule-2:#E8ECEE;
+  --signal:var(--pan-signal);--signal-soft:color-mix(in srgb,var(--signal) 10%,#fff);--on-signal:#fff;
+  --heat-0:#E7EAEC;--heat-1:color-mix(in srgb,var(--signal) 25%,#fff);--heat-2:color-mix(in srgb,var(--signal) 46%,#fff);--heat-3:color-mix(in srgb,var(--signal) 75%,#fff);--on-heat:#fff;
+  --stress-text:color-mix(in srgb,var(--stress) 40%,var(--stress-ink));
+  --der:#1338BE;--die:#C0264C;--das:#17795E;--ok:#17795E;--warn:#B4620A;
+  --hard:#C0264C;--hard-soft:#FAE8EC;--learn:#B4620A;--learn-soft:#FBF0E2;--known:#17795E;--known-soft:#E3F1EC;--gap:#7C878E;--gap-soft:#EEF1F3;
+  --on-fill:#fff;--scrim:rgba(20,24,27,.42);
+  --shadow:0 1px 2px rgba(20,24,27,.05), 0 8px 24px -12px rgba(20,24,27,.18);
+  --shadow-lift:0 2px 4px rgba(20,24,27,.06), 0 18px 40px -18px rgba(20,24,27,.28);
 }
-:root[data-rpage="sepia"] .lpage{
-  --surface:#F7F0E3;--surface-2:#EFE5D2;--ink:#2F271C;--ink-2:#5E503D;--ink-3:#8C7C63;--rule:#E3D5BC;--rule-2:#EBDFC9;
-  --signal:var(--pan-signal);--signal-soft:color-mix(in srgb,var(--signal) 10%,var(--surface));--on-signal:#fff;--der:#1D4FA8;--die:#B0243F;--das:#2C6E3F;
-  --hard:#B0243F;--learn:#A45A07;--known:#2C6E3F;--ok:#2C6E3F;
+:root[data-reading="1"][data-rpage="sepia"]{
+  --paper:#F7F0E3;--paper-2:#EFE5D2;--surface:#FCF7EE;--surface-2:#F2E9D8;
+  --ink:#2F271C;--ink-2:#5E503D;--ink-3:#8C7C63;--rule:#E3D5BC;--rule-2:#EBDFC9;
+  --signal:var(--pan-signal);--signal-soft:color-mix(in srgb,var(--signal) 10%,#F7F0E3);--on-signal:#fff;
+  --heat-0:#EDE3D0;--heat-1:color-mix(in srgb,var(--signal) 25%,#F7F0E3);--heat-2:color-mix(in srgb,var(--signal) 46%,#F7F0E3);--heat-3:color-mix(in srgb,var(--signal) 75%,#F7F0E3);--on-heat:#fff;
+  --stress-text:color-mix(in srgb,var(--stress) 40%,var(--stress-ink));
+  --der:#1D4FA8;--die:#B0243F;--das:#2C6E3F;--ok:#2C6E3F;--warn:#A45A07;
+  --hard:#B0243F;--hard-soft:#F4DCD8;--learn:#A45A07;--learn-soft:#F3E2C6;--known:#2C6E3F;--known-soft:#E1E8D3;--gap:#8C7C63;--gap-soft:#EFE5D2;
+  --on-fill:#fff;--scrim:rgba(47,39,28,.42);
+  --shadow:0 1px 2px rgba(47,39,28,.06), 0 8px 24px -12px rgba(47,39,28,.2);
+  --shadow-lift:0 2px 4px rgba(47,39,28,.07), 0 18px 40px -18px rgba(47,39,28,.3);
 }
-:root[data-rpage="night"] .lpage{
-  --surface:#15181B;--surface-2:#1C2024;--ink:#DCE1E5;--ink-2:#A5AFB6;--ink-3:#78838A;--rule:#2B3237;--rule-2:#232A2E;
-  --signal:var(--pan-signal-dk);--signal-soft:color-mix(in srgb,var(--signal) 22%,#000);--on-signal:#0B0E10;--der:#7D9BFF;--die:#FF8FA8;--das:#5CCFA6;
-  --hard:#FF8FA8;--learn:#E5A159;--known:#5CCFA6;--ok:#5CCFA6;
+:root[data-reading="1"][data-rpage="night"]{
+  --paper:#15181B;--paper-2:#101315;--surface:#1B1F22;--surface-2:#22272B;
+  --ink:#DCE1E5;--ink-2:#A5AFB6;--ink-3:#78838A;--rule:#2B3237;--rule-2:#232A2E;
+  --signal:var(--pan-signal-dk);--signal-soft:color-mix(in srgb,var(--signal) 22%,#000);--on-signal:#0B0E10;
+  --heat-0:#22282D;--heat-1:color-mix(in oklab,var(--signal) 50%,#000);--heat-2:color-mix(in oklab,var(--signal) 65%,#000);--heat-3:color-mix(in oklab,var(--signal) 82%,#000);--on-heat:color-mix(in srgb,var(--signal) 17%,#fff);
+  --stress-text:var(--stress);
+  --der:#7D9BFF;--die:#FF8FA8;--das:#5CCFA6;--ok:#5CCFA6;--warn:#E5A159;
+  --hard:#FF8FA8;--hard-soft:#2B1820;--learn:#E5A159;--learn-soft:#2A2015;--known:#5CCFA6;--known-soft:#112A23;--gap:#78838A;--gap-soft:#1E2327;
+  --on-fill:#0B0E10;--scrim:rgba(0,0,0,.62);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.5), 0 18px 40px -18px rgba(0,0,0,.75);
 }
 /* the sentence being read aloud */
 .sent.is-reading{background:var(--signal-soft);box-shadow:-8px 0 0 var(--signal-soft),8px 0 0 var(--signal-soft),-11px 0 0 var(--signal);transition:background .2s var(--ease),box-shadow .2s var(--ease)}
@@ -6423,6 +6441,7 @@ function go(view, id) {
   }
   applyRoute();
 }
+let readingT = 0;
 function applyRoute() {
   const raw = location.hash.replace(/^#\/?/, "");
   const parts = raw.split("/");
@@ -6475,6 +6494,15 @@ function applyRoute() {
      seconds and there are a lot of those. */
   const sameView = state.view === view, prevView = state.view;
   state.view = view;
+  /* the page theme belongs to the reading screen. It changes in the gap
+     between the two strokes (after --out), so neither screen changes
+     colour while it is on show */
+  const rd = view === "lesson" ? "1" : "0";
+  clearTimeout(readingT);
+  if (document.documentElement.dataset.reading !== rd) {
+    if (!prevView) document.documentElement.dataset.reading = rd;
+    else readingT = setTimeout(() => { document.documentElement.dataset.reading = rd; }, 100);
+  }
 
   /* 1 — the chrome, first and cheaply. The tab highlights and the panel
      swaps before any HTML is built, so the tap always feels answered. */
@@ -11412,7 +11440,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.43";
+const APP_VERSION = "3.44";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
