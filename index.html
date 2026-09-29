@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.44 · neural German, cached on device -->
+<!-- Sprachlabor — v3.45 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -3571,19 +3571,28 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
   --fs-read:1;      /* the passage */
   --fs-card:1;      /* every card, wherever it appears */
   --lh-read:1.72;   /* how far apart the German lines sit */
+  --fs-en:1;        /* the English, against the passage */
+  --sgap:0;         /* extra room between sentences, in em */
+  --track:0;        /* letter spacing added to the passage, in em */
   --lh-card:1.68;   /* the same question, on a card */
   --sidew:clamp(340px,32vw,468px);
 }
 
 /* ---------- the passage ---------- */
 .de-text{font-size:calc(clamp(19px,2.1vw,22px) * var(--fs-read));line-height:var(--lh-read)}
-.en-line{font-size:calc(14.5px * var(--fs-read));line-height:calc(var(--lh-read) * .93)}
-.lpage__en .md{font-size:calc(16px * var(--fs-read));line-height:calc(var(--lh-read) * .98)}
+.en-line{font-size:calc(14.5px * var(--fs-read) * var(--fs-en));line-height:calc(var(--lh-read) * .93)}
+.lpage__en .md{font-size:calc(16px * var(--fs-read) * var(--fs-en));line-height:calc(var(--lh-read) * .98)}
+.de-text{letter-spacing:calc(-.004em + var(--track) * 1em)}
+.de-text .sent:not(.sent--inline){margin-bottom:calc(2px + var(--sgap) * 1em)}
+:root[data-readweight="300"] .de-text{font-weight:300}
+:root[data-readweight="500"] .de-text{font-weight:500}
+:root[data-readalign="justify"] .de-text :is(.sent:not(.sent--inline),.md-p,li){text-align:justify;-webkit-hyphens:auto;hyphens:auto}
+:root[data-readalign="justify"] .de-text .en-line{text-align:left;-webkit-hyphens:manual;hyphens:manual}
 .md-table{font-size:calc(14.5px * var(--fs-read))}
 .md-pre code{font-size:calc(13px * var(--fs-read))}
 /* the serif is the house voice for German, but a sans face is easier
    for some eyes at length, so it is a choice rather than a decree */
-:root[data-readfont="sans"] .de-text{font-family:var(--sans);letter-spacing:-.008em}
+:root[data-readfont="sans"] .de-text{font-family:var(--sans);letter-spacing:calc(-.008em + var(--track) * 1em)}
 :root[data-readfont="sans"] .de-text .md-h{letter-spacing:-.02em}
 
 /* ---------- the card, wherever it appears ---------- */
@@ -3806,33 +3815,83 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
   .sbar__top .dclose .aaico{font-size:13px}
 }
 
+/* ---------- the Text panel (Aa) ----------
+   One panel, two shapes. On a wide screen it is a popover that grows
+   out of the Aa key that opened it and sits under it (over it when
+   there is no room below). On a phone it is a sheet welded to the
+   bottom edge, short enough that the passage above stays in view,
+   because the passage is the preview: every control repaints it live.
+   Four tabs keep it one height; a tab change is a fade-through. */
 .rquick{
-  position:fixed;z-index:130;right:22px;top:76px;width:330px;max-width:calc(100vw - 28px);
-  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
-  box-shadow:var(--shadow-lift);padding:15px 16px 15px;
-  animation:rise .16s var(--ease) both;
-  max-height:calc(100dvh - 104px);overflow-y:auto;overscroll-behavior:contain;
+  position:fixed;z-index:130;top:0;left:0;width:372px;max-width:calc(100vw - 24px);
+  display:flex;flex-direction:column;
+  background:var(--surface);color:var(--ink);border:1px solid var(--rule);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-lift);overflow:hidden;
 }
-.rquick__head{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding-bottom:11px;margin-bottom:13px;border-bottom:1px solid var(--rule-2);
+.rquick__grip{display:none}
+.rquick__head{flex:none;display:flex;align-items:center;gap:8px;padding:14px 14px 0 18px}
+.rquick__head h4{flex:1;font-size:15px;font-weight:600;letter-spacing:-.015em}
+.rquick__key{
+  width:34px;height:34px;flex:none;border-radius:var(--r-md);display:grid;place-items:center;
+  color:var(--ink-3);border:1px solid var(--rule);background:var(--surface);
+  transition:background-color .14s var(--ease),color .14s var(--ease),border-color .14s var(--ease),transform .1s var(--ease);
 }
-.rquick__head h4{font-size:13.5px;font-weight:600;letter-spacing:-.012em}
-.rquick__x{
-  width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
-  color:var(--ink-3);border:1px solid var(--rule);background:var(--surface-2);flex:none;
-}
-.rquick__x:hover{background:var(--paper-2);color:var(--ink)}
-.rquick__x svg{width:14px;height:14px}
-.rquick__foot{display:flex;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid var(--rule-2)}
-.rquick__foot .btn{flex:1;justify-content:center}
+.rquick__key:hover{background:var(--surface-2);border-color:var(--ink-3);color:var(--ink)}
+.rquick__key:active{transform:scale(.95)}
+.rquick__key svg{width:15px;height:15px}
+.rquick .ptabs{flex:none;margin:8px 0 0;padding:0 8px}
+.rquick .ptabs button{flex:1;padding:11px 8px 12px}
+.rquick__panes{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.rq-pane{padding:18px 18px 20px}
+.rquick__foot{flex:none;padding:10px 14px 12px;border-top:1px solid var(--rule-2)}
+.rquick__foot .btn{width:100%;justify-content:center}
+.rquick .rsw{padding:12px 2px}
 @media (max-width:860px){
-  .rquick{
-    right:10px;left:10px;top:auto;width:auto;
-    bottom:calc(70px + env(safe-area-inset-bottom));
-    max-height:min(72dvh,560px);
+  .rquick.is-sheet{
+    left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;
+    max-height:min(64dvh,540px);
+    border-bottom:none;border-radius:var(--r-lg) var(--r-lg) 0 0;
+    padding-bottom:env(safe-area-inset-bottom);
+    box-shadow:0 -2px 4px rgba(20,24,27,.04), 0 -22px 60px -20px rgba(20,24,27,.34);
   }
+  :root[data-theme="dark"] .rquick.is-sheet{box-shadow:0 -2px 4px rgba(0,0,0,.3), 0 -22px 60px -20px rgba(0,0,0,.6)}
+  .rquick.is-sheet .rquick__grip{display:grid;place-items:center;flex:none;padding:10px 0 0;cursor:grab;touch-action:none}
+  .rquick.is-sheet .rquick__grip::before{content:"";width:42px;height:4px;border-radius:100px;background:var(--rule)}
+  .rquick.is-sheet .rquick__head{padding-top:4px;touch-action:none}
+  .rquick.is-sheet .rq-pane{padding:16px 20px 18px}
+  .rquick.is-sheet .rquick__foot{padding:10px 20px 12px}
 }
+
+/* the page, picked by looking at it: each tile is the page itself */
+.rpages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.rpg{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.rpg__sw{
+  position:relative;width:100%;height:64px;border-radius:var(--r-md);overflow:hidden;
+  border:1px solid var(--rule);background:var(--pg-bg);color:var(--pg-ink);
+  display:grid;place-items:center;font-family:var(--serif);font-size:24px;line-height:1;
+  transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .1s var(--ease);
+}
+.rpg__sw i{
+  position:absolute;right:7px;top:7px;width:16px;height:16px;border-radius:100px;
+  background:var(--signal);color:var(--on-signal);display:grid;place-items:center;
+  transform:scale(0);transition:transform .22s var(--ease);
+}
+.rpg__sw i svg{width:10px;height:10px}
+.rpg > span{font-size:12.5px;font-weight:600;color:var(--ink-3);transition:color .14s var(--ease)}
+.rpg:hover .rpg__sw{border-color:var(--ink-3)}
+.rpg:active .rpg__sw{transform:scale(.96)}
+.rpg[aria-pressed="true"] .rpg__sw{border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
+.rpg[aria-pressed="true"] .rpg__sw i{transform:scale(1)}
+.rpg[aria-pressed="true"] > span{color:var(--ink)}
+.rpg--paper{--pg-bg:#FFFFFF;--pg-ink:#14181B}
+.rpg--sepia{--pg-bg:#F7F0E3;--pg-ink:#2F271C}
+.rpg--night{--pg-bg:#15181B;--pg-ink:#DCE1E5}
+/* Auto is the app's own, light or dark, so its tile is both */
+.rpg--auto .rpg__sw{background:linear-gradient(135deg,#ECEEF0 50%,#0F1214 50%);color:transparent}
+.rpg--auto .rpg__sw b{position:absolute;font-weight:400}
+.rpg--auto .rpg__sw b:first-child{left:22%;top:22%;color:#14181B}
+.rpg--auto .rpg__sw b:last-of-type{right:22%;bottom:20%;color:#E8EBEE}
+.rpg__sw b{font-weight:400}
 
 .rfield{margin-bottom:15px}
 .rfield:last-child{margin-bottom:0}
@@ -6857,8 +6916,8 @@ function recolour(attr, v) {
    ============================================================ */
 const READ_SHOW = ["def", "say", "note", "ex", "exen", "pos", "src", "hint", "underline"];
 const READ_DEFAULTS = {
-  text: 100, card: 100, line: 172, measure: 66,
-  font: "serif", sidecard: 1, widestudy: 1, fsauto: 0, page: "auto",
+  text: 100, card: 100, line: 172, measure: 66, en: 100, sgap: 0, track: 0,
+  font: "serif", weight: 400, align: "left", sidecard: 1, widestudy: 1, fsauto: 0, page: "auto",
   show: { def: 1, say: 1, note: 1, ex: 1, exen: 1, pos: 1, src: 1, hint: 1, underline: 0 }
 };
 /* the passage's page: the app's own colours, or a page of its own */
@@ -6866,7 +6925,10 @@ const READ_PAGES = [["auto", "Auto"], ["paper", "Paper"], ["sepia", "Sepia"], ["
 const READ_RANGE = {
   text: { min: 80, max: 200, step: 5 },
   card: { min: 80, max: 200, step: 5 },
-  line: { min: 130, max: 230, step: 4 }
+  line: { min: 130, max: 230, step: 4 },
+  en:   { min: 70, max: 160, step: 5 },
+  sgap: { min: 0, max: 150, step: 10 },
+  track: { min: -20, max: 80, step: 5 }
 };
 
 function readCfg() {
@@ -6877,8 +6939,11 @@ function readCfg() {
      setting saved before then is reset once, and can be turned on again */
   if (!saved.ul39) { out.show.underline = 0; out.ul39 = 1; }
   READ_SHOW.forEach(k => { out.show[k] = out.show[k] ? 1 : 0; });
-  ["text", "card", "line", "measure"].forEach(k => { out[k] = +out[k] || READ_DEFAULTS[k]; });
+  ["text", "card", "line", "measure", "en"].forEach(k => { out[k] = +out[k] || READ_DEFAULTS[k]; });
+  ["sgap", "track"].forEach(k => { out[k] = Number.isFinite(+out[k]) ? +out[k] : READ_DEFAULTS[k]; });
   out.font = out.font === "sans" ? "sans" : "serif";
+  out.weight = [300, 400, 500].includes(+out.weight) ? +out.weight : 400;
+  out.align = out.align === "justify" ? "justify" : "left";
   out.page = READ_PAGES.some(p => p[0] === out.page) ? out.page : "auto";
   out.sidecard = out.sidecard ? 1 : 0;
   out.widestudy = out.widestudy ? 1 : 0;
@@ -6896,7 +6961,12 @@ function applyRead() {
   h.style.setProperty("--fs-card", (r.card / 100).toFixed(3));
   h.style.setProperty("--lh-read", (r.line / 100).toFixed(2));
   h.style.setProperty("--measure", r.measure >= 200 ? "100%" : r.measure + "ch");
+  h.style.setProperty("--fs-en", (r.en / 100).toFixed(3));
+  h.style.setProperty("--sgap", (r.sgap / 100).toFixed(2));
+  h.style.setProperty("--track", (r.track / 1000).toFixed(3));
   h.setAttribute("data-readfont", r.font);
+  h.setAttribute("data-readweight", String(r.weight));
+  h.setAttribute("data-readalign", r.align);
   h.setAttribute("data-rpage", r.page);
   h.setAttribute("data-sidecard", String(r.sidecard));
   h.setAttribute("data-widestudy", String(r.widestudy));
@@ -6919,6 +6989,7 @@ function readTouched() {
 function setRead(k, v) {
   const r = readCfg();
   if (k === "font") r.font = v === "sans" ? "sans" : "serif";
+  else if (k === "align") r.align = v === "justify" ? "justify" : "left";
   else if (k === "page") r.page = READ_PAGES.some(p => p[0] === v) ? v : "auto";
   else r[k] = +v;
   readTouched();
@@ -6937,7 +7008,7 @@ function resetRead(part) {
      the quick panel's Reset still puts back the whole set */
   if (part === "look" || part === "cards") {
     const r = readCfg();
-    if (part === "look") ["text", "card", "line", "measure", "font", "page", "sidecard", "widestudy"].forEach(k => { r[k] = READ_DEFAULTS[k]; });
+    if (part === "look") ["text", "card", "line", "measure", "en", "sgap", "track", "font", "weight", "align", "page", "sidecard", "widestudy"].forEach(k => { r[k] = READ_DEFAULTS[k]; });
     READ_SHOW.forEach(k => { if ((k === "underline") === (part === "look")) r.show[k] = READ_DEFAULTS.show[k]; });
     readTouched();
     toast(part === "look" ? "Appearance back to its defaults" : "Cards show everything again");
@@ -6951,6 +7022,8 @@ function resetRead(part) {
 function readLabel(k, v) {
   if (k === "line") return (v / 100).toFixed(2);
   if (k === "measure") return v >= 200 ? "full width" : v + " ch";
+  if (k === "sgap") return v ? "+" + (v / 100).toFixed(1) + " em" : "None";
+  if (k === "track") return v ? (v > 0 ? "+" : "\u2212") + Math.abs(v / 10).toFixed(1) + "%" : "Normal";
   return v + "%";
 }
 
@@ -6976,6 +7049,16 @@ function rSeg(k, label, opts, note) {
     "</div>" +
     (note ? '<div class="hint">' + note + "</div>" : "") +
   "</div>";
+}
+/* the page themes as tiles: each one is a small piece of that page */
+const ICO_TICK_S = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+function rPages() {
+  const r = readCfg();
+  return '<div class="rfield"><label>Page</label><div class="rpages" role="group" aria-label="Page">' +
+    READ_PAGES.map(p => '<button type="button" class="rpg rpg--' + p[0] + '" data-readset="page" data-val="' + p[0] +
+      '" aria-pressed="' + (r.page === p[0]) + '"><span class="rpg__sw" aria-hidden="true">' +
+      (p[0] === "auto" ? "<b>A</b><b>a</b>" : "<b>Aa</b>") + "<i>" + ICO_TICK_S + "</i></span><span>" + p[1] + "</span></button>").join("") +
+    "</div></div>";
 }
 function rSwitch(k, label, note) {
   const r = readCfg();
@@ -7032,34 +7115,192 @@ document.addEventListener("webkitfullscreenchange", paintFsBtn);
 const ICO_AA = '<span class="aaico">Aa</span>';
 const ICO_RX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 
-/* ---------- the floating panel ---------- */
-let readPopEl = null;
-function closeReadPop() {
-  if (readPopEl) { readPopEl.remove(); readPopEl = null; }
+/* ---------- the Text panel ----------
+   Built fresh on each open (so it always shows the current values) and
+   then only updated in place: a slider or a key writes the setting,
+   applyRead() repaints the page, syncReadUI() moves the other controls.
+   It opens out of the key that was pressed and closes back into it. */
+const ICO_RESET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4.5v4h4"/></svg>';
+const RQ_TABS = [["size", "Size"], ["space", "Spacing"], ["type", "Type"], ["page", "Page"]];
+let readPopEl = null, rqTab = "size", rqAnchor = null, rqGen = 0;
+const rqIsSheet = () => !matchMedia("(min-width:861px)").matches;
+
+function rqPanes() {
+  return {
+    size: rSlider("text", "Passage") + rSlider("en", "Translation") + rSlider("card", "Card text"),
+    space: rSlider("line", "Line spacing") + rSlider("sgap", "Between sentences") + rSlider("track", "Letter spacing") +
+      rSeg("measure", "Line width", [[54, "Narrow"], [66, "Normal"], [78, "Wide"], [999, "Full"]]),
+    type: rSeg("font", "Typeface", [["serif", "Serif"], ["sans", "Sans"]]) +
+      rSeg("weight", "Weight", [[300, "Light"], [400, "Regular"], [500, "Medium"]]) +
+      rSeg("align", "Alignment", [["left", "Left"], ["justify", "Justify"]]) +
+      '<div class="rswitches">' + rSwitch("underline", "Underline words that have a card") + "</div>",
+    page: rPages()
+  };
+}
+
+/* where the popover sits: under its key, right edges lined up, turned
+   over the key when the room is above; the sheet needs no placing */
+function rqPlace() {
+  const n = readPopEl;
+  if (!n || n.classList.contains("is-sheet")) return;
+  const b = rqAnchor && rqAnchor.isConnected ? rqAnchor.getBoundingClientRect() : null;
+  const w = n.offsetWidth, vw = innerWidth, vh = innerHeight;
+  const r = b || { left: vw - w - 22, right: vw - 22, top: 64, bottom: 68 };
+  const left = Math.max(12, Math.min(r.right - w, vw - w - 12));
+  n.style.maxHeight = "";
+  const h = n.offsetHeight, below = vh - r.bottom - 20, above = r.top - 20;
+  const up = h > below && above > below;
+  const room = up ? above : below;
+  if (h > room) n.style.maxHeight = Math.max(240, room) + "px";
+  const top = up ? Math.max(12, r.top - 8 - Math.min(h, room)) : r.bottom + 8;
+  n.style.left = left + "px";
+  n.style.top = top + "px";
+  n.style.transformOrigin = Math.round(Math.min(w, Math.max(0, r.left + (r.right - r.left) / 2 - left))) + "px " + (up ? "100%" : "0");
+}
+
+/* one height for all four tabs, so a tab change never moves the edge */
+function rqFixHeight() {
+  const n = readPopEl;
+  if (!n) return;
+  const box = $(".rquick__panes", n), panes = $$(".rq-pane", n);
+  let h = 0;
+  panes.forEach(p => {
+    const was = p.hidden;
+    p.hidden = false;
+    h = Math.max(h, p.offsetHeight);
+    p.hidden = was;
+  });
+  box.style.height = h + "px";
+}
+
+function openReadPop(btn) {
+  if (readPopEl) return;
+  /* a panel still on its way out goes at once */
+  $$(".rquick").forEach(x => x.remove());
+  rqAnchor = btn || null;
+  const sheet = rqIsSheet();
+  const panes = rqPanes();
+  const n = readPopEl = el("div", "rquick" + (sheet ? " is-sheet" : ""));
+  n.id = "readQuick";
+  n.setAttribute("role", "dialog");
+  n.setAttribute("aria-label", "Text");
+  n.innerHTML =
+    '<div class="rquick__grip" aria-hidden="true"></div>' +
+    '<div class="rquick__head"><h4>Text</h4>' +
+      '<button type="button" class="rquick__key" data-readreset="1" aria-label="Reset to defaults" title="Reset to defaults">' + ICO_RESET + "</button>" +
+      '<button type="button" class="rquick__key" data-readclose="1" aria-label="Close" title="Close">' + ICO_RX + "</button></div>" +
+    '<div class="ptabs" role="tablist">' + RQ_TABS.map(t =>
+      '<button type="button" role="tab" data-rqtab="' + t[0] + '" aria-selected="' + (t[0] === rqTab) + '">' + t[1] + "</button>").join("") +
+      '<i class="ptabs__ind" aria-hidden="true"></i></div>' +
+    '<div class="rquick__panes">' + RQ_TABS.map(t =>
+      '<div class="rq-pane" role="tabpanel" data-pane="' + t[0] + '"' + (t[0] === rqTab ? "" : " hidden") + ">" + panes[t[0]] + "</div>").join("") + "</div>" +
+    '<div class="rquick__foot"><button type="button" class="btn btn--sm" data-readmore="1">All reading settings</button></div>';
+  document.body.appendChild(n);
+  rqFixHeight();
+  rqPlace();
+  const bar = $(".ptabs", n);
+  placePTab(bar, $('[data-rqtab="' + rqTab + '"]', bar));
+  if (sheet) rqDrag(n);
+  $$("[data-readpop]").forEach(b => b.setAttribute("aria-expanded", String(b === btn)));
+  if (btn) btn.setAttribute("aria-expanded", "true");
+  if (!reducedMotion()) {
+    n.animate(sheet
+      ? [{ transform: "translateY(100%)" }, { transform: "none" }]
+      : [{ opacity: 0, transform: "translateY(-6px) scale(.96)" }, { opacity: 1, transform: "none" }],
+      { duration: sheet ? 300 : 220, easing: "cubic-bezier(.2,.7,.3,1)" });
+  } else n.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160 });
+}
+
+function closeReadPop(now) {
   $$("[data-readpop]").forEach(b => b.setAttribute("aria-expanded", "false"));
+  const n = readPopEl;
+  if (!n) return;
+  readPopEl = null;
+  if (now) { n.remove(); return; }
+  n.inert = true;
+  n.style.pointerEvents = "none";
+  const sheet = n.classList.contains("is-sheet");
+  const from = getComputedStyle(n).transform;
+  const a = n.animate(reducedMotion() ? [{ opacity: 1 }, { opacity: 0 }]
+    : sheet ? [{ transform: from === "none" ? "none" : from }, { transform: "translateY(100%)" }]
+    : [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-4px) scale(.97)" }],
+    { duration: sheet ? 220 : 150, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" });
+  a.onfinish = () => n.remove();
+  setTimeout(() => n.remove(), 400);
 }
-function openReadPop() {
-  closeReadPop();
-  readPopEl = el("div", "rquick");
-  readPopEl.id = "readQuick";
-  readPopEl.setAttribute("role", "dialog");
-  readPopEl.setAttribute("aria-label", "Reading size");
-  readPopEl.innerHTML =
-    '<div class="rquick__head"><h4>Size &amp; readability</h4>' +
-      '<button class="rquick__x" data-readclose="1" aria-label="Close">' + ICO_RX + "</button></div>" +
-    rSlider("text", "Passage") +
-    rSlider("card", "Card text") +
-    rSlider("line", "Line spacing") +
-    rSeg("font", "Passage typeface", [["serif", "Serif"], ["sans", "Sans"]]) +
-    rSeg("page", "Page", READ_PAGES) +
-    '<div class="rquick__foot">' +
-      '<button class="btn btn--sm" data-readreset="1">Reset</button>' +
-      '<button class="btn btn--sm" data-readmore="1">All settings</button>' +
-    "</div>";
-  document.body.appendChild(readPopEl);
-  $$("[data-readpop]").forEach(b => b.setAttribute("aria-expanded", "true"));
+function toggleReadPop(btn) {
+  if (readPopEl) {
+    const same = !btn || rqAnchor === btn;
+    closeReadPop(!same);
+    if (same) return;
+  }
+  openReadPop(btn);
 }
-function toggleReadPop() { if (readPopEl) closeReadPop(); else openReadPop(); }
+
+/* a tab change: the old controls fade out (.1s, leaving curve), then the
+   new ones rise in 40ms apart; the underline travels meanwhile */
+function rqTabTo(k) {
+  const n = readPopEl;
+  if (!n || k === rqTab) return;
+  rqTab = k;
+  const bar = $(".ptabs", n), gen = ++rqGen;
+  $$("[data-rqtab]", bar).forEach(b => b.setAttribute("aria-selected", String(b.dataset.rqtab === k)));
+  placePTab(bar, $('[data-rqtab="' + k + '"]', bar));
+  const shown = $$(".rq-pane", n).filter(p => !p.hidden);
+  const swap = () => {
+    if (gen !== rqGen || !n.isConnected) return;
+    $$(".rq-pane", n).forEach(p => { p.getAnimations().forEach(x => x.cancel()); p.hidden = p.dataset.pane !== k; });
+    const nw = $('.rq-pane[data-pane="' + k + '"]', n);
+    $(".rquick__panes", n).scrollTop = 0;
+    $$(".seg", nw).forEach(sg => segPlace(sg, true));
+    if (reducedMotion()) return;
+    Array.prototype.forEach.call(nw.children, (c, i) => c.animate(
+      [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }],
+      { duration: 260, delay: i * 40, easing: "cubic-bezier(.2,.7,.3,1)", fill: "backwards" }));
+  };
+  if (reducedMotion() || !shown.length) return swap();
+  shown.forEach(p => p.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }));
+  setTimeout(swap, 100);
+}
+
+/* the sheet goes the way it came: drag the handle or the header down */
+function rqDrag(n) {
+  let y0 = 0, dy = 0, t0 = 0, on = false;
+  const down = e => {
+    if (e.target.closest("button")) return;
+    on = true; y0 = e.clientY; dy = 0; t0 = performance.now();
+    n.getAnimations().forEach(a => a.finish());
+    n.style.transition = "none";
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const move = e => {
+    if (!on) return;
+    dy = Math.max(0, e.clientY - y0);
+    n.style.transform = "translateY(" + dy + "px)";
+  };
+  const up = () => {
+    if (!on) return;
+    on = false;
+    const fast = dy / Math.max(1, performance.now() - t0) > .5;
+    if (dy > 90 || (fast && dy > 24)) { closeReadPop(); return; }
+    n.style.transition = "transform .24s cubic-bezier(.2,.7,.3,1)";
+    n.style.transform = "";
+  };
+  [$(".rquick__grip", n), $(".rquick__head", n)].forEach(h => {
+    h.addEventListener("pointerdown", down);
+    h.addEventListener("pointermove", move);
+    h.addEventListener("pointerup", up);
+    h.addEventListener("pointercancel", up);
+  });
+}
+
+/* the popover follows its key; a change of shape closes it */
+addEventListener("resize", () => {
+  if (!readPopEl) return;
+  if (readPopEl.classList.contains("is-sheet") !== rqIsSheet()) closeReadPop(true);
+  else { rqFixHeight(); rqPlace(); }
+});
+addEventListener("scroll", () => { if (readPopEl) rqPlace(); }, { passive: true });
 
 /* ---------- the full set, in Settings ----------
    Split across three sections by what each control is for: how the
@@ -7092,9 +7333,16 @@ function renderReadSettings() {
       "<h3>The passage</h3>" +
       '<div class="rsplit">' +
         rSeg("font", "Typeface", [["serif", "Serif"], ["sans", "Sans"]]) +
+        rSeg("weight", "Weight", [[300, "Light"], [400, "Regular"], [500, "Medium"]]) +
+        rSeg("align", "Alignment", [["left", "Left"], ["justify", "Justify"]]) +
         rSeg("measure", "Line width", [[54, "Narrow"], [66, "Normal"], [78, "Wide"], [999, "Full"]]) +
-        rSeg("page", "Page", READ_PAGES) +
       "</div>" +
+      '<div class="rsplit">' +
+        rSlider("en", "Translation") +
+        rSlider("sgap", "Between sentences") +
+        rSlider("track", "Letter spacing") +
+      "</div>" +
+      rPages() +
       '<div class="rswitches">' +
         rSwitch("underline", "Underline words that have a card") +
       "</div>" +
@@ -8099,7 +8347,7 @@ function lessonTally(lesson) {
 function readerHTML(lesson, mode) {
   const full = mode === "full" && lesson.paragraph.en;
   return '<div class="lpage' + (full ? " is-full" : "") + '" id="lPage">' +
-      '<div class="de-text" id="readerText">' + richGerman(lesson, mode) + "</div>" +
+      '<div class="de-text" id="readerText" lang="de">' + richGerman(lesson, mode) + "</div>" +
       (full ? '<aside class="lpage__en"><span class="eyebrow">English</span><div class="md">' + richEnglish(lesson.paragraph.en) + "</div></aside>" : "") +
     "</div>";
 }
@@ -9878,7 +10126,10 @@ document.addEventListener("click", e => {
      be able to put the panel away. */
   const tb = t.closest("[data-tipbtn]");
   if (tb) { toggleTip(tb); return; }
-  if (t.closest("[data-readpop]")) { e.preventDefault(); toggleReadPop(); return; }
+  const rpop = t.closest("[data-readpop]");
+  if (rpop) { e.preventDefault(); toggleReadPop(rpop); return; }
+  const rqt = t.closest("[data-rqtab]");
+  if (rqt) { rqTabTo(rqt.dataset.rqtab); return; }
   if (t.closest("[data-readclose]")) { closeReadPop(); return; }
   if (t.closest("[data-dfs]")) { e.preventDefault(); fullscreen.toggle(); return; }
   const rstep = t.closest("[data-readstep]");
@@ -9888,7 +10139,7 @@ document.addEventListener("click", e => {
   const rres = t.closest("[data-readreset]");
   if (rres) { e.preventDefault(); resetRead(rres.dataset.readreset); renderReadSettings(); return; }
   if (t.closest("[data-readmore]")) {
-    closeReadPop();
+    closeReadPop(true);
     if (drill.on) endDrill();
     if (spell.on) endSpelling();
     go("settings", "look");
@@ -11440,7 +11691,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.44";
+const APP_VERSION = "3.45";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
