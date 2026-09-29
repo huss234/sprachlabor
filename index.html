@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Sprachlabor — v3.45 · neural German, cached on device -->
+<!-- Sprachlabor — v3.46 · neural German, cached on device -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -1206,7 +1206,7 @@ html,body,.rail{transition:background-color .2s var(--ease)}
 
 .pop__head{
   flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
-  padding:6px 40px 0;margin:0;
+  padding:6px 40px 16px;margin:0;border-bottom:1px solid var(--rule-2);
   width:100%;max-width:1120px;margin-inline:auto;
 }
 .pop__ident{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
@@ -1217,7 +1217,7 @@ html,body,.rail{transition:background-color .2s var(--ease)}
 /* what kind of word it is, and its plural — labels on the word, so they
    sit under it rather than drifting into the body */
 .pop__meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.pop__plural{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+.pop__plural{font-family:var(--serif);font-size:15px;color:var(--ink-2)}
 .pop__plural::before{content:"\00B7";margin-right:10px;color:var(--rule)}
 .pop__close{
   width:38px;height:38px;border-radius:9px;display:grid;place-items:center;
@@ -1274,7 +1274,7 @@ body.has-sheet .toasts{bottom:auto;top:22px}
 
 @media (max-width:860px){
   .pop{left:0;max-height:min(84vh,calc(100dvh - 32px))}
-  .pop__head{padding:6px 18px 0}
+  .pop__head{padding:6px 18px 14px}
   .pop__body{padding:14px 18px 20px}
   .pop .stat{padding:10px 18px calc(12px + env(safe-area-inset-bottom));gap:6px}
   .pop .stat button{height:46px}
@@ -1321,7 +1321,8 @@ body.has-sheet .toasts{bottom:auto;top:22px}
    the card where the word is doing something, and it is now the only
    place you can take apart word by word. */
 .ex{
-  border-left:2px solid var(--rule-2);padding:0 0 0 11px;
+  background:var(--surface-2);border:1px solid var(--rule-2);border-radius:var(--r-md);
+  padding:10px 14px 12px;
   display:flex;flex-direction:column;gap:5px;
 }
 .ex__head{display:flex;align-items:center;gap:8px;min-width:0}
@@ -2894,7 +2895,11 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
   display:flex;align-items:center;gap:5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
 }
 .fcard__src svg{width:12px;height:12px;flex:none;stroke-width:1.8}
-.fcard__plural{font-size:11.5px;color:var(--ink-3);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis}
+.fcard__plural{font-size:14px;color:var(--ink-2);font-family:var(--serif);overflow:hidden;text-overflow:ellipsis}
+.fcard__plural i,.pop__plural i{
+  font-family:var(--sans);font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);margin-right:2px;
+}
 
 /* the word, its button and its respelling: one thought, one block */
 .fcard__lead{display:flex;flex-direction:column;align-items:flex-start;gap:9px}
@@ -3046,13 +3051,8 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
    V2 — final polish
    ============================================================ */
 
-/* the practice card wears the same spine as the grid card */
-.drill__card::before{
-  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gap);
-}
-.drill__card[data-st="hard"]::before{background:var(--hard)}
-.drill__card[data-st="learning"]::before{background:var(--learn)}
-.drill__card[data-st="known"]::before{background:var(--known)}
+/* the practice card is the same card as the grid's: no coloured spine;
+   the front's status pill says where it stands */
 .drill__card .fcard__top{margin-bottom:2px}
 .drill__card .pnote{font-size:13px}
 .drill__foot .btn{min-width:132px}
@@ -3068,12 +3068,11 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .ex__head .tts svg{width:15px;height:15px}
 .ex--lg .ex__head .tts{width:33px;height:33px}
 .ex--lg .ex__head .tts svg{width:17px;height:17px}
-.pop .ex{border-left-color:var(--rule);padding-left:14px}
-.pop .ex__head .tts{width:38px;height:38px}
-.pop .ex__head .tts svg{width:19px;height:19px}
+.pop .ex__head .tts{width:34px;height:34px}
+.pop .ex__head .tts svg{width:17px;height:17px}
 /* the sheet is a reading surface, so its sentence gets the room to breathe */
 .pop .ex{gap:8px}
-.drill__card .ex{border-left-color:var(--rule);padding-left:14px;gap:7px}
+.drill__card .ex{gap:7px}
 
 /* ---------- more than one sentence ----------
    The rule down the left of the block splits into one segment per
@@ -3081,9 +3080,9 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
    the way through them. The sentences share one grid cell, so the block
    is as tall as its longest sentence and never changes height as you
    step — nothing below it moves. */
-.ex.ex--multi{position:relative;border-left-color:transparent}
+.ex.ex--multi{position:relative;padding-left:21px}
 .ex__rail{
-  position:absolute;left:-2px;top:0;bottom:0;width:2px;
+  position:absolute;left:9px;top:12px;bottom:12px;width:2px;
   display:flex;flex-direction:column;gap:3px;pointer-events:none;
 }
 .ex__rail i{flex:1;border-radius:2px;background:var(--rule-2);transition:background-color .22s var(--ease)}
@@ -3242,10 +3241,10 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .dstack .drill__card{
   grid-area:1/1;width:100%;margin:0;animation:none;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  min-height:clamp(292px,46vh,412px);padding:26px 28px 22px 30px;gap:14px;
+  min-height:clamp(292px,46vh,412px);padding:24px 28px 22px;gap:16px;
   transition:box-shadow .18s var(--ease),border-color .18s var(--ease);
 }
-.dstack .drill__card--back{transform:rotateY(180deg);background:var(--surface-2);overflow:auto}
+.dstack .drill__card--back{transform:rotateY(180deg);overflow:auto}
 .dstack:hover .drill__card{border-color:var(--ink-3)}
 .dstack:focus-visible{outline:none}
 .dstack:focus-visible .drill__card{outline:2px solid var(--signal);outline-offset:4px}
@@ -3253,8 +3252,8 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 /* the word you were just asked, printed as a word rather than as a
    label, with its button against it and the counter pushed to the end */
 .dword-sm{
-  font-family:var(--serif);font-size:19px;line-height:1.2;letter-spacing:-.012em;
-  color:var(--ink-2);min-width:0;overflow-wrap:anywhere;
+  font-family:var(--serif);font-size:22px;line-height:1.15;letter-spacing:-.015em;
+  color:var(--ink);min-width:0;overflow-wrap:anywhere;
 }
 .dface__count{
   margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-3);flex:none;
@@ -3267,9 +3266,8 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .dask{
   font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);
 }
-.dback{display:flex;flex-direction:column;gap:13px;flex:1}
-/* the respelling is a chip, not a banner: it sizes to its syllables */
-.dback > .say{align-self:flex-start}
+.dback{display:flex;flex-direction:column;gap:14px;flex:1}
+.dback__mean{display:flex;flex-direction:column;gap:inherit;min-width:0}
 .dback .drill__tr{letter-spacing:-.015em}
 .dhint{
   margin-top:auto;flex:none;display:flex;align-items:center;justify-content:center;gap:8px;
@@ -3333,7 +3331,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
   .sbar__top{gap:8px}
   .dcount b{font-size:18px}
   .drill__stage{padding:16px 14px}
-  .dstack .drill__card{padding:22px 20px 18px 23px;min-height:clamp(250px,42vh,360px)}
+  .dstack .drill__card{padding:20px 20px 18px;min-height:clamp(250px,42vh,360px)}
   .drill__foot{padding:12px 14px calc(16px + env(safe-area-inset-bottom))}
   .dbtn{height:58px;gap:4px}
   .dbtn__l{font-size:10.5px;letter-spacing:.06em;gap:5px}
@@ -3601,7 +3599,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .pop__def{font-size:calc(clamp(16px,2.9vw,18px) * var(--fs-card));line-height:var(--lh-card)}
 .pop__gap{font-size:calc(15px * var(--fs-card));line-height:var(--lh-card)}
 .pop .pos{font-size:calc(11.5px * var(--fs-card))}
-.pop__plural{font-size:calc(13.5px * var(--fs-card))}
+.pop__plural{font-size:calc(15.5px * var(--fs-card))}
 .pop .say{font-size:calc(15.5px * var(--fs-card))}
 .pop .pnote{font-size:calc(15px * var(--fs-card));line-height:var(--lh-card)}
 .pop .ex__de{font-size:calc(18.5px * var(--fs-card));line-height:calc(var(--lh-card) * 1.05)}
@@ -3613,7 +3611,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .fcard__wordsm{font-size:calc(18.5px * var(--fs-card))}
 .fcard__tr{font-size:calc(20px * var(--fs-card))}
 .fcard__def{font-size:calc(13.5px * var(--fs-card));line-height:calc(var(--lh-card) * .95)}
-.fcard__plural{font-size:calc(12.5px * var(--fs-card))}
+.fcard__plural{font-size:calc(14px * var(--fs-card))}
 .fcard .pnote{font-size:calc(13px * var(--fs-card));line-height:calc(var(--lh-card) * .92)}
 .fcard .ex__de{font-size:calc(15.5px * var(--fs-card));line-height:calc(var(--lh-card) * .98)}
 .fcard .ex__en{font-size:calc(13px * var(--fs-card))}
@@ -3624,7 +3622,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .drill__word{font-size:calc(clamp(32px,6vw,46px) * var(--fs-card))}
 .drill__tr{font-size:calc(25px * var(--fs-card));line-height:1.3}
 .drill__def{font-size:calc(16px * var(--fs-card));line-height:var(--lh-card)}
-.dword-sm{font-size:calc(20px * var(--fs-card))}
+.dword-sm{font-size:calc(23px * var(--fs-card))}
 .drill__card .pnote{font-size:calc(14.5px * var(--fs-card));line-height:calc(var(--lh-card) * .96)}
 .drill__card .say{font-size:calc(15px * var(--fs-card))}
 .ex--lg .ex__de{font-size:calc(18.5px * var(--fs-card));line-height:calc(var(--lh-card) * 1.05)}
@@ -3635,6 +3633,54 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
 .say i{padding:.45em .6em}
 .say--lg i{padding:.58em .78em}
 .pop .say i{padding:.58em .78em}
+
+/* ---------- the card, one object in three places ----------
+   The word sheet, the flip card and the practice card are one card:
+   a head (what kind of word, the word, its sound), ruled off from the
+   meaning, then the word at work in an inset, then your status. Each
+   zone has one colour and one job:
+     head     the gender, as a band under the article
+     voice    signal yellow on the stressed syllable and the note
+     example  the primary on the card's own word in its sentence,
+              as the passage lights a word whose card is open
+     foot     the status, on the lit key only
+   The card itself is never tinted: die and das share their colours
+   with Hard and Known, so a coloured card would read as a status. */
+.pop__word .art,.fcard__word .art,.drill__word .art,.dword-sm .art{
+  text-decoration-line:underline;text-decoration-thickness:.085em;
+  text-underline-offset:.19em;text-decoration-skip-ink:none;
+}
+.exw.is-hw:not(.is-playing),.exhw{
+  color:var(--signal);background-color:var(--signal-soft);text-decoration-color:var(--signal);
+  box-shadow:0 0 0 .12em var(--signal-soft);
+}
+.exhw{font-weight:inherit;border-radius:3px}
+
+/* the meaning and the note are one column; the example the other */
+.pop__mean{display:flex;flex-direction:column;align-items:flex-start;gap:inherit;min-width:0}
+.pop__mean > *{width:100%}
+.pop,.dstack{container:card / inline-size}
+@container card (min-width:700px){
+  .pop__body{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    column-gap:32px;align-items:start;align-content:start;
+  }
+  .pop__body > *{max-width:none}
+}
+@container card (min-width:620px){
+  .dback{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    column-gap:26px;align-items:start;align-content:start;
+  }
+}
+
+/* the practice card's back keeps the word's head */
+.dface__head{align-items:flex-start;padding-bottom:16px;border-bottom:1px solid var(--rule-2)}
+.dface__id{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:0}
+.dface__head .wordrow{gap:9px}
+.dface__head .dface__count{padding-top:6px}
+/* keys are for a keyboard: a phone is not told to press W */
+@media (hover:none){.dhint__keys{display:none}}
 
 /* ============================================================
    V4 — WHAT A CARD SHOWS
@@ -3690,7 +3736,7 @@ button.lbrow:not(:disabled):active{transform:scale(.99)}
   :root[data-sidecard="1"] .pop__grip{display:none}
   /* and its status runs down the leading edge, the way it does on every
      other card in the app, rather than along the top of a sheet */
-  :root[data-sidecard="1"] .pop__head{padding:20px 24px 0;max-width:none;margin-inline:0}
+  :root[data-sidecard="1"] .pop__head{padding:20px 24px 18px;max-width:none;margin-inline:0}
   :root[data-sidecard="1"] .pop__body{padding:16px 24px 24px;max-width:none;margin-inline:0;gap:16px}
   :root[data-sidecard="1"] .pop__body > *{max-width:none}
   :root[data-sidecard="1"] .pop .stat{max-width:none;margin-inline:0;padding:14px 24px 18px}
@@ -5843,22 +5889,23 @@ function sayBtn(text, what, size) {
    quotation marks the file gave it. A word the engine would read as
    nothing — a bare numeral inside markup, say — is printed flat rather
    than offered as a target that would answer with silence. */
-function speakWordsHTML(text) {
+function speakWordsHTML(text, hw) {
   const src = String(text == null ? "" : text);
   if (!src) return "";
-  if (!speech.ok) return esc(src);
+  if (!speech.ok && !hw) return esc(src);
   /* a private matcher: WORD_RE is global and shared, and borrowing its
      lastIndex here would cut the reader's tokenizer off mid-sentence */
   const re = new RegExp(WORD_RE.source, "g");
   let out = "", last = 0, m;
   while ((m = re.exec(src)) !== null) {
     if (m.index > last) out += esc(src.slice(last, m.index));
-    const w = m[0], line = speech.clean(w);
+    const w = m[0], line = speech.ok ? speech.clean(w) : "";
+    const own = hw && hw(w);
     out += line
-      ? '<button type="button" class="exw" data-tts="' + esc(line) + '" aria-pressed="false"' +
+      ? '<button type="button" class="exw' + (own ? " is-hw" : "") + '" data-tts="' + esc(line) + '" aria-pressed="false"' +
         ' title="Hear this word on its own"' +
         ' aria-label="Hear the word ' + esc(w) + ' spoken in German">' + esc(w) + "</button>"
-      : esc(w);
+      : own ? '<b class="exhw">' + esc(w) + "</b>" : esc(w);
     last = m.index + w.length;
   }
   if (last < src.length) out += esc(src.slice(last));
@@ -5876,9 +5923,24 @@ function speakWordsHTML(text) {
    segment per sentence and the count sits at the end of the label —
    the only two signs there is more, and the count is the way to it.
    `lid` is the file the card is being read in; its own sentence leads. */
+/* The card's own word, found again inside its sentence, so the example
+   shows the word at work rather than asking you to hunt for it. A match
+   is the bare word or one of its forms; a verb also takes a conjugated
+   shape of its stem ("kenne" for kennen), but only a stem of four
+   letters or more, since a short one would light half the line. */
+function ownWord(v) {
+  const bare = normWord(v.word.replace(/^(der|die|das)\s+/i, ""));
+  const keys = new Set([bare].concat((v.forms || []).map(normWord)).filter(Boolean));
+  const stem = v.pos === "verb" ? bare.replace(/(en|n)$/, "") : "";
+  return w => {
+    const n = normWord(w);
+    return keys.has(n) || (stem.length >= 4 && n.startsWith(stem) && n.length <= stem.length + 3);
+  };
+}
 function exampleHTML(v, cls, lid) {
   const list = examplesFor(v, lid);
   if (!list.length) return "";
+  const hw = ownWord(v);
   const de = list[0].de;
   const btn = sayBtn(de, "the whole example sentence");
   const n = list.length;
@@ -5891,7 +5953,7 @@ function exampleHTML(v, cls, lid) {
     "</div>";
   if (n < 2) {
     return '<div class="ex' + (cls ? " " + cls : "") + '">' + head +
-      '<p class="ex__de">' + speakWordsHTML(de) + "</p>" +
+      '<p class="ex__de">' + speakWordsHTML(de, hw) + "</p>" +
       (list[0].en ? '<p class="ex__en">' + esc(list[0].en) + "</p>" : "") +
       "</div>";
   }
@@ -5902,7 +5964,7 @@ function exampleHTML(v, cls, lid) {
       list.map((e, k) =>
         '<div class="ex__slide' + (k ? "" : " is-on") + '" data-tts-line="' + esc(speech.clean(e.de)) + '"' +
           (k ? ' aria-hidden="true"' : "") + ">" +
-          '<p class="ex__de">' + speakWordsHTML(e.de) + "</p>" +
+          '<p class="ex__de">' + speakWordsHTML(e.de, hw) + "</p>" +
           (e.en ? '<p class="ex__en">' + esc(e.en) + "</p>" : "") +
           '<p class="ex__from">' + exFrom(e, lid) + "</p>" +
         "</div>").join("") +
@@ -8217,7 +8279,7 @@ function cardHTML(lesson, v, i, src, also) {
     '<div class="fcard__flip" data-card="' + i + '" data-fclid="' + esc(lid) + '" role="button" tabindex="0" aria-expanded="false" aria-label="Show the answer: ' + esc(v.word) + '">' +
       '<div class="fcard__top">' +
         '<span class="fcard__kind"><span class="pos">' + esc(v.pos || "word") + "</span>" +
-          (v.plural ? '<span class="fcard__plural">pl. ' + esc(v.plural) + "</span>" : "") + "</span>" +
+          (v.plural ? '<span class="fcard__plural"><i>pl.</i> ' + esc(v.plural) + "</span>" : "") + "</span>" +
         '<span class="fcard__meta">' + seenChip(v) +
           (src ? '<span class="fcard__src"' +
                    (also ? ' title="Also in ' + also + (also === 1 ? " other file" : " other files") + '"' : "") +
@@ -8613,7 +8675,7 @@ function openPop(tok, lesson, v, i) {
     '<div class="pop__head">' +
       '<div class="pop__ident">' +
         '<div class="pop__meta"><span class="pos">' + esc(v.pos || "word") + "</span>" +
-          (v.plural ? '<span class="pop__plural">pl. ' + esc(v.plural) + "</span>" : "") +
+          (v.plural ? '<span class="pop__plural"><i>pl.</i> ' + esc(v.plural) + "</span>" : "") +
           seenChip(v) +
         "</div>" +
         '<div class="wordrow"><div class="pop__word">' + articleHTML(v) + "</div>" +
@@ -8622,14 +8684,19 @@ function openPop(tok, lesson, v, i) {
       "</div>" +
       '<button class="pop__close" aria-label="Close card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
     "</div>" +
+    /* the meaning and the note in one column, the word at work in the
+       other: on a narrow card the two stack, on a wide one they sit side
+       by side, so a landscape screen is not one long strip */
     '<div class="pop__body">' +
-      '<div class="pop__answer">' +
-        '<div class="pop__tr">' + (v.translation ? esc(v.translation) : "\u2014") + "</div>" +
-        (v.definition ? '<div class="pop__def">' + esc(v.definition) + "</div>" : "") +
+      '<div class="pop__mean">' +
+        '<div class="pop__answer">' +
+          '<div class="pop__tr">' + (v.translation ? esc(v.translation) : "\u2014") + "</div>" +
+          (v.definition ? '<div class="pop__def">' + esc(v.definition) + "</div>" : "") +
+        "</div>" +
+        (!v.translation && !v.definition
+          ? '<div class="pop__gap">This word has a card, but the file carried no translation for it. Re-run the paragraph prompt to fill it in.</div>' : "") +
+        noteHTML(v) +
       "</div>" +
-      (!v.translation && !v.definition
-        ? '<div class="pop__gap">This word has a card, but the file carried no translation for it. Re-run the paragraph prompt to fill it in.</div>' : "") +
-      noteHTML(v) +
       exampleHTML(v, "", lesson.id) +
     "</div>" +
     statusBar(lesson.id, v, i, true, true) +
@@ -8920,7 +8987,8 @@ function paintDrill() {
 
           '<div class="drill__card drill__card--front" data-st="' + st + '">' +
             '<div class="dface__top">' +
-              '<span class="pos">' + esc(v.pos || "word") + (v.plural ? " · pl. " + esc(v.plural) : "") + "</span>" +
+              '<span class="fcard__kind"><span class="pos">' + esc(v.pos || "word") + "</span>" +
+                (v.plural ? '<span class="fcard__plural"><i>pl.</i> ' + esc(v.plural) + "</span>" : "") + "</span>" +
               '<span class="fcard__meta">' + seenChip(v) +
                 '<span class="fcard__src">' + ICO_DOC + esc(e.src || "") + "</span>" +
               "</span>" +
@@ -8931,20 +8999,26 @@ function paintDrill() {
               '<div class="dask">What does it mean?</div>' +
               statusPill(st) +
             "</div>" +
-            '<div class="dhint">' + ICO_FLIP + "Click to reveal" + (speech.ok ? ' · <span class="kbd">W</span> word · <span class="kbd">S</span> sentence' : "") + "</div>" +
+            '<div class="dhint">' + ICO_FLIP + "Click to reveal" + (speech.ok ? '<span class="dhint__keys"> · <span class="kbd">W</span> word · <span class="kbd">S</span> sentence</span>' : "") + "</div>" +
           "</div>" +
 
           '<div class="drill__card drill__card--back" data-st="' + st + '">' +
-            '<div class="dface__top">' +
-              '<span class="dword-sm">' + articleHTML(v) + "</span>" +
-              sayBtn(v.word, v.word, "sm") +
+            /* the back keeps the word's head, as every card does: the
+               word, its sound and its respelling, ruled off from the answer */
+            '<div class="dface__top dface__head">' +
+              '<div class="dface__id">' +
+                '<div class="wordrow"><span class="dword-sm">' + articleHTML(v) + "</span>" +
+                  sayBtn(v.word, v.word, "sm") + "</div>" +
+                sayStrip(v.say, true) +
+              "</div>" +
               '<span class="dface__count">' + (drill.i + 1) + " / " + total + "</span>" +
             "</div>" +
             '<div class="dback">' +
-              sayStrip(v.say, true) +
-              '<div class="drill__tr">' + (v.translation ? esc(v.translation) : "—") + "</div>" +
-              (v.definition ? '<div class="drill__def">' + esc(v.definition) + "</div>" : "") +
-              noteHTML(v) +
+              '<div class="dback__mean">' +
+                '<div class="drill__tr">' + (v.translation ? esc(v.translation) : "—") + "</div>" +
+                (v.definition ? '<div class="drill__def">' + esc(v.definition) + "</div>" : "") +
+                noteHTML(v) +
+              "</div>" +
               exampleHTML(v, "ex--lg", cur.lid) +
             "</div>" +
             '<div class="dhint">' + ICO_FLIP + "How did that go? Rate it below</div>" +
@@ -11691,7 +11765,7 @@ async function ghTest() {
    ============================================================ */
 /* the one version number the app shows — keep it in step with the
    comment on the second line of this file */
-const APP_VERSION = "3.45";
+const APP_VERSION = "3.46";
 
 /* The name logo. Built here rather than written out twice in the
    markup; playMark() replays its entrance (and the icon's, beside it). */
